@@ -67,7 +67,7 @@ if (isLocal) {
           .catch(async () => {
             const isLms = url.pathname.startsWith('/lms');
             const fallbackPath = isLms ? '/lms/index.html' : '/index.html';
-            const c = await caches.match(req) || await caches.match(fallbackPath) || await caches.match('/');
+            const c = await caches.match(fallbackPath);
             if (c) return c;
             return new Response('Offline', { status: 503, statusText: 'Offline', headers: { 'Content-Type': 'text/plain' } });
           })
