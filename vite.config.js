@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve, extname } from 'path';
-import { existsSync, statSync, createReadStream } from 'fs';
+import { existsSync, statSync, createReadStream, cpSync } from 'fs';
 
 const MIME = {
   '.html': 'text/html',            '.js':   'text/javascript',
@@ -58,6 +58,16 @@ export default defineConfig({
           }
           next();
         });
+      },
+    },
+    {
+      name: 'ck-copy-lms-to-dist',
+      closeBundle() {
+        const src = resolve(__dirname, 'lms');
+        const dest = resolve(__dirname, 'dist', 'lms');
+        if (existsSync(src)) {
+          cpSync(src, dest, { recursive: true });
+        }
       },
     },
   ],

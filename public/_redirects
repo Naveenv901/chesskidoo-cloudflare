@@ -1,2 +1,1 @@
-/lms /lms/index.html 200
-/* /index.html 200
+/api/* /api/:splat 200
