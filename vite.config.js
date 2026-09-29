@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve, extname } from 'path';
-import { existsSync, statSync, createReadStream, cpSync, mkdirSync } from 'fs';
+import { existsSync, statSync, createReadStream } from 'fs';
 
 const MIME = {
   '.html': 'text/html',            '.js':   'text/javascript',
@@ -18,13 +18,6 @@ const MIME = {
 export default defineConfig({
   plugins: [
     {
-      /* Serve the portal from the repo-root `lms/` directory.
-         Production serves it from there (vercel.json rewrites /lms ->
-         /lms/index.html), but dev used to resolve /lms/ out of `public/lms/`
-         because publicDir is `public`. That meant two byte-identical copies of
-         62 files, one per environment, and every portal fix had to be applied
-         twice or the two would silently drift. This makes dev read the same
-         directory production does, so one copy is the single source of truth. */
       name: 'ck-serve-lms-from-root',
       configureServer(server) {
         const lmsRoot = resolve(__dirname, 'lms');
@@ -34,7 +27,6 @@ export default defineConfig({
           let rel = pathname.slice('/lms'.length);
           if (rel === '/' ) rel = '/index.html';
           const file = resolve(lmsRoot, '.' + rel);
-          // Never let a crafted path escape the lms directory.
           if (!file.startsWith(lmsRoot)) return next();
           if (!existsSync(file) || statSync(file).isDirectory()) return next();
           res.setHeader('Content-Type', MIME[extname(file).toLowerCase()] || 'application/octet-stream');
@@ -44,10 +36,6 @@ export default defineConfig({
       },
     },
     {
-      // Vite's static layer does not redirect a directory request without its
-      // trailing slash, so "/lms" fell through to the SPA history fallback and
-      // served the landing page instead of the portal. Vercel handles this in
-      // production via a rewrite; this makes dev behave the same way.
       name: 'ck-lms-dir-redirect',
       configureServer(server) {
         server.middlewares.use((req, res, next) => {
@@ -60,55 +48,17 @@ export default defineConfig({
         });
       },
     },
-    {
-      name: 'ck-copy-lms-to-dist',
-      closeBundle() {
-        const src = resolve(__dirname, 'lms');
-        const dest = resolve(__dirname, 'dist', 'lms');
-        if (existsSync(src)) {
-          cpSync(src, dest, { recursive: true });
-        }
-      },
-    },
-    {
-      name: 'ck-copy-assets-to-dist',
-      closeBundle() {
-        const srcJs = resolve(__dirname, 'assets', 'js');
-        const destJs = resolve(__dirname, 'dist', 'assets', 'js');
-        const srcCss = resolve(__dirname, 'assets', 'css');
-        const destCss = resolve(__dirname, 'dist', 'assets', 'css');
-
-        if (existsSync(srcJs)) {
-          if (!existsSync(destJs)) mkdirSync(destJs, { recursive: true });
-          const jsFiles = require('fs').readdirSync(srcJs).filter(f => f.endsWith('.js'));
-          for (const file of jsFiles) {
-            cpSync(resolve(srcJs, file), resolve(destJs, file));
-          }
-        }
-
-        if (existsSync(srcCss)) {
-          if (!existsSync(destCss)) mkdirSync(destCss, { recursive: true });
-          const cssFiles = require('fs').readdirSync(srcCss).filter(f => f.endsWith('.css'));
-          for (const file of cssFiles) {
-            cpSync(resolve(srcCss, file), resolve(destCss, file));
-          }
-        }
-      },
-    },
   ],
 
-  // Multi-page: one entry per HTML shell
   build: {
     rollupOptions: {
       input: {
         landing: resolve(__dirname, 'index.html'),
       },
       output: {
-        // Content-hash every chunk so CDN caches never go stale
         chunkFileNames:  'assets/js/[name]-[hash].js',
         entryFileNames:  'assets/js/[name]-[hash].js',
         assetFileNames:  'assets/[ext]/[name]-[hash].[ext]',
-        // Keep Stockfish WASM out of the main bundle
         manualChunks(id) {
           if (id.includes('stockfish'))     return 'stockfish';
           if (id.includes('@supabase'))     return 'supabase';
@@ -116,12 +66,10 @@ export default defineConfig({
         },
       },
     },
-    // Fail loudly on anything over 500 kB uncompressed
     chunkSizeWarningLimit: 500,
     sourcemap: true,
   },
 
-  // Resolve aliases so modules import cleanly
   resolve: {
     alias: {
       '@lib':        resolve(__dirname, 'src/lib'),
@@ -131,10 +79,8 @@ export default defineConfig({
     },
   },
 
-  // Serve public/ as root (images, favicon, etc.)
   publicDir: 'public',
 
-  // During dev, proxy API calls to local Cloudflare Functions
   server: {
     port: 5173,
     host: true,
