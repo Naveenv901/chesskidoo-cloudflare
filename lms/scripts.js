@@ -95,7 +95,7 @@
 
   let SUPABASE_URL = "";
   let SUPABASE_ANON_KEY = "";
-  const API_BASE = window.SUPABASE_URL ? `${window.SUPABASE_URL}/functions/v1` : "/api";
+  const API_BASE = "/api";
   const $ = (id) => {
     const el = document.getElementById(id);
     if (el) return el;
@@ -241,55 +241,24 @@
       throw err;
     }
 
-    const cleanEndpoint = endpoint.replace(/^\/api/, '');
-    const useLocalApiProxy = window.location.hostname === 'localhost' && endpoint.startsWith('/api');
-    const url = useLocalApiProxy
-      ? endpoint
-      : (cleanEndpoint.startsWith("http") || cleanEndpoint.startsWith(API_BASE)
-        ? cleanEndpoint
-        : `${API_BASE}${cleanEndpoint}`);
-    // Forward a real Supabase JWT or authorization token when available.
+    const url = endpoint.startsWith("http") ? endpoint : endpoint;
     const storedTok = sessionStorage.getItem("sb-access-token") || localStorage.getItem("sb-access-token");
     let auth = {};
     try {
       auth = JSON.parse(sessionStorage.getItem("chesskidoo_auth") || sessionStorage.getItem("twoknights_auth") || localStorage.getItem("chesskidoo_auth") || localStorage.getItem("twoknights_auth") || "{}");
     } catch (e) {}
 
-    let sbSessionTok = null;
-    try {
-      if (window.supabaseClient && window.supabaseClient.auth) {
-        // Supabase v1: .session() is synchronous
-        const s1 = window.supabaseClient.auth.session ? window.supabaseClient.auth.session() : null;
-        if (s1 && s1.access_token) sbSessionTok = s1.access_token;
-        // Supabase v2: .getSession() is async but we try it as a fallback
-        if (!sbSessionTok && window.supabaseClient.auth.getSession) {
-          const { data: sessData } = await window.supabaseClient.auth.getSession().catch(() => ({ data: null }));
-          if (sessData?.session?.access_token) sbSessionTok = sessData.session.access_token;
-        }
-      }
-    } catch (e) {}
-
-    const isValidToken = (t) => typeof t === "string" && t.trim().length > 0;
-    const customToken = isValidToken(sbSessionTok)
-      ? sbSessionTok
-      : isValidToken(storedTok)
-        ? storedTok
-        : isValidToken(auth.token)
-          ? auth.token
-          : null;
-
-    // For Supabase Edge Functions, the gateway requires the project's Anon Key in Authorization
-    // Custom portal user tokens are sent via 'x-portal-token' to prevent Kong 401 UNAUTHORIZED_ASYMMETRIC_JWT errors.
-    const bearerToken = SUPABASE_ANON_KEY;
-    const effectiveRole = auth.role || window.role || (sessionStorage.getItem("user_role") || localStorage.getItem("user_role")) || "admin";
+    const customToken = (() => {
+      const t = storedTok || auth.token;
+      return typeof t === "string" && t.trim().length > 0 ? t : null;
+    })();
 
     const headers = {
       "Content-Type": "application/json",
-      apikey: SUPABASE_ANON_KEY,
-      Authorization: `Bearer ${bearerToken}`,
-      ...(customToken ? { "x-portal-token": customToken } : {}),
-      "x-portal-role": effectiveRole,
+      ...(customToken ? { Authorization: `Bearer ${customToken}` } : {}),
+      ...(auth.role ? { "x-portal-role": auth.role } : {}),
       ...(auth.studentId ? { "x-portal-student-id": auth.studentId } : {}),
+      ...(auth.coachId ? { "x-portal-coach-id": auth.coachId } : {}),
       ...options.headers,
     };
 

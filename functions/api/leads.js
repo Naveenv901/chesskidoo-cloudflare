@@ -48,7 +48,7 @@ function cors() {
   return {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-portal-role, x-portal-student-id, x-portal-coach-id'
   };
 }
 
@@ -58,3 +58,4 @@ function json(status, body) {
     headers: { 'Content-Type': 'application/json', ...cors() }
   });
 }
+
