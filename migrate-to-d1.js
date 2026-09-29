@@ -1,6 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { execSync } from 'child_process';
-import { readFileSync, writeFileSync, unlinkSync } from 'fs';
+import { writeFileSync, unlinkSync } from 'fs';
 
 const SUPABASE_URL = 'https://vseombfkrvpffnpgbsnk.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_DADHCm1eB-nASpQfSi5zvA_2rMZxCJT';
@@ -8,39 +8,147 @@ const D1_DB = 'chesskidoo-db';
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const TABLES = [
-  'users', 'classes', 'attendance', 'assignments', 'hw_submissions',
-  'feedback', 'leads', 'expenses', 'document', 'ratings',
-  'tourRatings', 'resources', 'meetings', 'coach_notes',
-  'credentials', 'batch_links', 'monthly_reports', 'puzzle_scores',
-  'coach_attendance', 'broadcasts', 'sessions'
+const TABLES_TO_MIGRATE = [
+  'students',
+  'coaches',
+  'classes',
+  'attendance',
+  'assignments',
+  'homework_assignments',
+  'hw_submissions',
+  'feedback',
+  'leads',
+  'expenses',
+  'document',
+  'ratings',
+  'tourRatings',
+  'resources',
+  'meetings',
+  'coach_notes',
+  'credentials',
+  'batch_links',
+  'monthly_reports',
+  'puzzle_scores',
+  'coach_attendance',
+  'broadcasts'
 ];
 
-const JSONB_FIELDS = new Set([
-  'studentIds', 'days', 'assignedTo', 'moves', 'questions_files',
-  'attachment_urls', 'user_ids', 'file_urls', 'submission_text',
-  'submission_urls', 'srs_data', 'timetable', 'revenue', 'last_note'
-]);
+const D1_TABLE_MAP = {
+  'students': 'users',
+  'coaches': 'users',
+  'homework_assignments': 'assignments',
+  'hw_submissions': 'hw_submissions',
+  'document': 'document',
+  'tourRatings': 'tourRatings',
+  'coach_notes': 'coach_notes',
+  'batch_links': 'batch_links',
+  'monthly_reports': 'monthly_reports',
+  'puzzle_scores': 'puzzle_scores',
+  'coach_attendance': 'coach_attendance'
+};
+
+const STUDENT_COLUMN_MAP = {
+  'id': 'id',
+  'name': 'full_name',
+  'email': 'email',
+  'phone': 'phone_number',
+  'age': 'age',
+  'grade': 'grade',
+  'parent_name': 'childEmail',
+  'parent_phone': 'phone_number',
+  'address': 'city',
+  'enrollment_date': 'join_date',
+  'status': 'status',
+  'coach_id': 'coach',
+  'rating': 'rating',
+  'notes': 'last_note',
+  'created_at': 'created_at',
+  'updated_at': 'updated_at',
+  'account_status': 'status',
+  'session_mode': 'session_type',
+  'session_time': 'session',
+  'monthly_fee': 'fee',
+  'due_date': 'due_date',
+  'payment_status': 'payment_status',
+  'credit_balance': 'revenue',
+  'outstanding_balance': 'revenue',
+  'billing_anchor_year': 'revenue',
+  'billing_anchor_month': 'revenue',
+  'last_payment_applied_month': 'revenue',
+  'country_code': 'city',
+  'lichess_username': 'auth_id',
+  'chesscom_username': 'auth_id',
+  'chessable_username': 'auth_id',
+  'batch_id': 'batch'
+};
+
+const COACH_COLUMN_MAP = {
+  'id': 'id',
+  'name': 'full_name',
+  'email': 'email',
+  'phone': 'phone_number',
+  'specialization': 'level',
+  'experience': 'rating',
+  'rating': 'rating',
+  'bio': 'last_note',
+  'status': 'status',
+  'hourly_rate': 'fee',
+  'availability': 'session',
+  'created_at': 'created_at',
+  'updated_at': 'updated_at',
+  'monthly_fee': 'fee',
+  'batch_count': 'classes',
+  'pay_level': 'fee',
+  'role': 'role',
+  'address': 'city',
+  'account_status': 'status',
+  'salary': 'revenue',
+  'payment_status': 'payment_status',
+  'photo_url': 'photo'
+};
 
 const DATE_FIELDS = new Set([
   'created_at', 'updated_at', 'due_date', 'join_date', 'date', 'markedAt',
-  'submittedAt', 'createdAt', 'liveStartedAt', 'joinedAt'
+  'submittedAt', 'createdAt', 'liveStartedAt', 'joinedAt', 'enrollment_date'
 ]);
 
 const BOOL_FIELDS = new Set(['active', 'completed', 'replied', 'online']);
 
-function transformRow(row) {
-  const out = { ...row };
-  for (const [key, value] of Object.entries(out)) {
-    if (value === undefined || value === null) continue;
-    if (JSONB_FIELDS.has(key) && typeof value === 'object') {
-      out[key] = JSON.stringify(value);
-    } else if (DATE_FIELDS.has(key) && typeof value === 'object') {
-      out[key] = new Date(value).toISOString();
-    } else if (BOOL_FIELDS.has(key) && typeof value === 'boolean') {
-      out[key] = value ? 1 : 0;
+function transformRow(table, row) {
+  const out = {};
+  let columnMap = {};
+  
+  if (table === 'students') {
+    columnMap = STUDENT_COLUMN_MAP;
+    out.role = 'student';
+  } else if (table === 'coaches') {
+    columnMap = COACH_COLUMN_MAP;
+    out.role = 'coach';
+  } else {
+    columnMap = {};
+    for (const key of Object.keys(row)) {
+      columnMap[key] = key;
     }
   }
+
+  for (const [srcKey, value] of Object.entries(row)) {
+    if (value === undefined || value === null) continue;
+    
+    const destKey = columnMap[srcKey] || srcKey;
+    
+    if (DATE_FIELDS.has(destKey) && typeof value === 'object') {
+      out[destKey] = new Date(value).toISOString();
+    } else if (BOOL_FIELDS.has(destKey) && typeof value === 'boolean') {
+      out[destKey] = value ? 1 : 0;
+    } else {
+      out[destKey] = value;
+    }
+  }
+
+  // Ensure required fields have defaults
+  if (!out.role) out.role = table === 'coaches' ? 'coach' : 'student';
+  if (out.rating === undefined) out.rating = 800;
+  
   return out;
 }
 
@@ -53,7 +161,9 @@ function sqlValue(val) {
 }
 
 async function migrateTable(table) {
-  console.log(`\nMigrating ${table}...`);
+  const d1Table = D1_TABLE_MAP[table] || table;
+  console.log(`\nMigrating ${table} → ${d1Table}...`);
+  
   let allRows = [];
   let page = 0;
   const pageSize = 1000;
@@ -81,7 +191,7 @@ async function migrateTable(table) {
   }
 
   console.log(`  Transforming ${allRows.length} rows...`);
-  const transformed = allRows.map(transformRow);
+  const transformed = allRows.map(row => transformRow(table, row));
   const columns = Object.keys(transformed[0]);
   const colList = columns.join(', ');
   const rowsSql = transformed.map(row => {
@@ -89,7 +199,7 @@ async function migrateTable(table) {
     return `(${vals})`;
   });
 
-  const sql = `INSERT INTO ${table} (${colList}) VALUES ${rowsSql.join(';\nINSERT INTO ' + table + ' (' + colList + ') VALUES ')};`;
+  const sql = `INSERT INTO ${d1Table} (${colList}) VALUES ${rowsSql.join(';\nINSERT INTO ' + d1Table + ' (' + colList + ') VALUES ')};`;
   const tempFile = `migrations/migrate_${table}.sql`;
   writeFileSync(tempFile, sql);
 
@@ -99,7 +209,7 @@ async function migrateTable(table) {
       encoding: 'utf8',
       stdio: 'pipe'
     });
-    console.log(`  ✅ ${table}: ${allRows.length} rows migrated`);
+    console.log(`  ✅ ${table} → ${d1Table}: ${allRows.length} rows migrated`);
   } catch (e) {
     console.error(`  ❌ Error importing ${table}:`, e.message);
   }
@@ -109,7 +219,7 @@ async function migrateTable(table) {
 
 async function main() {
   console.log('🚀 Starting Supabase → D1 migration\n');
-  for (const table of TABLES) {
+  for (const table of TABLES_TO_MIGRATE) {
     try {
       await migrateTable(table);
     } catch (e) {

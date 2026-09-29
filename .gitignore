@@ -63,6 +63,9 @@ replace_ui.py
 # ─── Kilo/agent artifacts ─────────────────
 .kilo/
 
+# ─── Wrangler local state ─────────────────
+.wrangler/
+
 # ─── Large Binaries ──────────────────────
 public/stockfish/src/old-nn/*.nnue
 public/stockfish/src/*.nnue

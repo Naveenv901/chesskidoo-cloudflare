@@ -41,7 +41,8 @@ CREATE TABLE users (
     session_type TEXT,
     payment_status TEXT,
     xp INTEGER DEFAULT 0,
-    created_at TEXT DEFAULT (datetime('now'))
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
 );
 
 CREATE TABLE expenses (
