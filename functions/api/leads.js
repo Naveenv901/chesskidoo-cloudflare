@@ -55,6 +55,6 @@ function cors() {
 function json(status, body) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { 'Content-Type': application/json', ...cors() }
+    headers: { 'Content-Type': 'application/json', ...cors() }
   });
 }
