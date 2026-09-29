@@ -7,19 +7,19 @@ export default {
       return new Response(null, { status: 200, headers: cors() });
     }
 
-    if (request.method === 'POST' && pathname.includes('auth') && pathname.includes('login')) {
+    if (request.method === 'POST' && (pathname === '/api/auth/login' || pathname === '/auth/login')) {
       return handleLogin(request, env);
     }
 
-    if (request.method === 'POST' && pathname.includes('auth') && pathname.includes('register')) {
+    if (request.method === 'POST' && (pathname === '/api/auth/register' || pathname === '/auth/register')) {
       return handleRegister(request, env);
     }
 
-    if (request.method === 'POST' && pathname.includes('auth') && pathname.includes('logout')) {
+    if (request.method === 'POST' && (pathname === '/api/auth/logout' || pathname === '/auth/logout')) {
       return handleLogout(request, env);
     }
 
-    if (request.method === 'GET' && pathname.includes('auth') && pathname.includes('me')) {
+    if (request.method === 'GET' && (pathname === '/api/auth/me' || pathname === '/auth/me')) {
       return handleMe(request, env);
     }
 
@@ -69,6 +69,10 @@ export default {
 
     if (pathname === '/api/chesscom-proxy' || pathname.startsWith('/api/chesscom-proxy')) {
       return handleChesscom(request, env);
+    }
+
+    if (request.method === 'POST' && pathname.includes('login')) {
+      return handleLogin(request, env);
     }
 
     return new Response('Not Found', { status: 404, headers: cors() });
