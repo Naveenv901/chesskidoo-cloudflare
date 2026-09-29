@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { execSync } from 'child_process';
+import { readFileSync, writeFileSync, unlinkSync } from 'fs';
 
 const SUPABASE_URL = 'https://vseombfkrvpffnpgbsnk.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_DADHCm1eB-nASpQfSi5zvA_2rMZxCJT';
@@ -15,122 +16,99 @@ const TABLES = [
   'coach_attendance', 'broadcasts', 'sessions'
 ];
 
-function transformRow(table, row) {
-  const transformed = { ...row };
-  
-  // Convert UUID-like IDs to strings
-  if (transformed.id && typeof transformed.id === 'object') {
-    transformed.id = String(transformed.id);
-  }
-  
-  // Convert JSONB fields to JSON strings
-  const jsonbFields = ['studentIds', 'days', 'assignedTo', 'moves', 'questions_files', 
-                       'attachment_urls', 'user_ids', 'file_urls', 'submission_text',
-                       'submission_urls', 'srs_data', 'timetable', 'revenue', 'last_note'];
-  
-  for (const field of jsonbFields) {
-    if (transformed[field] !== undefined && transformed[field] !== null) {
-      if (typeof transformed[field] === 'object') {
-        transformed[field] = JSON.stringify(transformed[field]);
-      }
+const JSONB_FIELDS = new Set([
+  'studentIds', 'days', 'assignedTo', 'moves', 'questions_files',
+  'attachment_urls', 'user_ids', 'file_urls', 'submission_text',
+  'submission_urls', 'srs_data', 'timetable', 'revenue', 'last_note'
+]);
+
+const DATE_FIELDS = new Set([
+  'created_at', 'updated_at', 'due_date', 'join_date', 'date', 'markedAt',
+  'submittedAt', 'createdAt', 'liveStartedAt', 'joinedAt'
+]);
+
+const BOOL_FIELDS = new Set(['active', 'completed', 'replied', 'online']);
+
+function transformRow(row) {
+  const out = { ...row };
+  for (const [key, value] of Object.entries(out)) {
+    if (value === undefined || value === null) continue;
+    if (JSONB_FIELDS.has(key) && typeof value === 'object') {
+      out[key] = JSON.stringify(value);
+    } else if (DATE_FIELDS.has(key) && typeof value === 'object') {
+      out[key] = new Date(value).toISOString();
+    } else if (BOOL_FIELDS.has(key) && typeof value === 'boolean') {
+      out[key] = value ? 1 : 0;
     }
   }
-  
-  // Convert timestamps to ISO strings
-  const dateFields = ['created_at', 'updated_at', 'due_date', 'join_date', 'date', 'markedAt',
-                      'submittedAt', 'createdAt', 'liveStartedAt', 'joinedAt'];
-  
-  for (const field of dateFields) {
-    if (transformed[field] && typeof transformed[field] === 'object') {
-      transformed[field] = new Date(transformed[field]).toISOString();
-    }
-  }
-  
-  // Convert booleans to integers for SQLite
-  const boolFields = ['active', 'completed', 'replied', 'online'];
-  for (const field of boolFields) {
-    if (transformed[field] !== undefined) {
-      transformed[field] = transformed[field] ? 1 : 0;
-    }
-  }
-  
-  return transformed;
+  return out;
+}
+
+function sqlValue(val) {
+  if (val === null || val === undefined) return 'NULL';
+  if (typeof val === 'number') return String(val);
+  if (typeof val === 'boolean') return val ? '1' : '0';
+  const s = String(val).replace(/'/g, "''");
+  return `'${s}'`;
 }
 
 async function migrateTable(table) {
   console.log(`\nMigrating ${table}...`);
-  
   let allRows = [];
   let page = 0;
   const pageSize = 1000;
-  
+
   while (true) {
     const { data, error } = await supabase
       .from(table)
       .select('*')
       .range(page * pageSize, (page + 1) * pageSize - 1);
-    
+
     if (error) {
       console.error(`  Error fetching ${table}:`, error.message);
       return;
     }
-    
     if (!data || data.length === 0) break;
-    
     allRows = allRows.concat(data);
     console.log(`  Fetched ${allRows.length} rows...`);
-    
     if (data.length < pageSize) break;
     page++;
   }
-  
+
   if (allRows.length === 0) {
     console.log(`  No data in ${table}, skipping.`);
     return;
   }
-  
+
   console.log(`  Transforming ${allRows.length} rows...`);
-  const transformed = allRows.map(row => transformRow(table, row));
-  
-  // Generate INSERT SQL
+  const transformed = allRows.map(transformRow);
   const columns = Object.keys(transformed[0]);
-  const placeholders = columns.map(() => '?').join(', ');
-  const sql = transformed.map(row => {
-    const values = columns.map(col => {
-      const val = row[col];
-      if (val === null || val === undefined) return 'NULL';
-      if (typeof val === 'number') return val;
-      if (typeof val === 'boolean') return val ? 1 : 0;
-      return `'${String(val).replace(/'/g, "''")}'`;
-    }).join(', ');
-    return `(${values})`;
-  }).join(';\nINSERT INTO ${table} (${columns.join(', ')}) VALUES ');
-  
-  const fullSql = `INSERT INTO ${table} (${columns.join(', ')}) VALUES ${sql};`;
-  
-  // Write to temp file
-  const fs = await import('fs');
+  const colList = columns.join(', ');
+  const rowsSql = transformed.map(row => {
+    const vals = columns.map(col => sqlValue(row[col])).join(', ');
+    return `(${vals})`;
+  });
+
+  const sql = `INSERT INTO ${table} (${colList}) VALUES ${rowsSql.join(';\nINSERT INTO ' + table + ' (' + colList + ') VALUES ')};`;
   const tempFile = `migrations/migrate_${table}.sql`;
-  fs.writeFileSync(tempFile, fullSql);
-  
+  writeFileSync(tempFile, sql);
+
   console.log(`  Importing to D1...`);
   try {
-    const result = execSync(
-      `wrangler d1 execute ${D1_DB} --remote --file=${tempFile}`,
-      { encoding: 'utf8', stdio: 'pipe' }
-    );
+    execSync(`wrangler d1 execute ${D1_DB} --remote --file=${tempFile}`, {
+      encoding: 'utf8',
+      stdio: 'pipe'
+    });
     console.log(`  ✅ ${table}: ${allRows.length} rows migrated`);
   } catch (e) {
     console.error(`  ❌ Error importing ${table}:`, e.message);
   }
-  
-  // Cleanup
-  fs.unlinkSync(tempFile);
+
+  unlinkSync(tempFile);
 }
 
 async function main() {
   console.log('🚀 Starting Supabase → D1 migration\n');
-  
   for (const table of TABLES) {
     try {
       await migrateTable(table);
@@ -138,7 +116,6 @@ async function main() {
       console.error(`\n❌ Failed to migrate ${table}:`, e);
     }
   }
-  
   console.log('\n✅ Migration complete!');
 }
 
