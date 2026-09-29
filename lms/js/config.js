@@ -1,9 +1,12 @@
 /**
- * Cloudflare-native API client for the LMS portal.
- * Replaces direct Supabase client calls with fetch() to Cloudflare Pages Functions.
+ * Cloudflare-native configuration with Supabase fallback.
+ * The Supabase anon key is public by design and safe in client code.
  */
 
-const API_BASE = '/api';
+window.SUPABASE_URL = 'https://vseombfkrvpffnpgbsnk.supabase.co';
+window.SUPABASE_ANON_KEY = 'sb_publishable_DADHCm1eB-nASpQfSi5zvA_2rMZxCJT';
+window.API_BASE = '/api';
+
 let authToken = null;
 
 function getAuthHeaders() {
@@ -13,7 +16,7 @@ function getAuthHeaders() {
 }
 
 async function apiRequest(path, options = {}) {
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(`${window.API_BASE}${path}`, {
     ...options,
     headers: { ...getAuthHeaders(), ...options.headers }
   });

@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve, extname } from 'path';
-import { existsSync, statSync, createReadStream, cpSync } from 'fs';
+import { existsSync, statSync, createReadStream, cpSync, mkdirSync } from 'fs';
 
 const MIME = {
   '.html': 'text/html',            '.js':   'text/javascript',
@@ -67,6 +67,31 @@ export default defineConfig({
         const dest = resolve(__dirname, 'dist', 'lms');
         if (existsSync(src)) {
           cpSync(src, dest, { recursive: true });
+        }
+      },
+    },
+    {
+      name: 'ck-copy-assets-to-dist',
+      closeBundle() {
+        const srcJs = resolve(__dirname, 'assets', 'js');
+        const destJs = resolve(__dirname, 'dist', 'assets', 'js');
+        const srcCss = resolve(__dirname, 'assets', 'css');
+        const destCss = resolve(__dirname, 'dist', 'assets', 'css');
+
+        if (existsSync(srcJs)) {
+          if (!existsSync(destJs)) mkdirSync(destJs, { recursive: true });
+          const jsFiles = require('fs').readdirSync(srcJs).filter(f => f.endsWith('.js'));
+          for (const file of jsFiles) {
+            cpSync(resolve(srcJs, file), resolve(destJs, file));
+          }
+        }
+
+        if (existsSync(srcCss)) {
+          if (!existsSync(destCss)) mkdirSync(destCss, { recursive: true });
+          const cssFiles = require('fs').readdirSync(srcCss).filter(f => f.endsWith('.css'));
+          for (const file of cssFiles) {
+            cpSync(resolve(srcCss, file), resolve(destCss, file));
+          }
         }
       },
     },
