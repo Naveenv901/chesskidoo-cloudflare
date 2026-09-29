@@ -89,6 +89,7 @@ window.doLogin = async function () {
     }
 
     // 2. Coach Portal Authentication Pipeline (Default Password: "coach123")
+    try {
     const normUser = user.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
     const isCoachPass = (pass === 'coach123' || pass === 'chess123' || pass === 'admin123');
 
