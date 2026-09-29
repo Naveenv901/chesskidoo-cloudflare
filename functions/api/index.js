@@ -9,19 +9,19 @@ export default {
       return new Response(null, { status: 200, headers: cors() });
     }
 
-    if (pathname === '/api/auth/login' || pathname === '/auth/login') {
+    if (pathname === '/api/auth/signin' || pathname === '/auth/signin') {
       return handleLogin(request, env);
     }
 
-    if (pathname === '/api/auth/register' || pathname === '/auth/register') {
+    if (pathname === '/api/auth/signup' || pathname === '/auth/signup') {
       return handleRegister(request, env);
     }
 
-    if (pathname === '/api/auth/logout' || pathname === '/auth/logout') {
+    if (pathname === '/api/auth/signout' || pathname === '/auth/signout') {
       return handleLogout(request, env);
     }
 
-    if (pathname === '/api/auth/me' || pathname === '/auth/me') {
+    if (pathname === '/api/auth/profile' || pathname === '/auth/profile') {
       return handleMe(request, env);
     }
 

@@ -119,7 +119,7 @@ window.supabaseClient = {
       return { data: { user: result.data?.user || null }, error: result.error };
     },
     async signInWithPassword({ email, password }) {
-      const result = await apiRequest('/auth/login', {
+      const result = await apiRequest('/auth/signin', {
         method: 'POST',
         body: JSON.stringify({ email, password })
       });

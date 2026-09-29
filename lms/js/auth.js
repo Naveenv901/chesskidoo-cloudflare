@@ -32,7 +32,7 @@ window.doLogin = async function () {
   const telemetry = window.extractDeviceTelemetry ? window.extractDeviceTelemetry() : {};
 
     try {
-      const authRes = await window.apiCall('/api/auth/login', {
+      const authRes = await window.apiCall('/api/auth/signin', {
         method: 'POST',
         body: JSON.stringify({ email: user.includes('@') ? user : `${user.toLowerCase().replace(/[^a-z0-9]/g, '')}@gmail.com`, password: pass }),
         silent: true
