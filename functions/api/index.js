@@ -7,19 +7,19 @@ export default {
       return new Response(null, { status: 200, headers: cors() });
     }
 
-    if (request.method === 'POST' && pathname.includes('/auth/login')) {
+    if (request.method === 'POST' && pathname.includes('auth') && pathname.includes('login')) {
       return handleLogin(request, env);
     }
 
-    if (request.method === 'POST' && pathname.includes('/auth/register')) {
+    if (request.method === 'POST' && pathname.includes('auth') && pathname.includes('register')) {
       return handleRegister(request, env);
     }
 
-    if (request.method === 'POST' && pathname.includes('/auth/logout')) {
+    if (request.method === 'POST' && pathname.includes('auth') && pathname.includes('logout')) {
       return handleLogout(request, env);
     }
 
-    if (request.method === 'GET' && pathname.includes('/auth/me')) {
+    if (request.method === 'GET' && pathname.includes('auth') && pathname.includes('me')) {
       return handleMe(request, env);
     }
 
