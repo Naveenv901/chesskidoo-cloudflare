@@ -8,5 +8,7 @@ const copy = (src, dest) => {
 };
 
 copy(resolve('assets/js'), resolve('dist/assets/js'));
+copy(resolve('assets/js'), resolve('dist/lms/assets/js'));
 copy(resolve('assets/css'), resolve('dist/assets/css'));
+copy(resolve('assets/css'), resolve('dist/lms/assets/css'));
 copy(resolve('lms'), resolve('dist/lms'));
