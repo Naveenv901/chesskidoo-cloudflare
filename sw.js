@@ -28,7 +28,7 @@ if (isLocal) {
   });
 } else {
   // Production PWA logic
-  const CACHE = 'chesskidoo-v3';
+  const CACHE = 'chesskidoo-v4';
   const SHELL = ['/', '/index.html', '/lms/index.html', '/manifest.json', '/icon.svg'];
 
   self.addEventListener('install', (event) => {

@@ -7,20 +7,20 @@ export default {
       return new Response(null, { status: 200, headers: cors() });
     }
 
-    if (request.method === 'GET' && (pathname === '/api/auth/me' || pathname === '/auth/me')) {
-      return handleMe(request, env);
-    }
-
-    if (request.method === 'POST' && (pathname === '/api/auth/login' || pathname === '/auth/login')) {
+    if (request.method === 'POST' && pathname.includes('/auth/login')) {
       return handleLogin(request, env);
     }
 
-    if (request.method === 'POST' && (pathname === '/api/auth/register' || pathname === '/auth/register')) {
+    if (request.method === 'POST' && pathname.includes('/auth/register')) {
       return handleRegister(request, env);
     }
 
-    if (request.method === 'POST' && (pathname === '/api/auth/logout' || pathname === '/auth/logout')) {
+    if (request.method === 'POST' && pathname.includes('/auth/logout')) {
       return handleLogout(request, env);
+    }
+
+    if (request.method === 'GET' && pathname.includes('/auth/me')) {
+      return handleMe(request, env);
     }
 
     if ((pathname === '/api/query' || pathname === '/query')) {

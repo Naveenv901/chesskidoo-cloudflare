@@ -1,1 +1,7 @@
+/lms/* /lms/:splat 200
+/lms /lms/index.html 200
+/admin /index.html 200
+/coach /index.html 200
+/student /index.html 200
+/arena /index.html 200
 /* /index.html 200
