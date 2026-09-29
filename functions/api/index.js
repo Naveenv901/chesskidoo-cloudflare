@@ -1,32 +1,33 @@
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const pathname = url.pathname;
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 200, headers: cors() });
     }
 
-    if (request.method === 'GET' && url.pathname === '/api/auth/me') {
+    if (request.method === 'GET' && (pathname === '/api/auth/me' || pathname === '/auth/me')) {
       return handleMe(request, env);
     }
 
-    if (request.method === 'POST' && url.pathname === '/api/auth/login') {
+    if (request.method === 'POST' && (pathname === '/api/auth/login' || pathname === '/auth/login')) {
       return handleLogin(request, env);
     }
 
-    if (request.method === 'POST' && url.pathname === '/api/auth/register') {
+    if (request.method === 'POST' && (pathname === '/api/auth/register' || pathname === '/auth/register')) {
       return handleRegister(request, env);
     }
 
-    if (request.method === 'POST' && url.pathname === '/api/auth/logout') {
+    if (request.method === 'POST' && (pathname === '/api/auth/logout' || pathname === '/auth/logout')) {
       return handleLogout(request, env);
     }
 
-    if (url.pathname === '/api/query') {
+    if ((pathname === '/api/query' || pathname === '/query')) {
       return handleQuery(request, env);
     }
 
-    if (url.pathname === '/api/mutate') {
+    if ((pathname === '/api/mutate' || pathname === '/mutate')) {
       return handleMutate(request, env);
     }
 
