@@ -1,0 +1,185 @@
+/* mobile-arena.css — ChessKidoo Arena Mobile Optimization
+   Works alongside arena.css base rules. The base now uses flex-wrap so
+   the moves panel naturally wraps below the board on narrow viewports;
+   these rules only fine-tune paddings, sizing budgets, and a few sticky
+   bits like the controls bar.
+   ─────────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════
+   BASE TOUCH FOUNDATIONS
+   ═══════════════════════════════════════════════════════════ */
+#arena-page {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+#arena-page * {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   900px — TABLETS & MOBILE
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Arena header compact */
+  .arena-header {
+    padding: 12px 14px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .arena-header-left { width: 100%; justify-content: space-between; }
+  .arena-header-right { width: 100%; justify-content: space-between; }
+  .arena-header-settings { width: 100%; overflow-x: auto; padding-bottom: 4px; }
+
+  .difficulty-selector, .timer-selector, .personality-selector {
+    flex-shrink: 0;
+  }
+
+  /* Game layout: column stack centred — base is already flex column */
+  .arena-game-layout {
+    gap: 18px;
+    padding: 14px 12px;
+  }
+
+  /* The board row keeps eval+board inline, moves panel wraps below */
+  .arena-board-container {
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  /* Eval bar — thinner on touch screens, stretches to board height */
+  .eval-bar-container {
+    width: 14px !important;
+    margin-right: 0 !important;
+    min-height: 0 !important;       /* don't force its own tall row when wrapped */
+  }
+
+  /* CRITICAL FIX: stop the board from wrapping below the eval bar.
+     The desktop rule pins width:min(640px,75vh) which is too wide to sit
+     beside the eval bar on a narrow row, so the board wrapped to row 2 and
+     the eval bar floated alone above it. Make the board flex-shrink to fill
+     the remaining row width instead. */
+  .arena-board-container > div[style*="fit-content"] {
+    width: auto !important;
+    max-width: calc(100% - 30px) !important;
+    /* grow:0 so this wrapper hugs the (capped) board instead of expanding and
+       leaving the board floating centred with the eval bar far to the left. */
+    flex: 0 1 auto !important;
+    min-width: 0 !important;
+  }
+
+  /* Moves panel (inline-styled wrapper) wraps to its own row below board */
+  .arena-board-container > div[style*="min-width: 250px"] {
+    flex: 1 1 100% !important;
+    min-width: 0 !important;
+    margin: 12px 0 0 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    max-height: 280px !important;
+    height: auto !important;
+  }
+
+  /* Board cap */
+  .arena-board {
+    max-width: min(540px, 90vw) !important;
+  }
+
+  /* Analysis Panel compact */
+  .arena-panel { border-radius: 16px; }
+  .arena-move-list { max-height: 220px; }
+  .engine-eval-value { font-size: 1.8rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   768px — PHONES (tighter spacing, thinner eval bar)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .arena-board-container {
+    gap: 6px;
+    padding: 0 !important;
+  }
+  .arena-board {
+    max-width: min(440px, 92vw) !important;
+  }
+  .arena-board-container > div[style*="min-width: 250px"] {
+    max-height: 220px !important;
+  }
+
+  /* Game action buttons: 2-column grid */
+  .arena-controls {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+    justify-content: center !important;
+    padding: 0 8px;
+  }
+  .arena-ctrl-btn {
+    flex: 1 1 calc(50% - 6px) !important;
+    min-width: 0 !important;
+    font-size: 0.78rem !important;
+    padding: 10px 12px !important;
+    justify-content: center !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   480px — SMALL PHONES (tightest)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .arena-game-layout { padding: 10px 6px; gap: 14px; }
+
+  .btn-more-games { padding: 8px 12px; font-size: 0.75rem; }
+  .arena-player-info { padding: 4px 8px; }
+  .arena-player-avatar { width: 28px; height: 28px; font-size: 0.7rem; }
+
+  .arena-board-container { gap: 4px; }
+  .eval-bar-container { width: 10px !important; }
+  .arena-board { max-width: 96vw !important; }
+  .arena-board-container > div[style*="min-width: 250px"] {
+    max-height: 180px !important;
+  }
+  .arena-ctrl-btn {
+    font-size: 0.72rem !important;
+    padding: 8px 10px !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MORE GAMES — compact 2-up grid on phones
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 700px) {
+  .games-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .game-card { padding: 18px 12px !important; border-radius: 18px !important; }
+  .game-icon { font-size: 2.3rem !important; margin-bottom: 6px !important; }
+  .card-title { font-size: 1rem !important; margin-bottom: 5px !important; }
+  .card-desc { font-size: 0.76rem !important; margin-bottom: 12px !important; line-height: 1.4 !important; }
+  .card-badges { gap: 4px !important; flex-wrap: wrap !important; }
+  .card-badges .badge { font-size: 0.6rem !important; padding: 3px 7px !important; }
+  .card-best { font-size: 0.72rem !important; }
+  .game-card:hover { transform: translateY(-4px) !important; }
+}
+@media (max-width: 360px) {
+  .games-grid { gap: 9px !important; }
+  .game-card { padding: 14px 9px !important; }
+  .card-title { font-size: 0.92rem !important; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOUCH DEVICE — disable hover-only effects
+   ═══════════════════════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  .diff-btn:hover,
+  .timer-btn:hover,
+  .style-btn:hover,
+  .amove-san:hover {
+    background: transparent;
+  }
+  .diff-btn.active, .timer-btn.active, .style-btn.active {
+    background: rgba(255,255,255,0.1);
+  }
+}

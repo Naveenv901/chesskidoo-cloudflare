@@ -1,0 +1,33 @@
+{
+  "name": "chesskidoo",
+  "version": "3.0.0",
+  "description": "ChessKidoo Academy — modular Vite SPA with Cloudflare Pages + D1 backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint src --ext .js --max-warnings 0",
+    "format": "prettier --write \"src/**/*.{js,css,html}\"",
+    "cf:dev": "wrangler pages project dev --compatibility-flags=nodejs_compat --port 8788",
+    "cf:deploy": "wrangler pages project deploy",
+    "db:generate": "wrangler d1 migrations create chesskidoo-db",
+    "db:apply": "wrangler d1 migrations apply chesskidoo-db --local",
+    "db:apply:remote": "wrangler d1 migrations apply chesskidoo-db"
+  },
+  "dependencies": {
+    "stockfish": "^16.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.3.0",
+    "vite": "^5.4.0",
+    "wrangler": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

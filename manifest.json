@@ -1,0 +1,20 @@
+{
+  "id": "/",
+  "name": "ChessKidoo — Chess Academy",
+  "short_name": "ChessKidoo",
+  "description": "Your chess academy in one app: lessons, puzzles, homework, live classes, tournaments and arcade games.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#0c1322",
+  "theme_color": "#D97706",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["education", "games", "sports"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

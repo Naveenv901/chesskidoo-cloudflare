@@ -1,0 +1,71 @@
+# ─── Node ───────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# ─── Environment & Secrets ───────────────
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+*.pem
+*.key
+
+# ─── Build Outputs ───────────────────────
+dist/
+build/
+.next/
+out/
+
+# ─── Vercel ──────────────────────────────
+.vercel
+
+# ─── IDE ─────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── OS ──────────────────────────────────
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ─── Logs ────────────────────────────────
+*.log
+logs/
+tmp/
+temp/
+
+# ─── Test/Coverage ───────────────────────
+coverage/
+.nyc_output/
+
+# ─── Misc ────────────────────────────────
+*.pid
+*.seed
+*.pid.lock
+.sixth/
+
+# ─── Dev Artifacts (not for production) ──
+scratch/
+.kilo/
+upgrade_*.py
+replace_ui.py
+*.kilo
+
+# ─── Claude agent worktrees ──────────────
+.claude/
+
+# ─── Kilo/agent artifacts ─────────────────
+.kilo/
+
+# ─── Large Binaries ──────────────────────
+public/stockfish/src/old-nn/*.nnue
+public/stockfish/src/*.nnue
+public/stockfish/src/**/*.wasm
+assets/vendor/stockfish/*.wasm
+assets/videos/*.mp4

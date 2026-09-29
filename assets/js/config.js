@@ -1,0 +1,125 @@
+/* assets/js/config.js -------------------------------------------------------
+   ChessKidoo — Runtime Configuration
+   
+   SECURITY NOTE:
+   The Supabase ANON KEY is intentionally public — it is designed for
+   client-side use and is restricted by Row Level Security (RLS) policies
+   in Supabase. It cannot access data beyond what RLS permits.
+   
+   Never commit SERVICE_ROLE keys or private secrets here.
+   --------------------------------------------------------------- */
+
+// Guarantee the CK namespace exists before any module attaches to it
+window.CK = window.CK || {};
+
+window.APP_CONFIG = {
+  // Single source of truth: the "vseo" project, which is also what the /lms
+  // portal (lms/js/config.js) and the Vite dev proxy target. This used to point
+  // at a second project ("bqln…"), so the marketing site and the portal were
+  // reading and writing two different databases and their data diverged.
+  //
+  // NOTE: vseo uses a different schema — students / coaches / payments, not
+  // users / credentials. Anything in db.js still querying the old table names
+  // will read empty; see the portal-retirement note in the audit.
+  SUPABASE_URL:     "https://vseombfkrvpffnpgbsnk.supabase.co",
+  SUPABASE_ANON_KEY: "sb_publishable_DADHCm1eB-nASpQfSi5zvA_2rMZxCJT",
+
+  // Admin UUID — matches the seeded admin user in the users table
+  ADMIN_UUID:       "a0000000-0000-4000-8000-000000000001",
+
+  // Razorpay — replace with your live key from dashboard.razorpay.com
+  // Test key format: rzp_test_XXXXXXXXXXXXXXXX
+  // Live key format: rzp_live_XXXXXXXXXXXXXXXX
+  RAZORPAY_KEY:     "rzp_test_REPLACE_WITH_YOUR_KEY",
+
+  // Academy display info
+  ACADEMY_NAME:     "ChessKidoo Academy",
+  ACADEMY_EMAIL:    "Chesskidoo37@gmail.com",
+  ACADEMY_PHONE:    "+91 95142 66505",
+  ACADEMY_CITY:     "Bhavani, Erode, Tamil Nadu",
+
+  // UPI Payment — direct bank transfer (no gateway needed)
+  // IMPORTANT: Replace ACADEMY_UPI_ID with the actual UPI VPA from your bank app
+  // (e.g. ranjithas@okaxis, 9514266505@ybl, etc.)
+  ACADEMY_UPI_ID:     "saminathanranjith73@okaxis",
+  ACADEMY_UPI_NAME:   "Ranjith A S",
+  ACADEMY_UPI_MOBILE: "9514266505",
+
+  // EmailJS (public keys — safe for client-side)
+  EMAILJS_SERVICE:  "service_7mn07q9",
+  EMAILJS_TEMPLATE: "template_3lumv9c",
+  EMAILJS_KEY:      "1EuHvvzi2H9RnaBF6",
+
+  // WebRTC TURN servers — REQUIRED for in-app live video/audio to work behind
+  // NAT/firewalls (most networks). Without this, peer video falls back to the
+  // avatar. Get free/cheap credentials from metered.ca, Twilio, or self-host
+  // coturn, then fill this in. Example:
+  //   TURN_SERVERS: [{ urls: "turn:host:3478", username: "user", credential: "pass" }]
+  TURN_SERVERS: [],
+
+  // Google Sheets Demo Booking Integration
+  // Sheet: https://docs.google.com/spreadsheets/d/1AG6Mvpctz6TFzCRGa1-6Qz0V1cl0NDI-QqxINHPn5mU/edit?usp=sharing
+  GOOGLE_SHEET_DEMO_ID: "1AG6Mvpctz6TFzCRGa1-6Qz0V1cl0NDI-QqxINHPn5mU",
+  GOOGLE_SHEET_DEMO_URL: "https://docs.google.com/spreadsheets/d/1AG6Mvpctz6TFzCRGa1-6Qz0V1cl0NDI-QqxINHPn5mU/edit?usp=sharing",
+  GOOGLE_SHEET_WEBHOOK_URL: ""
+};
+
+// Expose Razorpay key via global for student.js payment gateway
+window.CK_RAZORPAY_KEY = window.APP_CONFIG.RAZORPAY_KEY;
+
+// HTML-escape helper — use CK.esc(str) inside any innerHTML template
+// to prevent XSS from user-supplied names, notes, and descriptions.
+window.CK = window.CK || {};
+window.CK.student = window.CK.student || {
+  nav(panelId) {
+    const target = document.getElementById('student-panel-' + panelId);
+    if (target) target.classList.add('active');
+  },
+  init() {}
+};
+window.CK.esc = function(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+};
+
+// Initialize Supabase Client
+(function initSupabase() {
+  const maxRetries = 10;
+  let retries = 0;
+
+  function attemptInit() {
+    if (window.supabase) {
+      try {
+        window.supabaseClient = window.supabase.createClient(
+          window.APP_CONFIG.SUPABASE_URL,
+          window.APP_CONFIG.SUPABASE_ANON_KEY,
+          {
+            auth: {
+              autoRefreshToken: true,
+              persistSession: true,
+              detectSessionInUrl: false
+            }
+          }
+        );
+      } catch (e) {
+        console.error("[ChessKidoo] Supabase init failed:", e);
+      }
+    } else {
+      retries++;
+      if (retries < maxRetries) {
+        setTimeout(attemptInit, 500);
+      } else {
+        console.error("[ChessKidoo] Supabase SDK failed to load. Check the CDN <script> in index.html.");
+      }
+    }
+  }
+
+  attemptInit();
+})();
+
+

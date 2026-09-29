@@ -1,0 +1,1604 @@
+/* assets/css/mobile-optimize-2026.css ---------------------------------------
+   ChessKidoo — Responsive pass for the 2026 components + portal pain points.
+   Loaded last; everything lives inside media queries so desktop is untouched.
+   --------------------------------------------------------------- */
+
+/* ===== Phones (≤640px) ===================================================== */
+@media (max-width: 640px) {
+
+  /* Generic: any wide table scrolls instead of overflowing the viewport */
+  .p-card-body { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .p-table { min-width: 480px; font-size: 0.82rem; }
+  .p-table th, .p-table td { padding: 8px 10px; }
+
+  /* Comfortable tap targets everywhere */
+  .p-btn, .la-act, .ckv-btn, .cal-tab-btn, .sc-tab-btn, .cc-tab-btn { min-height: 40px; }
+  button, select, input, textarea { font-size: 16px; } /* stop iOS zoom-on-focus */
+
+  /* Button groups wrap instead of overflowing card headers */
+  .p-card-header { flex-wrap: wrap; gap: 8px; row-gap: 10px; }
+
+  /* ---- Redesigned hero / live banner ---- */
+  .ck-rd-hero { padding: 16px 16px; }
+  .ck-rd-hero-row { gap: 12px; }
+  .ck-rd-hero-title { font-size: 1.1rem; }
+  .ck-rd-hero-ic { width: 46px; height: 46px; font-size: 1.4rem; }
+  .ck-rd-hero-chip { font-size: 0.72rem; padding: 5px 11px; }
+  .ck-live-banner { padding: 11px 13px; }
+
+  /* ---- PGN Vault ---- */
+  .ckv-toolbar { flex-direction: column; align-items: stretch; }
+  .ckv-search { width: 100%; min-width: 0; }
+  .ckv-import { width: 100%; }
+  .ckv-import .ckv-mini { flex: 1; width: auto; min-width: 0; }
+  .ckv-analytics { grid-template-columns: repeat(2, 1fr); }
+  .ckv-grid { grid-template-columns: 1fr; }
+  .ckv-filters { gap: 8px; }
+  .ckv-sort { margin-left: 0; width: 100%; }
+
+  /* ---- Report card ---- */
+  #printableReportCard { padding: 20px 16px !important; }
+  #printableReportCard h1 { font-size: 1.4rem !important; }
+  #printableReportCard [style*="grid-template-columns: repeat(auto-fit, minmax(280px"] { grid-template-columns: 1fr !important; }
+  #printableReportCard [style*="grid-template-columns: repeat(auto-fit, minmax(200px"] { grid-template-columns: 1fr !important; }
+
+  /* ---- Access manager ---- */
+  .acc-stats-row { grid-template-columns: repeat(2, 1fr) !important; }
+  .acc-search-row { flex-direction: column; align-items: stretch; }
+  .acc-search-row #accRoleFilter { width: 100% !important; }
+  .acc-bulk-row .p-btn { flex: 1 1 auto; }
+
+  /* ---- Coach puzzle progress chips ---- */
+  .cpz-head { flex-wrap: wrap; gap: 6px; }
+
+  /* ---- Pricing language + currency row ---- */
+  #pricing .pricing-grid { grid-template-columns: 1fr; }
+
+  /* ---- Lab / play boards: keep boards within the screen ---- */
+  .lab-main-grid, .pvc-layout, .pz-layout, .lab-board-with-vbar { grid-template-columns: 1fr !important; display: block; }
+  #pvBoard, .lab-board-container, .pv-board-el { max-width: 92vw; margin-left: auto; margin-right: auto; }
+
+  /* ---- Demo modal fields stack neatly ---- */
+  #contactModal .modal-card { max-width: 94vw; }
+
+  /* ---- Certificate Mobile Polish ---- */
+  .cert-overlay {
+    padding: 14px 6px !important;
+    overflow-x: hidden !important;
+    max-width: 100vw !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+  }
+  .cert-scale-wrapper {
+    max-width: calc(100vw - 12px) !important;
+    margin: 0 auto !important;
+  }
+  .cert-action-bar {
+    max-width: 96vw !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 8px !important;
+  }
+  .cert-action-btn {
+    flex: 1 1 120px !important;
+    padding: 10px 14px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* ===== Small phones (≤400px) ============================================== */
+@media (max-width: 400px) {
+  .ckv-analytics { grid-template-columns: 1fr 1fr; }
+  .acc-stats-row { grid-template-columns: 1fr 1fr !important; }
+  .ck-rd-hero-sub, .ck-live-banner-sub { font-size: 0.78rem; }
+  .p-card { border-radius: 14px; }
+}
+
+/* ===== Respect notches / safe areas on the landing CTA bars ============== */
+@supports (padding: max(0px)) {
+  @media (max-width: 640px) {
+    body { padding-bottom: env(safe-area-inset-bottom); }
+  }
+}
+
+/* ── BOOK FREE DEMO MODAL — REDESIGNED ── */
+
+/* Body scroll lock when any modal is open */
+body.modal-open {
+  overflow: hidden !important;
+}
+
+.ck-demo-modal-card {
+  max-width: 480px !important;
+  width: 94vw !important;
+  max-height: min(92vh, 720px) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  background: linear-gradient(180deg, #0c1222 0%, #111827 100%) !important;
+  border: 1px solid rgba(232, 160, 32, 0.25) !important;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.05),
+    0 20px 50px rgba(0, 0, 0, 0.65),
+    0 0 80px rgba(217, 119, 6, 0.08) !important;
+  color: #fff !important;
+  font-family: inherit;
+  margin: auto !important;
+  flex-shrink: 0 !important;
+  animation: ckModalSlideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes ckModalSlideIn {
+  from { opacity: 0; transform: translateY(24px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.ck-demo-modal-header {
+  background: linear-gradient(135deg, #1a2744 0%, #0f172a 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 18px 20px 14px !important;
+  text-align: center;
+  position: relative;
+  flex: 0 0 auto !important;
+}
+.ck-demo-header-badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  padding: 3px 10px;
+  border-radius: 20px;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+.ck-modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #94a3b8;
+  font-size: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+.ck-modal-close-btn:hover {
+  background: rgba(239, 68, 68, 0.7);
+  color: #fff;
+  border-color: transparent;
+  transform: rotate(90deg) scale(1.1);
+}
+.ck-demo-title {
+  font-family: var(--font-display, inherit);
+  font-size: 1.25rem;
+  margin-bottom: 4px;
+  color: #fff !important;
+  font-weight: 800;
+}
+.ck-demo-subtitle {
+  font-size: 0.78rem;
+  color: #7c8db5 !important;
+  line-height: 1.3;
+}
+
+/* ── Scrollable form body ── */
+.ck-demo-modal-body {
+  padding: 18px 20px 20px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  flex: 1 1 auto !important;
+  box-sizing: border-box;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(245,158,11,0.3) transparent;
+}
+.ck-demo-modal-body::-webkit-scrollbar { width: 5px; }
+.ck-demo-modal-body::-webkit-scrollbar-track { background: transparent; }
+.ck-demo-modal-body::-webkit-scrollbar-thumb {
+  background: rgba(245,158,11,0.25);
+  border-radius: 10px;
+}
+.ck-demo-modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(245,158,11,0.45);
+}
+
+.ck-demo-actions {
+  position: sticky !important;
+  bottom: -20px !important;
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, #0f172a 100%) !important;
+  backdrop-filter: blur(8px) !important;
+  padding-top: 14px !important;
+  padding-bottom: 8px !important;
+  margin-top: 16px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  z-index: 10 !important;
+}
+
+/* ── Level chips: compact horizontal row ── */
+.ck-level-chips {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+.ck-chip-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #1a2744 !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #c8d5e8 !important;
+  transition: all 0.2s ease;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+}
+.ck-chip-item:hover {
+  background: rgba(245, 158, 11, 0.12) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  color: #fff !important;
+}
+.ck-chip-item:has(input:checked) {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: #f59e0b !important;
+  color: #fbbf24 !important;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
+}
+.ck-chip-item input[type="radio"] {
+  appearance: auto !important;
+  -webkit-appearance: radio !important;
+  accent-color: #f59e0b !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  max-width: 16px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+/* ── Form controls ── */
+.ck-form-group {
+  margin-bottom: 12px !important;
+}
+.ck-form-label {
+  font-weight: 700;
+  font-size: 0.78rem;
+  margin-bottom: 4px;
+  display: block;
+  color: #d1d9e8 !important;
+  letter-spacing: 0.2px;
+}
+.ck-form-input, .ck-form-select {
+  width: 100% !important;
+  height: 42px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  padding: 0 12px !important;
+  font-size: 14px !important;
+  outline: none !important;
+  background: #1a2744 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+.ck-form-input::placeholder {
+  color: #64748b;
+  opacity: 1;
+}
+.ck-form-input:focus, .ck-form-select:focus {
+  border-color: #f59e0b;
+  background: #0f1b33;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+.ck-phone-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.ck-dial-select {
+  flex: 0 0 110px !important;
+  width: 110px !important;
+  min-width: 110px !important;
+  max-width: 110px !important;
+}
+.ck-phone-input {
+  flex: 1 1 auto !important;
+  width: 100% !important;
+}
+.ck-demo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.ck-demo-notice {
+  background: rgba(217, 119, 6, 0.08);
+  border: 1px solid rgba(217, 119, 6, 0.25);
+  border-radius: 8px;
+  padding: 8px 10px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ck-notice-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+.ck-notice-text {
+  font-size: 0.72rem;
+  color: #d4a341;
+  line-height: 1.3;
+}
+.ck-demo-actions {
+  display: flex;
+  gap: 8px;
+}
+.ck-btn-cancel {
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #94a3b8;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.ck-btn-cancel:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+.ck-btn-submit {
+  flex: 1;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-weight: 700;
+  font-size: 0.88rem;
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  border: none;
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.3);
+  cursor: pointer;
+  transition: all 0.25s;
+}
+.ck-btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(217, 119, 6, 0.4);
+}
+.ck-btn-submit:active {
+  transform: translateY(0);
+}
+
+/* ── Mobile breakpoints ── */
+@media (max-width: 480px) {
+  .ck-demo-modal-card {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 16px 16px 0 0;
+    margin: auto 0 0 0;
+  }
+  .ck-demo-grid {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .ck-demo-modal-body {
+    padding: 14px 16px 16px;
+  }
+  .ck-demo-modal-header {
+    padding: 14px 16px 10px;
+  }
+  .ck-demo-actions {
+    flex-direction: column-reverse;
+  }
+  .ck-btn-cancel, .ck-btn-submit {
+    width: 100%;
+  }
+  .ck-dial-select {
+    width: 90px;
+  }
+  .ck-level-chips {
+    flex-direction: column;
+  }
+}
+
+/* ── Demo Modal Multi-Step Wizard ── */
+.ck-demo-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 0 20px;
+}
+.ck-progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  opacity: 0.4;
+  transition: all 0.3s ease;
+}
+.ck-progress-step.active {
+  opacity: 1;
+}
+.ck-step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+.ck-progress-step.active .ck-step-circle {
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  border-color: #fbbf24;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+}
+.ck-step-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ck-progress-step.active .ck-step-label {
+  color: #fbbf24;
+}
+.ck-progress-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  min-width: 20px;
+  max-width: 40px;
+}
+
+.ck-wizard-step {
+  display: none;
+  animation: ckWizardFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.ck-wizard-step.active {
+  display: block;
+}
+@keyframes ckWizardFadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ck-step-head {
+  text-align: center;
+  margin-bottom: 22px;
+}
+.ck-step-pill {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  padding: 3px 10px;
+  border-radius: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.ck-step-title {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+.ck-step-sub {
+  font-size: 0.78rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ── Level Selection Cards ── */
+.ck-level-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.ck-level-card {
+  cursor: pointer;
+  position: relative;
+}
+.ck-level-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.ck-level-card-content {
+  background: rgba(15, 23, 42, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: left;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.ck-level-card:hover .ck-level-card-content {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(245, 158, 11, 0.4);
+  transform: translateY(-3px);
+}
+.ck-level-card input:checked + .ck-level-card-content,
+.ck-level-card:has(input:checked) .ck-level-card-content {
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.25) !important;
+}
+.ck-level-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.ck-level-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.ck-level-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.ck-level-name {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+.ck-level-desc {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  line-height: 1.35;
+  margin-bottom: 12px;
+  flex: 1;
+}
+.ck-level-check {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #fbbf24;
+  display: none;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.ck-level-card input:checked + .ck-level-card-content .ck-level-check,
+.ck-level-card:has(input:checked) .ck-level-check {
+  display: block;
+}
+
+/* ── Mode Selection Cards ── */
+.ck-mode-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.ck-mode-card {
+  cursor: pointer;
+  position: relative;
+}
+.ck-mode-card input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.ck-mode-card-content {
+  background: rgba(15, 23, 42, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.ck-mode-card:hover .ck-mode-card-content {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(245, 158, 11, 0.3);
+  transform: translateY(-2px);
+}
+.ck-mode-card input:checked + .ck-mode-card-content,
+.ck-mode-card:has(input:checked) .ck-mode-card-content {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.2) !important;
+}
+.ck-mode-icon {
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+.ck-mode-name {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 2px;
+}
+.ck-mode-desc {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  line-height: 1.3;
+}
+
+/* ── Slot Grid ── */
+.ck-slot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.ck-slot-item {
+  display: flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.7);
+  border: 2px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+.ck-slot-item input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+.ck-slot-item:hover {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(245, 158, 11, 0.3);
+}
+.ck-slot-item input:checked + .ck-slot-content,
+.ck-slot-item:has(input:checked) {
+  background: rgba(245, 158, 11, 0.15) !important;
+  border-color: #f59e0b !important;
+}
+.ck-slot-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.ck-slot-icon {
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.ck-slot-content strong {
+  display: block;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #f1f5f9;
+  line-height: 1.2;
+}
+.ck-slot-content small {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ── Wizard Actions / Buttons ── */
+.ck-wizard-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+.ck-btn-step-back {
+  flex: 0 0 auto;
+  padding: 12px 18px;
+  font-size: 0.88rem;
+}
+.ck-btn-step-next, .ck-btn-step-submit {
+  flex: 1;
+  justify-content: center;
+  padding: 14px 20px;
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+/* ── Success State ── */
+.ck-success-state {
+  text-align: center;
+  padding: 24px 10px 10px;
+  animation: ckWizardFadeIn 0.5s ease;
+}
+.ck-success-badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+  letter-spacing: 0.6px;
+}
+.ck-success-icon {
+  font-size: 3.5rem;
+  margin-bottom: 12px;
+  animation: ckSuccessPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes ckSuccessPop {
+  0% { transform: scale(0); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.ck-success-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 8px;
+}
+.ck-success-text {
+  font-size: 0.88rem;
+  color: #94a3b8;
+  line-height: 1.55;
+  margin-bottom: 20px;
+  max-width: 340px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.ck-success-summary {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 24px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ck-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.ck-summary-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.ck-summary-label {
+  color: #64748b;
+  font-weight: 600;
+}
+.ck-summary-val {
+  color: #fbbf24;
+  font-weight: 700;
+}
+.ck-success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ck-btn-wa-direct {
+  width: 100%;
+  padding: 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  background: #25d366 !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 12px;
+}
+.ck-btn-wa-direct:hover {
+  background: #1eb956 !important;
+}
+.ck-success-info-label {
+  font-size: 0.68rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ck-success-info-value {
+  font-size: 0.85rem;
+  color: #fbbf24;
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .ck-level-cards {
+    grid-template-columns: 1fr;
+  }
+  .ck-mode-cards {
+    grid-template-columns: 1fr;
+  }
+  .ck-slot-grid {
+    grid-template-columns: 1fr;
+  }
+  .ck-success-info {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .ck-wizard-actions {
+    flex-direction: column;
+  }
+  .ck-wizard-back, .ck-wizard-next, .ck-wizard-submit {
+    width: 100%;
+  }
+}
+
+/* ─── UPCOMING TOURNAMENTS & ANNOUNCEMENTS SECTION ─── */
+.ck-tournaments-section {
+  background: linear-gradient(180deg, #060a14 0%, #0f172a 50%, #060a14 100%);
+  color: #fff;
+  padding: 100px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.ck-tournaments-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(245, 158, 11, 0.06) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.ck-notice-board {
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 56px;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.ck-notice-board::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24);
+}
+
+.ck-notice-board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ck-notice-badge {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #fbbf24;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ck-notice-badge::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: #fbbf24;
+  border-radius: 50%;
+  animation: noticePulse 2s ease-in-out infinite;
+}
+
+@keyframes noticePulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.ck-notice-date {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.ck-notice-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.ck-notice-card {
+  display: flex;
+  gap: 14px;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 18px;
+  align-items: flex-start;
+  transition: all 0.3s ease;
+}
+
+.ck-notice-card:hover {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(245, 158, 11, 0.2);
+  transform: translateY(-2px);
+}
+
+.ck-notice-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 12px;
+}
+
+.ck-notice-detail h5 {
+  font-size: 0.95rem;
+  color: #f8fafc;
+  margin-bottom: 6px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.ck-notice-detail p {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Tournament Grid */
+.ck-tournament-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 28px;
+}
+
+.ck-t-card {
+  background: linear-gradient(145deg, #1e293b 0%, #162032 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.ck-t-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ck-t-card:hover::before {
+  opacity: 1;
+}
+
+.ck-t-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(245, 158, 11, 0.4);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(245, 158, 11, 0.1);
+}
+
+.ck-t-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.ck-t-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fide-badge { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.offline-badge { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+.weekly-badge { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+
+.ck-t-status { 
+  font-size: 0.78rem; 
+  font-weight: 700; 
+  color: #10b981; 
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ck-t-status::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: statusPulse 1.5s ease-in-out infinite;
+}
+
+.ck-t-status.free { color: #38bdf8; }
+.ck-t-status.free::before { background: #38bdf8; }
+
+@keyframes statusPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+.ck-t-title { 
+  font-size: 1.3rem; 
+  font-weight: 800; 
+  color: #fff; 
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.ck-t-sub { 
+  font-size: 0.85rem; 
+  color: #94a3b8; 
+  margin-bottom: 20px; 
+  line-height: 1.5;
+}
+
+.ck-t-details {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.ck-t-item { display: flex; flex-direction: column; gap: 3px; }
+.ck-t-label { 
+  font-size: 0.7rem; 
+  color: #64748b; 
+  font-weight: 700; 
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.ck-t-val { 
+  font-size: 0.9rem; 
+  color: #e2e8f0; 
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.ck-t-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+}
+
+.ck-t-fee { display: flex; flex-direction: column; }
+.ck-fee-amt { 
+  font-size: 1.5rem; 
+  font-weight: 800; 
+  color: #fbbf24; 
+  line-height: 1;
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+.ck-fee-lbl { 
+  font-size: 0.72rem; 
+  color: #64748b; 
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.ck-t-btn { 
+  padding: 12px 22px; 
+  font-size: 0.9rem; 
+  border-radius: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Tournament Category Tags */
+.ck-t-categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+.ck-t-cat {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+.ck-cat-beginner {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.25);
+}
+.ck-cat-intermediate {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+.ck-cat-advanced {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+.ck-t-cat:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── CAREERS & JOBS SECTION ─── */
+.ck-careers-section {
+  background: linear-gradient(180deg, #0f172a 0%, #162032 50%, #0f172a 100%);
+  color: #fff;
+  padding: 100px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.ck-careers-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.ck-careers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 28px;
+  margin-top: 48px;
+}
+
+.ck-job-card {
+  background: linear-gradient(145deg, #1e293b 0%, #1a2438 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  position: relative;
+  overflow: hidden;
+}
+
+.ck-job-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.ck-job-card:hover::before {
+  opacity: 1;
+}
+
+.ck-job-card:hover {
+  transform: translateY(-8px);
+  border-color: rgba(245, 158, 11, 0.35);
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(245, 158, 11, 0.08);
+}
+
+.ck-job-badge {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+  padding: 6px 14px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 16px;
+  width: max-content;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.ck-job-title { 
+  font-size: 1.2rem; 
+  font-weight: 800; 
+  color: #f8fafc; 
+  margin-bottom: 12px;
+  line-height: 1.3;
+}
+
+.ck-job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ck-job-meta span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(15, 23, 42, 0.6);
+  padding: 5px 10px;
+  border-radius: 8px;
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.ck-job-desc { 
+  font-size: 0.88rem; 
+  color: #cbd5e1; 
+  line-height: 1.6; 
+  margin-bottom: 24px; 
+  flex: 1 1 auto;
+}
+
+.ck-job-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ck-job-salary { 
+  font-size: 0.85rem; 
+  font-weight: 700; 
+  color: #34d399;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ck-job-salary::before {
+  content: '💰';
+  font-size: 0.9rem;
+}
+
+.ck-job-btn { 
+  width: 100%; 
+  padding: 12px; 
+  font-size: 0.9rem; 
+  border-radius: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* ─── NRI PRICING BOX & INR BADGE ─── */
+.ck-inr-pricing-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #059669;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border: 1px solid #6ee7b7;
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin: 10px 0 18px;
+}
+
+.ck-inr-pricing-tag::before {
+  content: '🇮🇳';
+  font-size: 1rem;
+}
+
+.ck-nri-pricing-box {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+  border: 2px solid rgba(251, 191, 36, 0.4);
+  border-radius: 28px;
+  padding: 40px;
+  margin-top: 48px;
+  color: #fff;
+  box-shadow: 
+    0 24px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(251, 191, 36, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.ck-nri-pricing-box::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24);
+}
+
+.ck-nri-pricing-box::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.ck-nri-badge {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #fbbf24;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  padding: 6px 16px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  letter-spacing: 0.5px;
+  position: relative;
+  z-index: 1;
+}
+
+.ck-nri-content {
+  display: flex;
+  gap: 32px;
+  align-items: stretch;
+  flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+}
+
+.ck-nri-info { 
+  flex: 1 1 500px; 
+}
+
+.ck-nri-info h4 { 
+  font-size: 1.3rem; 
+  font-weight: 800; 
+  color: #f8fafc; 
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ck-nri-info h4::before {
+  content: '📌';
+  font-size: 1.2rem;
+}
+
+.ck-nri-info p { 
+  font-size: 0.92rem; 
+  color: #cbd5e1; 
+  line-height: 1.6; 
+  margin-bottom: 20px;
+}
+
+.ck-nri-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.ck-nri-col {
+  display: flex;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.5);
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.3s ease;
+}
+
+.ck-nri-col:hover {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(245, 158, 11, 0.2);
+  transform: translateY(-2px);
+}
+
+.ck-nri-icon { 
+  font-size: 1.5rem; 
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: 12px;
+}
+
+.ck-nri-col strong { 
+  display: block; 
+  font-size: 0.85rem; 
+  color: #f1f5f9; 
+  margin-bottom: 4px;
+  font-weight: 700;
+}
+
+.ck-nri-col p { 
+  font-size: 0.8rem; 
+  color: #94a3b8; 
+  margin: 0; 
+  line-height: 1.5;
+}
+
+.ck-nri-action {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  border-radius: 20px;
+  padding: 28px;
+  text-align: center;
+  flex: 0 0 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  backdrop-filter: blur(8px);
+}
+
+.ck-nri-price-tag { 
+  font-size: 1.6rem; 
+  font-weight: 800; 
+  color: #fbbf24;
+  text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+}
+
+.ck-nri-price-sub { 
+  font-size: 0.8rem; 
+  color: #94a3b8; 
+  margin-bottom: 18px;
+  font-weight: 500;
+}
+
+.ck-nri-btn { 
+  width: 100%; 
+  padding: 14px 20px; 
+  font-size: 0.9rem; 
+  border-radius: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+@media (max-width: 768px) {
+  .ck-nri-content { flex-direction: column; align-items: stretch; }
+  .ck-nri-action { 
+    flex: 1 1 auto; 
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    text-align: left;
+  }
+  .ck-nri-price-tag { font-size: 1.3rem; }
+}
+
+/* ─── CRITICAL: Dark section text visibility ─── */
+.ck-tournaments-section .section-head h2,
+.ck-careers-section .section-head h2 {
+  color: #fff !important;
+}
+.ck-tournaments-section .section-head .eyebrow,
+.ck-careers-section .section-head .eyebrow {
+  color: #fbbf24 !important;
+}
+.ck-tournaments-section .section-head .lead,
+.ck-careers-section .section-head .lead {
+  color: #cbd5e1 !important;
+  opacity: 1 !important;
+}
+
+/* ─── Price Footnote Enhancement ─── */
+.price-footnote {
+  text-align: center;
+  font-size: 0.88rem;
+  color: #64748b;
+  margin-top: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: rgba(15, 23, 42, 0.04);
+  border-radius: 12px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.price-footnote span {
+  color: #fbbf24;
+}
+
+/* ─── Tournament card mobile responsive ─── */
+@media (max-width: 480px) {
+  .ck-tournament-grid {
+    grid-template-columns: 1fr;
+  }
+  .ck-careers-grid {
+    grid-template-columns: 1fr;
+  }
+  .ck-notice-grid {
+    grid-template-columns: 1fr;
+  }
+  .ck-t-card, .ck-job-card {
+    padding: 20px;
+  }
+  .ck-notice-board {
+    padding: 18px;
+  }
+  .ck-nri-pricing-box {
+    padding: 24px 18px;
+  }
+}
