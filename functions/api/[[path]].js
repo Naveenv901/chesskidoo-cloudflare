@@ -188,8 +188,17 @@ async function handleQuery(request, env) {
   };
   const actualTable = TABLE_ALIASES[table] || table;
 
+  const COLUMN_ALIASES = {
+    'homework_submissions': { submitted_at: 'created_at' }
+  };
+  const columnAliases = COLUMN_ALIASES[table] || {};
+
   if (!table || !ALLOWED_TABLES.includes(table)) {
     return json(400, { error: 'Invalid table' });
+  }
+
+  function normalizeColumn(col) {
+    return columnAliases[col] || col;
   }
 
   try {
@@ -201,7 +210,7 @@ async function handleQuery(request, env) {
         if (key.startsWith('filter_')) {
           const parts = key.split('_');
           const filterOp = parts[1];
-          const field = parts.slice(2).join('_');
+          const field = normalizeColumn(parts.slice(2).join('_'));
           query += ` AND ${field} ${filterOpToSQL(filterOp)} ?`;
           params.push(value);
         }
@@ -210,7 +219,7 @@ async function handleQuery(request, env) {
       const sortField = url.searchParams.get('sort');
       const sortOrder = url.searchParams.get('order') || 'asc';
       if (sortField) {
-        query += ` ORDER BY ${sortField} ${sortOrder === 'desc' ? 'DESC' : 'ASC'}`;
+        query += ` ORDER BY ${normalizeColumn(sortField)} ${sortOrder === 'desc' ? 'DESC' : 'ASC'}`;
       }
 
       const limit = url.searchParams.get('limit');
