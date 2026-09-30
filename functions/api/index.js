@@ -189,7 +189,10 @@ async function handleQuery(request, env) {
   const cols = url.searchParams.get('cols') || '*';
 
   const TABLE_ALIASES = {
-    'homework_submissions': 'hw_submissions'
+    'homework_submissions': 'hw_submissions',
+    'students': 'users',
+    'coaches': 'users',
+    'homework_assignments': 'assignments'
   };
   const actualTable = TABLE_ALIASES[table] || table;
 
@@ -240,7 +243,10 @@ async function handleMutate(request, env) {
     const { table, op, data } = body;
 
     const TABLE_ALIASES = {
-      'homework_submissions': 'hw_submissions'
+      'homework_submissions': 'hw_submissions',
+      'students': 'users',
+      'coaches': 'users',
+      'homework_assignments': 'assignments'
     };
     const actualTable = TABLE_ALIASES[table] || table;
 
