@@ -559,6 +559,157 @@ async function handleChesscom(request, env) {
   }
 }
 
+async function handleMessages(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    const { results } = await env.DB.prepare('SELECT * FROM messages ORDER BY created_at DESC').all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `msg-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO messages (id, sender_id, receiver_id, subject, body, read, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.sender_id || null, body.receiver_id || null, body.subject || null, body.body || null, body.read || 0, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM messages WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
+
+async function handleResources(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    const { results } = await env.DB.prepare('SELECT * FROM resources ORDER BY created_at DESC').all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `res-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO resources (id, title, type, url, batch, level, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.title || null, body.type || null, body.url || null, body.batch || null, body.level || null, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM resources WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
+
+async function handleBatches(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    const { results } = await env.DB.prepare('SELECT * FROM batches ORDER BY created_at DESC').all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `batch-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO batches (id, name, coach, level, time, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.coach || null, body.level || null, body.time || null, body.active !== false ? 1 : 0, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM batches WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
+
+async function handleRatingHistory(request, env) {
+  const url = new URL(request.url);
+  const userid = url.searchParams.get('userid');
+
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    if (!userid) return json(400, { error: 'userid required' });
+    const { results } = await env.DB.prepare('SELECT * FROM ratings WHERE userid = ? ORDER BY date DESC').bind(userid).all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `rating-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO ratings (id, userid, rating, date, event, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.rating || null, body.date || null, body.event || null, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM ratings WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
+
+async function handleAchievements(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    const { results } = await env.DB.prepare('SELECT * FROM achievements ORDER BY created_at DESC').all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `ach-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO achievements (id, userid, title, description, date, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.title || null, body.description || null, body.date || null, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM achievements WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
+
+async function handleEvents(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    const { results } = await env.DB.prepare('SELECT * FROM events ORDER BY date DESC').all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `evt-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO events (id, title, date, location, type, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.title || null, body.date || null, body.location || null, body.type || null, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM events WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
+
+async function handleAudit(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    const { results } = await env.DB.prepare('SELECT * FROM audit_log ORDER BY created_at DESC LIMIT 100').all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `audit-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO audit_log (id, action, user, details, created_at) VALUES (?, ?, ?, ?, ?)`).bind(id, body.action || null, body.user || null, JSON.stringify(body.details || {}), new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM audit_log WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
+
 export async function onRequest(context) {
   try {
     const { request, env } = context;
@@ -635,6 +786,34 @@ export async function onRequest(context) {
 
     if (pathname === '/api/chesscom-proxy' || apiPath === 'chesscom-proxy' || apiPath.startsWith('chesscom-proxy/')) {
       return handleChesscom(request, env);
+    }
+
+    if (pathname === '/api/messages' || apiPath === 'messages' || apiPath.startsWith('messages/')) {
+      return handleMessages(request, env);
+    }
+
+    if (pathname === '/api/resources' || apiPath === 'resources' || apiPath.startsWith('resources/')) {
+      return handleResources(request, env);
+    }
+
+    if (pathname === '/api/batches' || apiPath === 'batches' || apiPath.startsWith('batches/')) {
+      return handleBatches(request, env);
+    }
+
+    if (pathname === '/api/rating_history' || apiPath === 'rating_history' || apiPath.startsWith('rating_history/')) {
+      return handleRatingHistory(request, env);
+    }
+
+    if (pathname === '/api/achievements' || apiPath === 'achievements' || apiPath.startsWith('achievements/')) {
+      return handleAchievements(request, env);
+    }
+
+    if (pathname === '/api/events' || apiPath === 'events' || apiPath.startsWith('events/')) {
+      return handleEvents(request, env);
+    }
+
+    if (pathname === '/api/audit' || apiPath === 'audit' || apiPath.startsWith('audit/')) {
+      return handleAudit(request, env);
     }
 
     return notFound(pathname, request.method);
