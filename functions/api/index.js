@@ -72,6 +72,34 @@ export async function onRequest(context) {
     return handleChesscom(request, env);
   }
 
+  if (pathname === '/api/messages' || pathname.startsWith('/api/messages')) {
+    return handleMessages(request, env);
+  }
+
+  if (pathname === '/api/resources' || pathname.startsWith('/api/resources')) {
+    return handleResources(request, env);
+  }
+
+  if (pathname === '/api/batches' || pathname.startsWith('/api/batches')) {
+    return handleBatches(request, env);
+  }
+
+  if (pathname === '/api/rating_history' || pathname.startsWith('/api/rating_history')) {
+    return handleRatingHistory(request, env);
+  }
+
+  if (pathname === '/api/achievements' || pathname.startsWith('/api/achievements')) {
+    return handleAchievements(request, env);
+  }
+
+  if (pathname === '/api/events' || pathname.startsWith('/api/events')) {
+    return handleEvents(request, env);
+  }
+
+  if (pathname === '/api/audit' || pathname.startsWith('/api/audit')) {
+    return handleAudit(request, env);
+  }
+
   return new Response(JSON.stringify({ error: 'Not Found', pathname, method: request.method }), {
     status: 404,
     headers: { 'Content-Type': 'application/json', ...cors() }
