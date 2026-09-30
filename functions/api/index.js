@@ -188,13 +188,18 @@ async function handleQuery(request, env) {
   const op = url.searchParams.get('op') || 'select';
   const cols = url.searchParams.get('cols') || '*';
 
+  const TABLE_ALIASES = {
+    'homework_submissions': 'hw_submissions'
+  };
+  const actualTable = TABLE_ALIASES[table] || table;
+
   if (!table || !ALLOWED_TABLES.includes(table)) {
     return json(400, { error: 'Invalid table' });
   }
 
   try {
     if (op === 'select') {
-      let query = `SELECT ${cols} FROM ${table} WHERE 1=1`;
+      let query = `SELECT ${cols} FROM ${actualTable} WHERE 1=1`;
       const params = [];
 
       for (const [key, value] of url.searchParams) {
@@ -234,6 +239,11 @@ async function handleMutate(request, env) {
     const body = await request.json();
     const { table, op, data } = body;
 
+    const TABLE_ALIASES = {
+      'homework_submissions': 'hw_submissions'
+    };
+    const actualTable = TABLE_ALIASES[table] || table;
+
     if (!table || !ALLOWED_TABLES.includes(table)) {
       return json(400, { error: 'Invalid table' });
     }
@@ -252,9 +262,9 @@ async function handleMutate(request, env) {
       values.unshift(id);
       const allPlaceholders = keys.map(() => '?').join(', ');
 
-      await env.DB.prepare(`INSERT INTO ${table} (${keys.join(', ')}) VALUES (${allPlaceholders})`).bind(...values).run();
+      await env.DB.prepare(`INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${allPlaceholders})`).bind(...values).run();
 
-      const row = await env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`).bind(id).first();
+      const row = await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first();
       return json(201, { data: row });
     }
 
@@ -271,13 +281,13 @@ async function handleMutate(request, env) {
       }
       values.push(id);
 
-      await env.DB.prepare(`UPDATE ${table} SET ${fields.join(', ')} WHERE id = ?`).bind(...values).run();
-      const row = await env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`).bind(id).first();
+      await env.DB.prepare(`UPDATE ${actualTable} SET ${fields.join(', ')} WHERE id = ?`).bind(...values).run();
+      const row = await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first();
       return json(200, { data: row });
     }
 
     if (op === 'delete' && data?.id) {
-      await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(data.id).run();
+      await env.DB.prepare(`DELETE FROM ${actualTable} WHERE id = ?`).bind(data.id).run();
       return json(200, { success: true });
     }
 
@@ -292,17 +302,17 @@ async function handleMutate(request, env) {
       });
 
       try {
-        await env.DB.prepare(`INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`).bind(...values).run();
+        await env.DB.prepare(`INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${placeholders})`).bind(...values).run();
       } catch {
         const fields = keys.filter(k => k !== 'id').map(k => `${k} = ?`).join(', ');
         const updateValues = keys.filter(k => k !== 'id').map(k => {
           const v = data[k];
           return typeof v === 'object' && v !== null ? JSON.stringify(v) : v;
         });
-        await env.DB.prepare(`UPDATE ${table} SET ${fields} WHERE id = ?`).bind(...updateValues, id).run();
+        await env.DB.prepare(`UPDATE ${actualTable} SET ${fields} WHERE id = ?`).bind(...updateValues, id).run();
       }
 
-      const row = await env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`).bind(id).first();
+      const row = await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first();
       return json(200, { data: row });
     }
 

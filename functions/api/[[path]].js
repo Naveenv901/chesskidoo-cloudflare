@@ -62,7 +62,7 @@ async function handleLogin(request, env) {
 
     const userRow = await env.DB.prepare(
       'SELECT id, email, full_name, role, userid FROM users WHERE email = ?'
-    ).first(email);
+    ).bind(email).first();
 
     if (!userRow) {
       return json(401, { success: false, error: 'Invalid credentials' });
@@ -70,7 +70,7 @@ async function handleLogin(request, env) {
 
     const credRow = await env.DB.prepare(
       'SELECT password FROM credentials WHERE email = ?'
-    ).first(email);
+    ).bind(email).first();
 
     if (!credRow) {
       return json(401, { success: false, error: 'Invalid credentials' });
@@ -112,7 +112,7 @@ async function handleRegister(request, env) {
       return json(400, { error: 'Email, password, and full name are required' });
     }
 
-    const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ?').first(email);
+    const existing = await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first();
     if (existing) {
       return json(409, { error: 'User already exists' });
     }
@@ -157,7 +157,7 @@ async function handleMe(request, env) {
 
   const session = await env.DB.prepare(
     'SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?'
-  ).first(token);
+  ).bind(token).first();
 
   if (!session || new Date(session.expires_at) < new Date()) {
     return json(401, { error: 'Session expired' });
@@ -165,7 +165,7 @@ async function handleMe(request, env) {
 
   const user = await env.DB.prepare(
     'SELECT id, email, full_name, role, userid, phone_number, city, level, rating, coach, batch, status FROM users WHERE id = ?'
-  ).first(session.user_id);
+  ).bind(session.user_id).first();
 
   if (!user) {
     return json(401, { error: 'User not found' });
@@ -180,13 +180,18 @@ async function handleQuery(request, env) {
   const op = url.searchParams.get('op') || 'select';
   const cols = url.searchParams.get('cols') || '*';
 
+  const TABLE_ALIASES = {
+    'homework_submissions': 'hw_submissions'
+  };
+  const actualTable = TABLE_ALIASES[table] || table;
+
   if (!table || !ALLOWED_TABLES.includes(table)) {
     return json(400, { error: 'Invalid table' });
   }
 
   try {
     if (op === 'select') {
-      let query = `SELECT ${cols} FROM ${table} WHERE 1=1`;
+      let query = `SELECT ${cols} FROM ${actualTable} WHERE 1=1`;
       const params = [];
 
       for (const [key, value] of url.searchParams) {
@@ -226,6 +231,11 @@ async function handleMutate(request, env) {
     const body = await request.json();
     const { table, op, data } = body;
 
+    const TABLE_ALIASES = {
+      'homework_submissions': 'hw_submissions'
+    };
+    const actualTable = TABLE_ALIASES[table] || table;
+
     if (!table || !ALLOWED_TABLES.includes(table)) {
       return json(400, { error: 'Invalid table' });
     }
@@ -244,9 +254,9 @@ async function handleMutate(request, env) {
       values.unshift(id);
       const allPlaceholders = keys.map(() => '?').join(', ');
 
-      await env.DB.prepare(`INSERT INTO ${table} (${keys.join(', ')}) VALUES (${allPlaceholders})`).bind(...values).run();
+      await env.DB.prepare(`INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${allPlaceholders})`).bind(...values).run();
 
-      const row = await env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`).first(id);
+      const row = await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first();
       return json(201, { data: row });
     }
 
@@ -263,13 +273,13 @@ async function handleMutate(request, env) {
       }
       values.push(id);
 
-      await env.DB.prepare(`UPDATE ${table} SET ${fields.join(', ')} WHERE id = ?`).bind(...values).run();
-      const row = await env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`).first(id);
+      await env.DB.prepare(`UPDATE ${actualTable} SET ${fields.join(', ')} WHERE id = ?`).bind(...values).run();
+      const row = await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first();
       return json(200, { data: row });
     }
 
     if (op === 'delete' && data?.id) {
-      await env.DB.prepare(`DELETE FROM ${table} WHERE id = ?`).bind(data.id).run();
+      await env.DB.prepare(`DELETE FROM ${actualTable} WHERE id = ?`).bind(data.id).run();
       return json(200, { success: true });
     }
 
@@ -284,17 +294,17 @@ async function handleMutate(request, env) {
       });
 
       try {
-        await env.DB.prepare(`INSERT INTO ${table} (${keys.join(', ')}) VALUES (${placeholders})`).bind(...values).run();
+        await env.DB.prepare(`INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${placeholders})`).bind(...values).run();
       } catch {
         const fields = keys.filter(k => k !== 'id').map(k => `${k} = ?`).join(', ');
         const updateValues = keys.filter(k => k !== 'id').map(k => {
           const v = data[k];
           return typeof v === 'object' && v !== null ? JSON.stringify(v) : v;
         });
-        await env.DB.prepare(`UPDATE ${table} SET ${fields} WHERE id = ?`).bind(...updateValues, id).run();
+        await env.DB.prepare(`UPDATE ${actualTable} SET ${fields} WHERE id = ?`).bind(...updateValues, id).run();
       }
 
-      const row = await env.DB.prepare(`SELECT * FROM ${table} WHERE id = ?`).first(id);
+      const row = await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first();
       return json(200, { data: row });
     }
 
@@ -337,7 +347,7 @@ async function handleUsers(request, env) {
   }
 
   if (request.method === 'GET' && id) {
-    const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').first(id);
+    const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
     if (!user) return json(404, { error: 'Not found' });
     return json(200, user);
   }
@@ -365,7 +375,7 @@ async function handleUsers(request, env) {
     const id = body.id || `user-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
     const now = new Date().toISOString();
     await env.DB.prepare(`INSERT INTO users (id, full_name, role, email, phone_number, city, level, rating, coach, batch, status, due_date, join_date, age, grade, payment_status, xp, classes, streak_count, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.full_name || null, body.role || 'student', body.email || null, body.phone_number || null, body.city || null, body.level || null, body.rating ?? 800, body.coach || null, body.batch || null, body.status || null, body.due_date || null, body.join_date || null, body.age ?? null, body.grade || null, body.payment_status || null, body.xp ?? 0, body.classes ?? 0, body.streak_count ?? 0, now).run();
-    const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').first(id);
+    const user = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
     return json(201, user);
   }
 
@@ -393,7 +403,7 @@ async function handleClasses(request, env) {
     const body = await request.json();
     const id = body.id || `cls-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO classes (id, coachId, coachName, title, level, batch, days, time, duration, zoomLink, maxStudents, studentIds, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.coachId || null, body.coachName || null, body.title || null, body.level || null, body.batch || null, JSON.stringify(body.days || []), body.time || null, body.duration ?? null, body.zoomLink || null, body.maxStudents ?? 10, JSON.stringify(body.studentIds || []), body.active !== false ? 1 : 0, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM classes WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM classes WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -423,7 +433,7 @@ async function handleAttendance(request, env) {
     const body = await request.json();
     const id = body.id || `att-${Date.now()}`;
     await env.DB.prepare(`INSERT OR REPLACE INTO attendance (id, userid, studentId, studentName, classId, className, coachId, coachName, markedAt, date, status, class_title, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.studentId || null, body.studentName || null, body.classId || null, body.className || null, body.coachId || null, body.coachName || null, body.markedAt || new Date().toISOString(), body.date || null, body.status || null, body.class_title || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM attendance WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM attendance WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -444,7 +454,7 @@ async function handleAssignments(request, env) {
     const body = await request.json();
     const id = body.id || `asn-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO assignments (id, title, pgn, type, assignedTo, dueDate, description, coach, moves, created, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.title, body.pgn || null, body.type || null, JSON.stringify(body.assignedTo || []), body.dueDate || null, body.description || null, body.coach || null, body.moves ? JSON.stringify(body.moves) : null, Date.now(), new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM assignments WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM assignments WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -465,7 +475,7 @@ async function handleHomework(request, env) {
       const limit = Math.min(500, Math.max(1, parseInt(url.searchParams.get('limit') || '500')));
       const offset = (page - 1) * limit;
       const { results } = await env.DB.prepare('SELECT * FROM hw_submissions ORDER BY submittedAt DESC LIMIT ? OFFSET ?').bind(limit, offset).all();
-      const { count } = await env.DB.prepare('SELECT COUNT(*) as c FROM hw_submissions').first();
+      const { count } = await env.DB.prepare('SELECT COUNT(*) as c FROM hw_submissions').bind().first();
       return json(200, { data: results, total: count?.c || 0, page, limit });
     }
     const { results } = await env.DB.prepare('SELECT * FROM hw_submissions ORDER BY submittedAt DESC').all();
@@ -479,11 +489,11 @@ async function handleHomework(request, env) {
       const studentId = body.student_id || url.searchParams.get('student_id');
       const assignmentId = body.assignment_id || url.searchParams.get('assignment_id');
       if (!studentId || !assignmentId) return json(400, { error: 'Student ID and Assignment ID are required' });
-      const existing = await env.DB.prepare('SELECT * FROM hw_submissions WHERE assignment_id = ? AND student_id = ?').first(assignmentId, studentId);
+      const existing = await env.DB.prepare('SELECT * FROM hw_submissions WHERE assignment_id = ? AND student_id = ?').bind(assignmentId, studentId).first();
       const id = existing?.id || `sub-${Date.now()}`;
       const now = new Date().toISOString();
       await env.DB.prepare(`INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, assignmentId, studentId, body.submission_text || '', body.submission_url || '', JSON.stringify(body.file_urls || []), 'submitted', now, now).run();
-      const row = await env.DB.prepare('SELECT * FROM hw_submissions WHERE id = ?').first(id);
+      const row = await env.DB.prepare('SELECT * FROM hw_submissions WHERE id = ?').bind(id).first();
       return json(201, { data: row, success: true });
     }
     return json(400, { error: 'Unsupported action' });
@@ -512,7 +522,7 @@ async function handleFeedback(request, env) {
     const body = await request.json();
     const id = body.id || `fb-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO feedback (id, fromId, fromName, fromRole, childId, childName, toId, toName, message, rating, category, replied, reply, parent_name, parent_email, student_email, text, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.fromId || null, body.fromName || null, body.fromRole || null, body.childId || null, body.childName || null, body.toId || null, body.toName || null, body.message || null, body.rating ?? null, body.category || null, body.replied ? 1 : 0, body.reply || null, body.parent_name || null, body.parent_email || null, body.student_email || null, body.text || null, body.status || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM feedback WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM feedback WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -597,7 +607,7 @@ async function handleMessages(request, env) {
     const body = await request.json();
     const id = body.id || `msg-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO messages (id, sender_id, receiver_id, subject, body, read, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.sender_id || null, body.receiver_id || null, body.subject || null, body.body || null, body.read || 0, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM messages WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM messages WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -618,7 +628,7 @@ async function handleResources(request, env) {
     const body = await request.json();
     const id = body.id || `res-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO resources (id, title, type, url, batch, level, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.title || null, body.type || null, body.url || null, body.batch || null, body.level || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM resources WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM resources WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -639,7 +649,7 @@ async function handleBatches(request, env) {
     const body = await request.json();
     const id = body.id || `batch-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO batches (id, name, coach, level, time, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.coach || null, body.level || null, body.time || null, body.active !== false ? 1 : 0, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM batches WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM batches WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -664,7 +674,7 @@ async function handleRatingHistory(request, env) {
     const body = await request.json();
     const id = body.id || `rating-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO ratings (id, userid, rating, date, event, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.rating || null, body.date || null, body.event || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM ratings WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM ratings WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -685,7 +695,7 @@ async function handleAchievements(request, env) {
     const body = await request.json();
     const id = body.id || `ach-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO achievements (id, userid, title, description, date, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.title || null, body.description || null, body.date || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM achievements WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM achievements WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -706,7 +716,7 @@ async function handleEvents(request, env) {
     const body = await request.json();
     const id = body.id || `evt-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO events (id, title, date, location, type, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.title || null, body.date || null, body.location || null, body.type || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM events WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM events WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -727,7 +737,7 @@ async function handleAudit(request, env) {
     const body = await request.json();
     const id = body.id || `audit-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO audit_log (id, action, user, details, created_at) VALUES (?, ?, ?, ?, ?)`).bind(id, body.action || null, body.user || null, JSON.stringify(body.details || {}), new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM audit_log WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM audit_log WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -753,7 +763,7 @@ async function handleStudents(request, env) {
     const body = await request.json();
     const id = body.id || `stu-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO students (id, name, email, phone, parent_email, grade, level, batch, coach, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.email || null, body.phone || null, body.parent_email || null, body.grade || null, body.level || null, body.batch || null, body.coach || null, body.status || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM students WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM students WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -778,7 +788,7 @@ async function handlePayments(request, env) {
     const body = await request.json();
     const id = body.id || `pay-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO payments (id, student_id, amount, method, status, payment_date, due_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.student_id || null, body.amount || null, body.method || null, body.status || null, body.payment_date || null, body.due_date || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM payments WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM payments WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
@@ -803,7 +813,7 @@ async function handleCoaches(request, env) {
     const body = await request.json();
     const id = body.id || `coach-${Date.now()}`;
     await env.DB.prepare(`INSERT INTO coaches (id, name, email, phone, specialization, experience, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.email || null, body.phone || null, body.specialization || null, body.experience || null, body.active !== false ? 1 : 0, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM coaches WHERE id = ?').first(id);
+    const row = await env.DB.prepare('SELECT * FROM coaches WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
