@@ -37,7 +37,7 @@ async function handleLogin(request, env) {
     }
 
     const email = username.includes('@') ? username.toLowerCase() : `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@gmail.com`;
-    const normUser = username.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+    const normUser = username.toLowerCase().trim().split('@')[0].replace(/[^a-z0-9]/g, '');
 
     const isAdminFallback = (normUser === 'admin' || normUser === 'master' || normUser === 'chesskidoo' || normUser === 'ceo') &&
       (password === 'admin123' || password === 'master123' || password === 'chess123' || password === 'ceo123');
