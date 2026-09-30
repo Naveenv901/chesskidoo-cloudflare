@@ -643,5 +643,5 @@ async function handleChesscom(request, env) {
   } catch (e) {
     return json(502, { error: 'Chess.com proxy failed' });
   }
-}
+};
 
