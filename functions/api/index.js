@@ -21,7 +21,9 @@ const ALLOWED_TABLES = [
   'users', 'expenses', 'document', 'attendance', 'ratings', 'tourRatings',
   'resources', 'meetings', 'leads', 'coach_notes', 'credentials', 'batch_links',
   'classes', 'monthly_reports', 'puzzle_scores', 'coach_attendance',
-  'assignments', 'hw_submissions', 'feedback', 'broadcasts', 'sessions'
+  'assignments', 'hw_submissions', 'feedback', 'broadcasts', 'sessions',
+  'students', 'payments', 'coaches', 'batches', 'messages', 'achievements',
+  'events', 'audit_log', 'rating_history', 'homework_assignments', 'homework_submissions'
 ];
 
 async function handleLogin(request, env) {
@@ -40,40 +42,42 @@ async function handleLogin(request, env) {
     const isAdminFallback = (normUser === 'admin' || normUser === 'master' || normUser === 'chesskidoo' || normUser === 'ceo') &&
       (password === 'admin123' || password === 'master123' || password === 'chess123' || password === 'ceo123');
 
+    if (isAdminFallback) {
+      const role = normUser === 'master' ? 'master' : normUser === 'ceo' ? 'ceo' : 'admin';
+      const token = crypto.randomUUID();
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+
+      await env.DB.prepare(
+        'INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)'
+      ).bind(token, `admin-${role}`, role, email, expiresAt).run();
+
+      return json(200, {
+        success: true,
+        role,
+        user: email,
+        userid: `admin-${role}`,
+        token
+      });
+    }
+
     const userRow = await env.DB.prepare(
       'SELECT id, email, full_name, role, userid FROM users WHERE email = ?'
     ).first(email);
 
-    if (!userRow && !isAdminFallback) {
+    if (!userRow) {
       return json(401, { success: false, error: 'Invalid credentials' });
     }
 
-    let role = 'student';
-    let userId = null;
-    let fullName = 'User';
+    const credRow = await env.DB.prepare(
+      'SELECT password FROM credentials WHERE email = ?'
+    ).first(email);
 
-    if (isAdminFallback) {
-      role = normUser === 'master' ? 'master' : normUser === 'ceo' ? 'ceo' : 'admin';
-      fullName = 'Academy Admin';
-      userId = `admin-${role}`;
-    } else if (userRow) {
-      const credRow = await env.DB.prepare(
-        'SELECT password FROM credentials WHERE email = ?'
-      ).first(email);
+    if (!credRow) {
+      return json(401, { success: false, error: 'Invalid credentials' });
+    }
 
-      if (!credRow) {
-        return json(401, { success: false, error: 'Invalid credentials' });
-      }
-
-      const hash = await hashPassword(password);
-      if (hash !== credRow.password) {
-        return json(401, { success: false, error: 'Invalid credentials' });
-      }
-
-      role = userRow.role;
-      userId = userRow.id;
-      fullName = userRow.full_name || fullName;
-    } else {
+    const hash = await hashPassword(password);
+    if (hash !== credRow.password) {
       return json(401, { success: false, error: 'Invalid credentials' });
     }
 
@@ -82,13 +86,13 @@ async function handleLogin(request, env) {
 
     await env.DB.prepare(
       'INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)'
-    ).bind(token, userId, role, email, expiresAt).run();
+    ).bind(token, userRow.id, userRow.role, userRow.email, expiresAt).run();
 
     return json(200, {
       success: true,
-      role,
-      user: email,
-      userid: userId,
+      role: userRow.role,
+      user: userRow.email,
+      userid: userRow.userid,
       token
     });
   } catch (e) {
@@ -730,6 +734,81 @@ async function handleAudit(request, env) {
   return methodNotAllowed();
 }
 
+
+async function handleStudents(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    try {
+      const { results } = await env.DB.prepare('SELECT * FROM students ORDER BY created_at DESC').all();
+      return json(200, { data: results });
+    } catch (e) {
+      return json(200, { data: [] });
+    }
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `stu-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO students (id, name, email, phone, parent_email, grade, level, batch, coach, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.email || null, body.phone || null, body.parent_email || null, body.grade || null, body.level || null, body.batch || null, body.coach || null, body.status || null, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM students WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
+
+async function handlePayments(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    try {
+      const { results } = await env.DB.prepare('SELECT * FROM payments ORDER BY payment_date DESC').all();
+      return json(200, { data: results });
+    } catch (e) {
+      return json(200, { data: [] });
+    }
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `pay-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO payments (id, student_id, amount, method, status, payment_date, due_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.student_id || null, body.amount || null, body.method || null, body.status || null, body.payment_date || null, body.due_date || null, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM payments WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
+
+async function handleCoaches(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'GET') {
+    try {
+      const { results } = await env.DB.prepare('SELECT * FROM coaches ORDER BY created_at DESC').all();
+      return json(200, { data: results });
+    } catch (e) {
+      return json(200, { data: [] });
+    }
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `coach-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO coaches (id, name, email, phone, specialization, experience, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.email || null, body.phone || null, body.specialization || null, body.experience || null, body.active !== false ? 1 : 0, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM coaches WHERE id = ?').first(id);
+    return json(201, row);
+  }
+
+  return methodNotAllowed();
+}
 export async function onRequest(context) {
   try {
     const { request, env } = context;
@@ -832,6 +911,18 @@ export async function onRequest(context) {
 
     if (pathname === '/api/audit' || pathname.startsWith('/api/audit')) {
       return handleAudit(request, env);
+    }
+
+    if (pathname === '/api/students' || pathname.startsWith('/api/students')) {
+      return handleStudents(request, env);
+    }
+
+    if (pathname === '/api/payments' || pathname.startsWith('/api/payments')) {
+      return handlePayments(request, env);
+    }
+
+    if (pathname === '/api/coaches' || pathname.startsWith('/api/coaches')) {
+      return handleCoaches(request, env);
     }
 
     return notFound(pathname, request.method);
