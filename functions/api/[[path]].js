@@ -897,12 +897,11 @@ async function handleCoaches(request, env) {
 
   if (request.method === 'GET') {
     try {
-      const { results } = await env.DB.prepare("SELECT id, full_name as name, email, phone_number as phone, level, rating, status, active, created_at FROM users WHERE LOWER(role)='coach' ORDER BY created_at DESC").all();
+      const { results } = await env.DB.prepare("SELECT id, full_name as name, email, phone_number as phone, level, rating, status, created_at FROM users WHERE LOWER(role)='coach' ORDER BY created_at DESC").all();
       return json(200, { data: results });
     } catch (e) {
       return json(200, { data: [] });
     }
-  }
   }
 
   if (request.method === 'POST') {
