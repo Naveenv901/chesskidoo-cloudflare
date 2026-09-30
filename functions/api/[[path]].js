@@ -680,7 +680,7 @@ async function handleRatingHistory(request, env) {
   }
 
   if (request.method === 'GET') {
-    if (!userid) return json(400, { error: 'userid required' });
+    if (!userid) return json(200, { data: [] });
     const { results } = await env.DB.prepare('SELECT * FROM ratings WHERE userid = ? ORDER BY date DESC').bind(userid).all();
     return json(200, { data: results });
   }
