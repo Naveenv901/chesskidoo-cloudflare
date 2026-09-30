@@ -183,15 +183,6 @@ async function handleMe(request, env) {
 }
 
 async function handleQuery(request, env) {
-  try {
-    
-  } catch (e) {
-    if (e.message && e.message.includes('no such table')) {
-      return json(200, { data: [] });
-    }
-    return json(500, { error: e.message });
-  }
-}async function handleQuery(request, env) {
   const url = new URL(request.url);
   const table = url.searchParams.get('table');
   const op = url.searchParams.get('op') || 'select';
@@ -601,15 +592,6 @@ async function handleChesscom(request, env) {
 }
 
 async function handleMessages(request, env) {
-  try {
-    
-  } catch (e) {
-    if (e.message && e.message.includes('no such table')) {
-      return json(200, { data: [] });
-    }
-    return json(500, { error: e.message });
-  }
-}async function handleMessages(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
   }
@@ -631,15 +613,6 @@ async function handleMessages(request, env) {
 }
 
 async function handleResources(request, env) {
-  try {
-    
-  } catch (e) {
-    if (e.message && e.message.includes('no such table')) {
-      return json(200, { data: [] });
-    }
-    return json(500, { error: e.message });
-  }
-}async function handleResources(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
   }
@@ -661,15 +634,6 @@ async function handleResources(request, env) {
 }
 
 async function handleBatches(request, env) {
-  try {
-    
-  } catch (e) {
-    if (e.message && e.message.includes('no such table')) {
-      return json(200, { data: [] });
-    }
-    return json(500, { error: e.message });
-  }
-}async function handleBatches(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
   }
@@ -691,15 +655,6 @@ async function handleBatches(request, env) {
 }
 
 async function handleRatingHistory(request, env) {
-  try {
-    
-  } catch (e) {
-    if (e.message && e.message.includes('no such table')) {
-      return json(200, { data: [] });
-    }
-    return json(500, { error: e.message });
-  }
-}async function handleRatingHistory(request, env) {
   const url = new URL(request.url);
   const userid = url.searchParams.get('userid');
 
@@ -725,15 +680,6 @@ async function handleRatingHistory(request, env) {
 }
 
 async function handleAchievements(request, env) {
-  try {
-    
-  } catch (e) {
-    if (e.message && e.message.includes('no such table')) {
-      return json(200, { data: [] });
-    }
-    return json(500, { error: e.message });
-  }
-}async function handleAchievements(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
   }
@@ -755,15 +701,6 @@ async function handleAchievements(request, env) {
 }
 
 async function handleEvents(request, env) {
-  try {
-    
-  } catch (e) {
-    if (e.message && e.message.includes('no such table')) {
-      return json(200, { data: [] });
-    }
-    return json(500, { error: e.message });
-  }
-}async function handleEvents(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
   }
@@ -785,15 +722,6 @@ async function handleEvents(request, env) {
 }
 
 async function handleAudit(request, env) {
-  try {
-    
-  } catch (e) {
-    if (e.message && e.message.includes('no such table')) {
-      return json(200, { data: [] });
-    }
-    return json(500, { error: e.message });
-  }
-}async function handleAudit(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
   }

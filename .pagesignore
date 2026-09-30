@@ -1,0 +1,6 @@
+# Cloudflare Pages ignore file
+# Exclude large stockfish neural network files that exceed 25 MiB limit
+
+public/stockfish/src/nn-5af11540bbfe.nnue
+public/stockfish/src/*.nnue
+public/stockfish/src/**/*.wasm
