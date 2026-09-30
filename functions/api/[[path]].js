@@ -801,6 +801,86 @@ async function handlePayments(request, env) {
   return methodNotAllowed();
 }
 
+async function handleExpenditures(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  const url = new URL(request.url);
+
+  if (request.method === 'GET') {
+    const mode = url.searchParams.get('mode');
+    const month = url.searchParams.get('month');
+    const id = url.searchParams.get('id');
+    const limit = url.searchParams.get('limit');
+
+    if (mode === 'summary' && month) {
+      const { results } = await env.DB.prepare(
+        "SELECT COALESCE(SUM(CAST(amount AS REAL)), 0) as total_expense FROM expenses WHERE strftime('%Y-%m', date) = ?"
+      ).bind(month).all();
+      const total = results?.[0]?.total_expense || 0;
+      return json(200, { total_expense: parseFloat(total) });
+    }
+
+    if (id) {
+      const row = await env.DB.prepare('SELECT * FROM expenses WHERE id = ?').bind(id).first();
+      return json(200, { data: row });
+    }
+
+    try {
+      let query = 'SELECT * FROM expenses WHERE 1=1';
+      const params = [];
+      if (month) {
+        query += ' AND strftime(\'%Y-%m\', date) = ?';
+        params.push(month);
+      }
+      query += ' ORDER BY created_at DESC';
+      if (limit) {
+        query += ' LIMIT ?';
+        params.push(parseInt(limit));
+      }
+      const { results } = await env.DB.prepare(query).bind(...params).all();
+      return json(200, { data: results });
+    } catch (e) {
+      return json(200, { data: [] });
+    }
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = body.id || `exp-${Date.now()}`;
+    await env.DB.prepare(`INSERT INTO expenses (id, date, category, description, amount, mode, bill, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.date || null, body.category || null, body.description || null, body.amount || null, body.mode || null, body.bill || null, new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM expenses WHERE id = ?').bind(id).first();
+    return json(201, { data: row });
+  }
+
+  if (request.method === 'PUT') {
+    const id = url.searchParams.get('id');
+    if (!id) return json(400, { error: 'ID required' });
+    const body = await request.json();
+    const fields = [];
+    const values = [];
+    for (const [key, value] of Object.entries(body)) {
+      if (key === 'id') continue;
+      fields.push(`${key} = ?`);
+      values.push(value);
+    }
+    values.push(id);
+    await env.DB.prepare(`UPDATE expenses SET ${fields.join(', ')} WHERE id = ?`).bind(...values).run();
+    const row = await env.DB.prepare('SELECT * FROM expenses WHERE id = ?').bind(id).first();
+    return json(200, { data: row });
+  }
+
+  if (request.method === 'DELETE') {
+    const id = url.searchParams.get('id');
+    if (!id) return json(400, { error: 'ID required' });
+    await env.DB.prepare('DELETE FROM expenses WHERE id = ?').bind(id).run();
+    return json(200, { success: true });
+  }
+
+  return methodNotAllowed();
+}
+
 async function handleCoaches(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
@@ -935,6 +1015,10 @@ export async function onRequest(context) {
 
     if (pathname === '/api/payments' || pathname.startsWith('/api/payments')) {
       return handlePayments(request, env);
+    }
+
+    if (pathname === '/api/expenditures' || pathname.startsWith('/api/expenditures')) {
+      return handleExpenditures(request, env);
     }
 
     if (pathname === '/api/coaches' || pathname.startsWith('/api/coaches')) {

@@ -630,7 +630,7 @@
 
   async function init() {
     console.warn('[CEO] init start, role=', window.role);
-    if (window.role && window.role !== 'ceo') return;
+    if (window.role && window.role !== 'ceo' && window.role !== 'admin' && window.role !== 'master') return;
     const active = document.querySelector('.page.active')?.id;
     if (active !== 'page-ceo-dash') return;
     await loadData();
