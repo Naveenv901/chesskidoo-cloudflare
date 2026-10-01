@@ -810,6 +810,22 @@ async function handlePayments(request, env) {
   return methodNotAllowed();
 }
 
+async function handleAI(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    return json(200, {
+      reply: 'AI insights are temporarily unavailable on this deployment. Please try again later or contact support if this feature is needed.',
+      role: body.role || 'guest'
+    });
+  }
+
+  return methodNotAllowed();
+}
+
 async function handleExpenditures(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
@@ -1024,6 +1040,10 @@ export async function onRequest(context) {
 
     if (pathname === '/api/payments' || pathname.startsWith('/api/payments')) {
       return handlePayments(request, env);
+    }
+
+    if (pathname === '/api/ai' || pathname.startsWith('/api/ai')) {
+      return handleAI(request, env);
     }
 
     if (pathname === '/api/expenditures' || pathname.startsWith('/api/expenditures')) {
