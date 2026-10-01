@@ -767,7 +767,7 @@ async function handleStudents(request, env) {
 
   if (request.method === 'GET') {
     try {
-      const { results } = await env.DB.prepare('SELECT * FROM students ORDER BY created_at DESC').all();
+      const { results } = await env.DB.prepare("SELECT id, full_name as name, email, phone_number as phone, childEmail as parent_email, grade, level, batch, coach, status, created_at FROM users WHERE LOWER(role)='student' ORDER BY created_at DESC").all();
       return json(200, { data: results });
     } catch (e) {
       return json(200, { data: [] });
@@ -777,8 +777,8 @@ async function handleStudents(request, env) {
   if (request.method === 'POST') {
     const body = await request.json();
     const id = body.id || `stu-${Date.now()}`;
-    await env.DB.prepare(`INSERT INTO students (id, name, email, phone, parent_email, grade, level, batch, coach, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.email || null, body.phone || null, body.parent_email || null, body.grade || null, body.level || null, body.batch || null, body.coach || null, body.status || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM students WHERE id = ?').bind(id).first();
+    await env.DB.prepare(`INSERT INTO users (id, full_name, email, phone_number, childEmail, grade, level, batch, coach, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.email || null, body.phone || null, body.parent_email || null, body.grade || null, body.level || null, body.batch || null, body.coach || null, body.status || null, 'student', new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
     return json(201, row);
   }
 
