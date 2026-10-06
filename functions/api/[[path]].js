@@ -969,7 +969,29 @@ async function handleCoaches(request, env) {
 
   if (request.method === 'GET') {
     try {
-      const { results } = await env.DB.prepare("SELECT id, full_name as name, email, phone_number as phone, level, rating, status, created_at FROM users WHERE LOWER(role)='coach' ORDER BY created_at DESC").all();
+      const now = new Date();
+      const monthStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
+      const { results } = await env.DB.prepare(`
+        SELECT 
+          u.id,
+          u.full_name as name,
+          u.email,
+          u.phone_number as phone,
+          u.level,
+          u.rating,
+          u.status,
+          u.created_at,
+          COALESCE(e.amount, 0) as salary
+        FROM users u
+        LEFT JOIN (
+          SELECT description, amount
+          FROM expenses
+          WHERE category = 'Coach Salary'
+            AND strftime('%Y-%m', date) = ?
+        ) e ON e.description = u.id || ' monthly salary'
+        WHERE LOWER(u.role)='coach'
+        ORDER BY u.created_at DESC
+      `).bind(monthStr).all();
       return json(200, { data: results });
     } catch (e) {
       return json(200, { data: [] });
