@@ -767,7 +767,34 @@ async function handleStudents(request, env) {
 
   if (request.method === 'GET') {
     try {
-      const { results } = await env.DB.prepare("SELECT id, full_name as name, email, phone_number as phone, childEmail as parent_email, grade, level, batch, coach, coach as coach_id, status, created_at FROM users WHERE LOWER(role)='student' ORDER BY created_at DESC").all();
+      const { results } = await env.DB.prepare(`
+        SELECT 
+          u.id,
+          u.full_name as name,
+          u.email,
+          u.phone_number as phone,
+          u.childEmail as parent_email,
+          u.grade,
+          u.level,
+          u.batch,
+          b.name as batch_name,
+          u.coach,
+          u.coach as coach_id,
+          c.full_name as coach_name,
+          u.status,
+          u.rating,
+          u.session,
+          u.session_type,
+          u.fee,
+          u.payment_status,
+          u.due_date,
+          u.created_at
+        FROM users u
+        LEFT JOIN batches b ON u.batch = b.id
+        LEFT JOIN users c ON u.coach = c.id
+        WHERE LOWER(u.role)='student' 
+        ORDER BY u.created_at DESC
+      `).all();
       return json(200, { data: results });
     } catch (e) {
       return json(200, { data: [] });
