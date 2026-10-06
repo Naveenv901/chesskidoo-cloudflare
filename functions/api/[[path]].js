@@ -782,6 +782,35 @@ async function handleStudents(request, env) {
     return json(201, row);
   }
 
+  if (request.method === 'PUT') {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) {
+      return json(400, { error: 'Missing student id' });
+    }
+    const body = await request.json();
+    const existing = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    if (!existing) {
+      return json(404, { error: 'Student not found' });
+    }
+    const updates = [];
+    const values = [];
+    const allowed = ['name', 'email', 'phone', 'parent_email', 'grade', 'level', 'batch', 'coach', 'status', 'notes', 'learning_mode'];
+    for (const key of allowed) {
+      if (Object.prototype.hasOwnProperty.call(body, key)) {
+        updates.push(`${key} = ?`);
+        values.push(body[key]);
+      }
+    }
+    if (!updates.length) {
+      return json(400, { error: 'No updatable fields provided' });
+    }
+    values.push(id);
+    await env.DB.prepare(`UPDATE users SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
+    const row = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    return json(200, row);
+  }
+
   return methodNotAllowed();
 }
 
