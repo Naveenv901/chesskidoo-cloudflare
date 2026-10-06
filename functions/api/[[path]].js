@@ -709,7 +709,7 @@ async function handleAchievements(request, env) {
   if (request.method === 'POST') {
     const body = await request.json();
     const id = body.id || `ach-${Date.now()}`;
-    await env.DB.prepare(`INSERT INTO achievements (id, userid, title, description, date, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.title || null, body.description || null, body.date || null, body.image_url || null, new Date().toISOString()).run();
+    await env.DB.prepare(`INSERT INTO achievements (id, userid, title, description, date, img_url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.title || null, body.description || null, body.date || null, body.img_url || null, new Date().toISOString()).run();
     const row = await env.DB.prepare('SELECT * FROM achievements WHERE id = ?').bind(id).first();
     return json(201, row);
   }
@@ -723,7 +723,7 @@ async function handleAchievements(request, env) {
     const body = await request.json();
     const updates = [];
     const values = [];
-    const allowed = ['userid', 'title', 'description', 'date', 'image_url'];
+    const allowed = ['userid', 'title', 'description', 'date', 'img_url'];
     for (const key of allowed) {
       if (Object.prototype.hasOwnProperty.call(body, key)) {
         updates.push(`${key} = ?`);
