@@ -8645,8 +8645,8 @@ setTimeout(function () {
         if (s && getStudentPaymentStatus(s, month, year) !== "Paid") return sum;
 
         seenStuds.add(sid);
-        const fee = s ? getStudentMonthlyFee(s) : (p.amount || 0);
-        return sum + fee;
+        const amount = parseFloat(p.amount) || (s ? getStudentMonthlyFee(s) : 0);
+        return sum + amount;
       }
       return sum;
     }, 0);
