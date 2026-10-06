@@ -13177,7 +13177,7 @@ due_date: (function () {
 
         const bgImg = a.img_url
           ? a.img_url
-          : "https://i.ibb.co/R2W7kZY/placeholder-trophy.jpg";
+          : "assets/img/placeholder-trophy.jpg";
 
         return `
          <div class="ach-card" style="position:relative; height: 360px; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.6); transition: transform 0.3s ease; border: 1px solid rgba(212, 175, 55, 0.3);">
