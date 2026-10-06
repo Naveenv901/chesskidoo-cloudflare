@@ -709,9 +709,34 @@ async function handleAchievements(request, env) {
   if (request.method === 'POST') {
     const body = await request.json();
     const id = body.id || `ach-${Date.now()}`;
-    await env.DB.prepare(`INSERT INTO achievements (id, userid, title, description, date, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.title || null, body.description || null, body.date || null, new Date().toISOString()).run();
+    await env.DB.prepare(`INSERT INTO achievements (id, userid, title, description, date, image_url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.title || null, body.description || null, body.date || null, body.image_url || null, new Date().toISOString()).run();
     const row = await env.DB.prepare('SELECT * FROM achievements WHERE id = ?').bind(id).first();
     return json(201, row);
+  }
+
+  if (request.method === 'PUT') {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) {
+      return json(400, { error: 'Missing achievement id' });
+    }
+    const body = await request.json();
+    const updates = [];
+    const values = [];
+    const allowed = ['userid', 'title', 'description', 'date', 'image_url'];
+    for (const key of allowed) {
+      if (Object.prototype.hasOwnProperty.call(body, key)) {
+        updates.push(`${key} = ?`);
+        values.push(body[key]);
+      }
+    }
+    if (!updates.length) {
+      return json(400, { error: 'No updatable fields provided' });
+    }
+    values.push(id);
+    await env.DB.prepare(`UPDATE achievements SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
+    const row = await env.DB.prepare('SELECT * FROM achievements WHERE id = ?').bind(id).first();
+    return json(200, row);
   }
 
   return methodNotAllowed();
