@@ -6818,28 +6818,6 @@ syncCoachDropdowns();
           allCoaches = d.data || d;
           window.allCoaches = allCoaches;
         }
-        // Fetch coach salaries from expenditures for current month
-        try {
-          const now = new Date();
-          const monthStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
-          const expRes = await apiCall(`/api/expenditures?mode=summary&month=${monthStr}&category=Coach%20Salary`);
-          if (expRes.ok) {
-            const expData = await expRes.json();
-            if (expData.data) {
-              const salaryMap = {};
-              expData.data.forEach(e => {
-                const coachId = e.description?.replace(' monthly salary', '');
-                if (coachId) salaryMap[coachId] = e.amount;
-              });
-              allCoaches.forEach(c => {
-                if (salaryMap[c.id]) c.coach_salary = salaryMap[c.id];
-              });
-              window.allCoaches = allCoaches;
-            }
-          }
-        } catch (e) {
-          console.warn("Could not load coach salaries from expenditures:", e);
-        }
         if (res2.ok) {
           const d = await res2.json();
           allStudents = d.data || d;
