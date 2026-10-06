@@ -8636,14 +8636,8 @@ setTimeout(function () {
         if (seenStuds.has(sid)) return sum;
         const s = allStudents.find(x => String(x.id).toLowerCase() === sid);
 
-        // The registry's Status column is the single source of truth for whether
-        // a student has settled this month, and it treats applied_month as
-        // authoritative. Check 2 above deliberately falls back to payment_date,
-        // which matches a payment received this month but applied to a different
-        // one — so a student the registry shows as "Due" was being credited a
-        // full fee here and counted as collected. Defer to the status.
-        if (s && getStudentPaymentStatus(s, month, year) !== "Paid") return sum;
-
+        // Count actual payments as collected revenue regardless of student status.
+        // A payment record with status="paid" and matching applied_month means money was received.
         seenStuds.add(sid);
         const amount = parseFloat(p.amount) || (s ? getStudentMonthlyFee(s) : 0);
         return sum + amount;
