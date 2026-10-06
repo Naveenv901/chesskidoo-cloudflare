@@ -4254,7 +4254,7 @@
     return raw;
   }
   function getStudentBatchType(s) {
-    const raw = s.session_mode || s.batch_type || "Group";
+    const raw = s.session_type || s.session_mode || s.batch_type || "Group";
     if (String(raw).trim().toLowerCase() === "single") return "Single";
     return "Group";
   }
@@ -5185,7 +5185,7 @@
     return c.specialization || "";
   }
   function getCoachSalary(c) {
-    return c.salary || c.hourly_rate || 0;
+    return c.salary || c.hourly_rate || c.coach_salary || 0;
   }
   function getCoachAvailability(c) {
     return c.availability || "";
@@ -6817,6 +6817,28 @@ syncCoachDropdowns();
           const d = await res1.json();
           allCoaches = d.data || d;
           window.allCoaches = allCoaches;
+        }
+        // Fetch coach salaries from expenditures for current month
+        try {
+          const now = new Date();
+          const monthStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+          const expRes = await apiCall(`/api/expenditures?mode=summary&month=${monthStr}&category=Coach%20Salary`);
+          if (expRes.ok) {
+            const expData = await expRes.json();
+            if (expData.data) {
+              const salaryMap = {};
+              expData.data.forEach(e => {
+                const coachId = e.description?.replace(' monthly salary', '');
+                if (coachId) salaryMap[coachId] = e.amount;
+              });
+              allCoaches.forEach(c => {
+                if (salaryMap[c.id]) c.coach_salary = salaryMap[c.id];
+              });
+              window.allCoaches = allCoaches;
+            }
+          }
+        } catch (e) {
+          console.warn("Could not load coach salaries from expenditures:", e);
         }
         if (res2.ok) {
           const d = await res2.json();
@@ -8887,9 +8909,10 @@ setTimeout(function () {
       const type = getStudentBatchType(s);
       if (type === "Single") singleCount++;
       else groupCount++;
-      const lm = (s.learning_mode || "online").toLowerCase();
-      if (lm === "online") onlineCount++;
-      else offlineCount++;
+      const batchName = (s.batch_name || "").toLowerCase();
+      const isOffline = batchName.includes("offline");
+      if (isOffline) offlineCount++;
+      else onlineCount++;
     });
     if ($("s-group")) $("s-group").textContent = groupCount;
     if ($("s-single")) $("s-single").textContent = singleCount;
