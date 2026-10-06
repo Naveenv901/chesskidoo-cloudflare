@@ -8842,8 +8842,11 @@ setTimeout(function () {
         .then((summary) => {
           const el = $("s-profit");
           if (!el) return;
-          const otherExpenses = parseFloat(summary.total_expense || 0);
-          const netProfit = currCollected - totalCoachCost - otherExpenses;
+          const totalExpenses = parseFloat(summary.total_expense || 0);
+          // Exclude coach salaries from other expenses (already in totalCoachCost)
+          const otherExpenses = Math.max(0, totalExpenses - totalCoachCost);
+          // Use last month's collected revenue for net profit (matches Supabase logic)
+          const netProfit = prevCollected - totalCoachCost - otherExpenses;
           const money = (n) => "₹" + Math.round(n).toLocaleString("en-IN");
           el.textContent = (netProfit < 0 ? "-" : "") + money(Math.abs(netProfit));
           el.style.setProperty(
