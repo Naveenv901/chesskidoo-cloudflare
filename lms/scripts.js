@@ -5185,7 +5185,7 @@
     return c.specialization || "";
   }
   function getCoachSalary(c) {
-    return c.salary || c.hourly_rate || c.coach_salary || 0;
+    return Number(c.salary || c.hourly_rate || c.coach_salary || 0);
   }
   function getCoachAvailability(c) {
     return c.availability || "";
