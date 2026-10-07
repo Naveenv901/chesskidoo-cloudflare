@@ -4316,7 +4316,7 @@
     const day = targetDate.getUTCDay();
     const dayName = targetDate.toLocaleDateString("en-US", { weekday: "long", timeZone: "UTC" }).toUpperCase();
     const shortDay = dayName.slice(0, 3);
-    const batches = (window.allBatches || []).filter(b => window.ckSameCoach ? window.ckSameCoach(b.coach_id, coachId) : String(b.coach_id) === String(coachId));
+    const batches = (window.allBatches || []).filter(b => window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId));
     return batches.some(b => {
       const days = (b.days || "").toUpperCase();
       if (!days) return true;
@@ -4347,7 +4347,7 @@
     window.allCoaches.forEach(coach => {
       if ((coach.status || "active").toLowerCase() === "archived") return;
       const coachId = String(coach.id);
-      const batches = (window.allBatches || []).filter(b => window.ckSameCoach ? window.ckSameCoach(b.coach_id, coachId) : String(b.coach_id) === String(coachId));
+      const batches = (window.allBatches || []).filter(b => window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId));
       if (!batches.length) return;
 
       const studentIds = new Set();
@@ -9501,7 +9501,7 @@ setTimeout(function () {
               targetYear,
             ).day;
             const cB = allCoaches.find(
-              (x) => String(x.id) === String(b.coach_id),
+              (x) => String(x.id) === String(b.coach),
             );
             const dueB = getStudentDueConfig(
               b,
@@ -11167,7 +11167,7 @@ due_date: (function () {
     
     // Find all active batches belonging to this coach
     const batches = window.allBatches.filter(
-      (b) => (window.ckSameCoach ? window.ckSameCoach(b.coach_id, coachId) : String(b.coach_id) === String(coachId)) && b.status !== "archived"
+      (b) => (window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId)) && b.status !== "archived"
     );
     console.log("[CoachSchedule] filtered batches count=", batches.length, batches.map(b => ({ id: b.id, name: b.name, coach_id: b.coach_id, days: b.days, time_slot: b.time_slot, student_ids: b.student_ids })));
 
@@ -12128,7 +12128,7 @@ due_date: (function () {
 
     // Assign batches to coaches
     (allBatches || []).filter(b => b.status === 'active').forEach(b => {
-      const entry = coachMap.get(String(b.coach_id));
+      const entry = coachMap.get(String(b.coach));
       if (entry) {
         entry.batches.push(b);
       }
@@ -12561,7 +12561,7 @@ due_date: (function () {
     const filteredBatches = allBatches
       .filter((b) => {
         if (isCoach) {
-          const bCoach = String(b.coach_id || '').toLowerCase();
+          const bCoach = String(b.coach || '').toLowerCase();
           const matchesId = bCoach === String(currentCoachId).toLowerCase();
           const matchesName = currentCoachName && (bCoach.includes(currentCoachName) || b.name.toLowerCase().includes(currentCoachName));
           if (!matchesId && !matchesName) return false;
@@ -12579,13 +12579,13 @@ due_date: (function () {
 
     grid.innerHTML = filteredBatches
       .map((b) => {
-        const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coach_id).toLowerCase() || (c.name && String(c.name).toLowerCase() === String(b.coach_id).toLowerCase()));
-        const coachName = coach ? getCoachName(coach) : (b.coach_id ? escapeHtml(b.coach_id) : '<span class="text-danger">Unassigned</span>');
+const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coach).toLowerCase() || (c.name && String(c.name).toLowerCase() === String(b.coach).toLowerCase()));
+        const coachName = coach ? getCoachName(coach) : (b.coach ? escapeHtml(b.coach) : '<span class="text-danger">Unassigned</span>');
         const stCount = Array.isArray(b.student_ids) ? b.student_ids.length : 0;
         
         const badgeClass = b.status === "active" ? "badge-success" : b.status === "inactive" ? "badge-danger" : "badge-outline";
-
-        const canEdit = !isCoach || String(b.coach_id).toLowerCase() === String(currentCoachId).toLowerCase() || (currentCoachName && String(b.coach_id).toLowerCase().includes(currentCoachName));
+        
+        const canEdit = !isCoach || String(b.coach).toLowerCase() === String(currentCoachId).toLowerCase() || (currentCoachName && String(b.coach).toLowerCase().includes(currentCoachName));
 
         return `
         <div class="card" style="padding: 24px; position: relative; display: flex; flex-direction: column; gap: 16px;">
@@ -17617,7 +17617,7 @@ Best regards,
 
       // ── Batches ──
       const batchRows = (window.allBatches || []).map((b) => {
-        const coach = allCoaches.find((c) => String(c.id) === String(b.coach_id));
+        const coach = allCoaches.find((c) => String(c.id) === String(b.coach));
         const ids = Array.isArray(b.student_ids) ? b.student_ids : [];
         return {
           Batch: b.name || b.batch_name || "Batch",
@@ -18739,7 +18739,7 @@ window.deleteStudent = deleteStudent;
     // 2. Coach Notifications
     else if (userRole === 'coach') {
       const cid = window.currentCoachId || window.userId;
-      const coachBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, cid));
+      const coachBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach, cid));
       const batchIds = coachBatches.map(b => String(b.id));
 
       html += `<div style="padding:12px;background:var(--gold-glow);border-radius:8px;margin-bottom:12px">

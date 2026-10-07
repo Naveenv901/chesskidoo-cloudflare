@@ -67,7 +67,7 @@ window.renderCoachDashboard = function() {
   }
 
   const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id, coachId));
-  const myBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, coachId));
+  const myBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach, coachId));
 
   const statStudents = document.getElementById('coach-stat-students');
   const statBatches = document.getElementById('coach-stat-batches');
@@ -208,7 +208,7 @@ function initStudentPageObserver() {
 
     const searchTerm = (document.getElementById('coach-batch-search-input')?.value || '').toLowerCase();
     const myBatches = (window.allBatches || [])
-      .filter(b => window.ckSameCoach(b.coach_id, coachId))
+      .filter(b => window.ckSameCoach(b.coach, coachId))
       .filter(b => !searchTerm || (b.name || '').toLowerCase().includes(searchTerm))
       .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
@@ -1048,7 +1048,7 @@ function initStudentPageObserver() {
     }
     const date = dateEl ? (dateEl.value || today) : today;
 
-    const myBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, coachId));
+    const myBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach, coachId));
     const myBatchStudentIds = new Set();
     myBatches.forEach(b => {
       const rawIds = Array.isArray(b.student_ids) ? b.student_ids.map(String) : (window.parseStudentIds ? window.parseStudentIds(b.student_ids) : []);
@@ -1211,7 +1211,7 @@ function initStudentPageObserver() {
       return;
     }
 
-    const myBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, coachId));
+    const myBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach, coachId));
     const myBatchStudentIds = new Set();
     myBatches.forEach(b => {
       const rawIds = Array.isArray(b.student_ids) ? b.student_ids.map(String) : (window.parseStudentIds ? window.parseStudentIds(b.student_ids) : []);
@@ -1672,7 +1672,7 @@ function initStudentPageObserver() {
 
     const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id, coachId));
     const myStudentIds = myStudents.map(s => String(s.id));
-    const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, coachId)).map(b => String(b.id));
+    const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach, coachId)).map(b => String(b.id));
 
     const assignments = (window.allHomework || [])
       .filter(h => {
@@ -2441,7 +2441,7 @@ window.exportDataSheetCSV = function(targetStudentId) {
       labelEl.textContent = new Date(year, month, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
     }
 
-    const myBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, coachId));
+    const myBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach, coachId));
     const myStudentIds = new Set();
     myBatches.forEach(b => {
       const rawIds = Array.isArray(b.student_ids) ? b.student_ids.map(String) : (window.parseStudentIds ? window.parseStudentIds(b.student_ids) : []);
