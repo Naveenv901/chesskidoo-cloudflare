@@ -12659,9 +12659,12 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
     const countBadge = $("vb-student-count-badge");
     if (!list) return;
 
-    const batchStudentIds = Array.isArray(batch.student_ids)
-      ? batch.student_ids.map(String)
-      : [];
+    let batchStudentIds = [];
+    if (Array.isArray(batch.student_ids)) {
+      batchStudentIds = batch.student_ids.map(String);
+    } else if (typeof batch.student_ids === 'string') {
+      try { batchStudentIds = JSON.parse(batch.student_ids); } catch (e) { batchStudentIds = []; }
+    }
     const students = (allStudents || [])
       .filter((s) => batchStudentIds.includes(String(s.id)) && s.status !== "archived")
       .sort((a, b) => getStudentName(a).localeCompare(getStudentName(b)));
@@ -12693,9 +12696,12 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
     if (!select) return;
 
     const batch = (window.allBatches || []).find((b) => String(b.id) === String(batchId));
-    const batchStudentIds = Array.isArray(batch?.student_ids)
-      ? batch.student_ids.map(String)
-      : [];
+    let batchStudentIds = [];
+    if (Array.isArray(batch?.student_ids)) {
+      batchStudentIds = batch.student_ids.map(String);
+    } else if (typeof batch?.student_ids === 'string') {
+      try { batchStudentIds = JSON.parse(batch.student_ids); } catch (e) { batchStudentIds = []; }
+    }
 
     const available = (allStudents || [])
       .filter((s) => s.status !== "archived" && !batchStudentIds.includes(String(s.id)))
@@ -12756,9 +12762,12 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
     const batch = (window.allBatches || []).find((b) => String(b.id) === String(batchId));
     if (!batch) return;
 
-    const currentIds = Array.isArray(batch.student_ids)
-      ? batch.student_ids.map(String)
-      : [];
+    let currentIds = [];
+    if (Array.isArray(batch.student_ids)) {
+      currentIds = batch.student_ids.map(String);
+    } else if (typeof batch.student_ids === 'string') {
+      try { currentIds = JSON.parse(batch.student_ids); } catch (e) { currentIds = []; }
+    }
     const newIds = currentIds.filter((id) => String(id) !== String(studentId));
 
     try {
