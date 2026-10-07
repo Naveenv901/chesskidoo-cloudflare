@@ -8884,8 +8884,7 @@ setTimeout(function () {
       const type = getStudentBatchType(s);
       if (type === "Single") singleCount++;
       else groupCount++;
-      const batchName = (s.batch_name || "").toLowerCase();
-      const isOffline = batchName.includes("offline");
+      const isOffline = (s.learning_mode || "").toLowerCase() === "offline";
       if (isOffline) offlineCount++;
       else onlineCount++;
     });
