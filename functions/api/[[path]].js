@@ -92,7 +92,7 @@ async function handleLogin(request, env) {
       success: true,
       role: userRow.role,
       user: userRow.email,
-      userid: userRow.userid,
+      userid: userRow.id,
       token
     });
   } catch (e) {
