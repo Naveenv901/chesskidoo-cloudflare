@@ -1972,21 +1972,12 @@ if (typeof window.setPage === 'function') {
 
     let existingStudentIds = [];
     if (editingBatch) {
-      $('eb-name').value = editingBatch.name || '';
-      $('eb-level').value = editingBatch.level || 'Beginner';
-      $('eb-status').value = editingBatch.status || 'active';
-      const daysContainer = $('eb-days');
-      if (daysContainer) {
-        const selectedDays = String(editingBatch.days || '')
-          .split(/[&,]+/)
-          .map((d) => d.trim())
-          .filter(Boolean);
-        daysContainer.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
-          cb.checked = selectedDays.includes(cb.value);
-        });
+      let studentIdsRaw = editingBatch.student_ids;
+      if (typeof studentIdsRaw === 'string') {
+        try { existingStudentIds = JSON.parse(studentIdsRaw); } catch (e) { existingStudentIds = []; }
+      } else if (Array.isArray(studentIdsRaw)) {
+        existingStudentIds = studentIdsRaw.map(String);
       }
-      const timeSlot = editingBatch.time_slot || '';
-      const timeMatch = timeSlot.match(/(.+?)\s*-\s*(.+)/);
       const setTimeDisplay = (prefix, str) => {
         const m = str.trim().match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
         if (!m) return;
@@ -2021,7 +2012,6 @@ if (typeof window.setPage === 'function') {
       $('eb-notes').value = editingBatch.notes || '';
       if ($('eb-chessable')) $('eb-chessable').value = editingBatch.meet_link || '';
       $('eb-modal-title').textContent = 'Edit Batch';
-      const existingStudentIds = Array.isArray(editingBatch.student_ids) ? editingBatch.student_ids.map(String) : (typeof editingBatch.student_ids === 'string' ? JSON.parse(editingBatch.student_ids) : []);
     } else {
       $('eb-name').value = '';
       $('eb-level').value = 'Beginner';
