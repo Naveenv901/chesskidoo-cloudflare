@@ -489,7 +489,7 @@ function initStudentPageObserver() {
     }
 
     const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach ? window.ckSameCoach(s.coach_id, coachId) : String(s.coach_id) === String(coachId));
-    const myBatches = (window.allBatches || []).filter(b => (window.ckSameCoach ? window.ckSameCoach(b.coach_id, coachId) : String(b.coach_id) === String(coachId)) && b.status !== 'archived');
+    const myBatches = (window.allBatches || []).filter(b => (window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId)) && b.status !== 'archived');
 
     const view = (filterDayOrView === 'weekly' || filterDayOrView === 'monthly') ? filterDayOrView : (window.coachScheduleView || 'weekly');
     const filterDay = view === 'weekly' ? (filterDayOrView === 'weekly' ? 'all' : filterDayOrView) : 'all';
