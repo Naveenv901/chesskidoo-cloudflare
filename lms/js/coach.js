@@ -222,7 +222,11 @@ function initStudentPageObserver() {
     tbody.innerHTML = myBatches.map((b, idx) => {
       const days = b.days || b.schedule_days || 'TBD';
       const time = b.time_slot || b.time || 'TBD';
-      const studentCount = Array.isArray(b.student_ids) ? b.student_ids.length : 0;
+      let studentIds = b.student_ids;
+      if (typeof studentIds === 'string') {
+        try { studentIds = JSON.parse(studentIds); } catch (e) { studentIds = []; }
+      }
+      const studentCount = Array.isArray(studentIds) ? studentIds.length : 0;
       const link = window.getBatchMeetLink ? window.getBatchMeetLink(b) : '';
       const esc = window.escapeHtml || function(x){return x};
 
@@ -421,7 +425,7 @@ function initStudentPageObserver() {
     const msg = batchShareMessage(batch, link);
     if (navigator.clipboard) navigator.clipboard.writeText(msg).catch(() => {});
 
-    const ids = Array.isArray(batch.student_ids) ? batch.student_ids.map(String) : [];
+    const ids = Array.isArray(batch.student_ids) ? batch.student_ids.map(String) : (typeof batch.student_ids === 'string' ? JSON.parse(batch.student_ids) : []);
     const recipients = (window.allStudents || [])
       .filter(s => ids.includes(String(s.id)))
       .map(s => ({
@@ -1947,7 +1951,13 @@ if (typeof window.setPage === 'function') {
     const otherAssignedIds = new Set(
       (window.allBatches || [])
         .filter((b) => !editingBatch || String(b.id) !== String(editingBatch.id))
-        .flatMap((b) => (Array.isArray(b.student_ids) ? b.student_ids.map(String) : []))
+        .flatMap((b) => {
+          if (Array.isArray(b.student_ids)) return b.student_ids.map(String);
+          if (typeof b.student_ids === 'string') {
+            try { return JSON.parse(b.student_ids); } catch (e) { return []; }
+          }
+          return [];
+        })
         .filter((sid) => sid)
     );
 
@@ -2011,7 +2021,7 @@ if (typeof window.setPage === 'function') {
       $('eb-notes').value = editingBatch.notes || '';
       if ($('eb-chessable')) $('eb-chessable').value = editingBatch.meet_link || '';
       $('eb-modal-title').textContent = 'Edit Batch';
-      existingStudentIds = Array.isArray(editingBatch.student_ids) ? editingBatch.student_ids.map(String) : [];
+      const existingStudentIds = Array.isArray(editingBatch.student_ids) ? editingBatch.student_ids.map(String) : (typeof editingBatch.student_ids === 'string' ? JSON.parse(editingBatch.student_ids) : []);
     } else {
       $('eb-name').value = '';
       $('eb-level').value = 'Beginner';

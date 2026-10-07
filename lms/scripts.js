@@ -1832,7 +1832,7 @@
     const myRes = allResources.filter(
       (r) => (levelRank[r.level_requirement] || 0) <= sRank,
     );
-    const myBatches = allBatches.filter(b => b.student_ids && b.student_ids.map(String).includes(String(currentStudent.id)) && b.chessable_url);
+    const myBatches = allBatches.filter(b => b.student_ids && (typeof b.student_ids === 'string' ? JSON.parse(b.student_ids) : b.student_ids).map(String).includes(String(currentStudent.id)) && b.chessable_url);
     const classroomsHtml = myBatches.map(b => `<div class="resource-card" style="border: 1px solid var(--gold); background: rgba(218, 163, 62, 0.05);"><div class="res-type" style="color:var(--gold);">♟️ BATCH CLASSROOM</div><div class="res-title">${escapeHtml(b.name)}</div><div class="res-desc">Your official Chessable classroom for this batch.</div><div class="res-action"><a href="${safeUrl(b.chessable_url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%">Join Classroom</a></div></div>`).join("");
 
     if (!myRes.length && !classroomsHtml) {
@@ -2558,8 +2558,20 @@
       if (batchId === "__unassigned__") {
         const allBatchStudentIds = new Set(
           (window.allBatches || [])
-            .filter((b) => Array.isArray(b.student_ids))
-            .flatMap((b) => b.student_ids.map(String)),
+            .filter((b) => {
+              if (Array.isArray(b.student_ids)) return true;
+              if (typeof b.student_ids === 'string') {
+                try { JSON.parse(b.student_ids); return true; } catch (e) { return false; }
+              }
+              return false;
+            })
+            .flatMap((b) => {
+              if (Array.isArray(b.student_ids)) return b.student_ids.map(String);
+              if (typeof b.student_ids === 'string') {
+                try { return JSON.parse(b.student_ids); } catch (e) { return []; }
+              }
+              return [];
+            })
         );
         filteredStudents = filteredStudents.filter(
           (s) => !allBatchStudentIds.has(String(s.id)),
@@ -2568,7 +2580,7 @@
         const batch = (window.allBatches || []).find((b) => String(b.id) === String(batchId));
         const rawIds = Array.isArray(batch?.student_ids)
           ? batch.student_ids.map(String)
-          : (window.parseStudentIds ? window.parseStudentIds(batch?.student_ids) : []);
+          : (typeof batch?.student_ids === 'string' ? JSON.parse(batch.student_ids) : []);
         filteredStudents = filteredStudents.filter((s) =>
           rawIds.includes(String(s.id)) || (batch && ((s.batch_id && String(s.batch_id) === String(batch.id)) || (s.batch && String(s.batch) === String(batch.name)))),
         );
@@ -3095,7 +3107,7 @@
       sl.innerHTML = '<div class="empty-state" style="padding:14px">You can only select one of your assigned batches</div>';
       return;
     }
-    const studentIds = batch && batch.student_ids ? (typeof window.parseStudentIds === "function" ? window.parseStudentIds(batch.student_ids) : []) : [];
+    const studentIds = batch && batch.student_ids ? (typeof batch.student_ids === 'string' ? JSON.parse(batch.student_ids) : (Array.isArray(batch.student_ids) ? batch.student_ids : [])) : [];
     let students = (window.allStudents || []).filter((s) =>
       studentIds.length
         ? studentIds.includes(String(s.id))
@@ -4352,7 +4364,7 @@
 
       const studentIds = new Set();
       batches.forEach(b => {
-        const rawIds = Array.isArray(b.student_ids) ? b.student_ids.map(String) : (window.parseStudentIds ? window.parseStudentIds(b.student_ids) : []);
+        const rawIds = Array.isArray(b.student_ids) ? b.student_ids.map(String) : (typeof b.student_ids === 'string' ? JSON.parse(b.student_ids) : []);
         rawIds.forEach(id => studentIds.add(String(id)));
       });
 
@@ -12581,7 +12593,7 @@ due_date: (function () {
       .map((b) => {
 const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coach).toLowerCase() || (c.name && String(c.name).toLowerCase() === String(b.coach).toLowerCase()));
         const coachName = coach ? getCoachName(coach) : (b.coach ? escapeHtml(b.coach) : '<span class="text-danger">Unassigned</span>');
-        const stCount = Array.isArray(b.student_ids) ? b.student_ids.length : 0;
+        const stCount = Array.isArray(b.student_ids) ? b.student_ids.length : (typeof b.student_ids === 'string' ? JSON.parse(b.student_ids).length : 0);
         
         const badgeClass = b.status === "active" ? "badge-success" : b.status === "inactive" ? "badge-danger" : "badge-outline";
         
@@ -17618,7 +17630,7 @@ Best regards,
       // ── Batches ──
       const batchRows = (window.allBatches || []).map((b) => {
         const coach = allCoaches.find((c) => String(c.id) === String(b.coach));
-        const ids = Array.isArray(b.student_ids) ? b.student_ids : [];
+        const ids = Array.isArray(b.student_ids) ? b.student_ids : (typeof b.student_ids === 'string' ? JSON.parse(b.student_ids) : []);
         return {
           Batch: b.name || b.batch_name || "Batch",
           Coach: coach ? getCoachName(coach) : "Unassigned",
