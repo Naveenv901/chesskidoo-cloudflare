@@ -1978,6 +1978,8 @@ if (typeof window.setPage === 'function') {
       } else if (Array.isArray(studentIdsRaw)) {
         existingStudentIds = studentIdsRaw.map(String);
       }
+      const timeSlot = editingBatch.time_slot || '';
+      const timeMatch = timeSlot.match(/(.+?)\s*-\s*(.+)/);
       const setTimeDisplay = (prefix, str) => {
         const m = str.trim().match(/(\d{1,2}):(\d{2})\s*(AM|PM)/i);
         if (!m) return;
