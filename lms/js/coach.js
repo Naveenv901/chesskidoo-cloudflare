@@ -2119,7 +2119,7 @@ if (typeof window.setPage === 'function') {
       return;
     }
 
-    const myBatches = (window.allBatches || []).filter(b => (window.ckSameCoach ? window.ckSameCoach(b.coach_id, coachId) : String(b.coach_id) === String(coachId)) && b.status !== 'archived');
+    const myBatches = (window.allBatches || []).filter(b => (window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId)) && b.status !== 'archived');
     const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach ? window.ckSameCoach(s.coach_id, coachId) : String(s.coach_id) === String(coachId));
     const coachObj = (window.allCoaches || []).find((c) => String(c.id) === String(coachId));
     const coachName = coachObj ? (window.getCoachName ? window.getCoachName(coachObj) : (coachObj.name || 'Coach')) : 'Coach';
