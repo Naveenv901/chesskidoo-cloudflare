@@ -812,6 +812,7 @@ async function handleStudents(request, env) {
           u.session_type,
           u.fee,
           u.payment_status,
+          u.learning_mode,
           u.due_date,
           u.created_at
         FROM users u
