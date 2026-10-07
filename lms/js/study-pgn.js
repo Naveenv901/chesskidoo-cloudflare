@@ -1732,19 +1732,20 @@
 
     try {
       const res = await fetch(`https://lichess.org/api/cloud-eval?fen=${encodeURIComponent(fen)}`);
-      if (res.ok) {
-        const data = await res.json();
-        if (data && data.pvs && data.pvs[0]) {
-          const pv = data.pvs[0];
-          if (pv.mate) {
-            scoreTexts.forEach(st => st.textContent = `M${pv.mate}`);
-            bars.forEach(b => b.style.height = pv.mate > 0 ? '100%' : '0%');
-          } else if (pv.cp != null) {
-            const cpVal = pv.cp / 100;
-            scoreTexts.forEach(st => st.textContent = (cpVal >= 0 ? `+${cpVal.toFixed(1)}` : cpVal.toFixed(1)));
-            const whitePct = Math.max(5, Math.min(95, 50 + (cpVal * 4.5)));
-            bars.forEach(b => b.style.height = `${whitePct}%`);
-          }
+      // Handle 404 (no cloud eval available) gracefully - don't log as error
+      if (res.status === 404) return;
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data && data.pvs && data.pvs[0]) {
+        const pv = data.pvs[0];
+        if (pv.mate) {
+          scoreTexts.forEach(st => st.textContent = `M${pv.mate}`);
+          bars.forEach(b => b.style.height = pv.mate > 0 ? '100%' : '0%');
+        } else if (pv.cp != null) {
+          const cpVal = pv.cp / 100;
+          scoreTexts.forEach(st => st.textContent = (cpVal >= 0 ? `+${cpVal.toFixed(1)}` : cpVal.toFixed(1)));
+          const whitePct = Math.max(5, Math.min(95, 50 + (cpVal * 4.5)));
+          bars.forEach(b => b.style.height = `${whitePct}%`);
         }
       }
     } catch (e) {}
