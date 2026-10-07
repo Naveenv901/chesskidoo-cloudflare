@@ -164,7 +164,7 @@ async function handleMe(request, env) {
   }
 
   const user = await env.DB.prepare(
-    'SELECT id, email, full_name, role, userid, phone_number, city, level, rating, coach, batch, status FROM users WHERE id = ?'
+    'SELECT id, email, full_name, role, userid, phone_number, city, level, rating, coach, batch, status, childEmail as parent_email, session, session_type, fee FROM users WHERE id = ?'
   ).bind(session.user_id).first();
 
   if (!user) {
