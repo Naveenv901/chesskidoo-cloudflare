@@ -1978,6 +1978,16 @@ if (typeof window.setPage === 'function') {
       } else if (Array.isArray(studentIdsRaw)) {
         existingStudentIds = studentIdsRaw.map(String);
       }
+      const daysContainer = $('eb-days');
+      if (daysContainer) {
+        const selectedDays = String(editingBatch.days || '')
+          .split(/[&,]+/)
+          .map((d) => d.trim())
+          .filter(Boolean);
+        daysContainer.querySelectorAll('input[type="checkbox"]').forEach((cb) => {
+          cb.checked = selectedDays.includes(cb.value);
+        });
+      }
       const timeSlot = editingBatch.time_slot || '';
       const timeMatch = timeSlot.match(/(.+?)\s*-\s*(.+)/);
       const setTimeDisplay = (prefix, str) => {
@@ -2013,6 +2023,7 @@ if (typeof window.setPage === 'function') {
       }
       $('eb-notes').value = editingBatch.notes || '';
       if ($('eb-chessable')) $('eb-chessable').value = editingBatch.meet_link || '';
+      $('eb-name').value = editingBatch.name || '';
       $('eb-modal-title').textContent = 'Edit Batch';
     } else {
       $('eb-name').value = '';
