@@ -685,7 +685,9 @@ async function handleBatches(request, env) {
     for (const key of allowed) {
       if (Object.prototype.hasOwnProperty.call(body, key)) {
         updates.push(`${key} = ?`);
-        values.push(body[key]);
+        // JSON stringify arrays/objects before storing
+        const value = body[key];
+        values.push(Array.isArray(value) || (typeof value === 'object' && value !== null) ? JSON.stringify(value) : value);
       }
     }
     if (!updates.length) {
