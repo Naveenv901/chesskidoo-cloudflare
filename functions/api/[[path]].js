@@ -668,6 +668,35 @@ async function handleBatches(request, env) {
     return json(201, row);
   }
 
+  if (request.method === 'PUT') {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) {
+      return json(400, { error: 'Missing batch id' });
+    }
+    const body = await request.json();
+    const existing = await env.DB.prepare('SELECT * FROM batches WHERE id = ?').bind(id).first();
+    if (!existing) {
+      return json(404, { error: 'Batch not found' });
+    }
+    const updates = [];
+    const values = [];
+    const allowed = ['name', 'coach', 'level', 'time', 'days', 'time_slot', 'student_ids', 'active'];
+    for (const key of allowed) {
+      if (Object.prototype.hasOwnProperty.call(body, key)) {
+        updates.push(`${key} = ?`);
+        values.push(body[key]);
+      }
+    }
+    if (!updates.length) {
+      return json(400, { error: 'No updatable fields provided' });
+    }
+    values.push(id);
+    await env.DB.prepare(`UPDATE batches SET ${updates.join(', ')} WHERE id = ?`).bind(...values).run();
+    const row = await env.DB.prepare('SELECT * FROM batches WHERE id = ?').bind(id).first();
+    return json(200, row);
+  }
+
   return methodNotAllowed();
 }
 
