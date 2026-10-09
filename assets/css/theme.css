@@ -1,6 +1,7 @@
 /* theme.css — Professional Chess Color Palette
    Subtle, sophisticated colors that complement (not overwrite) the existing layout.
    ChessKidoo Professional — clean, not overwhelming.
+   Layout-preserving: only adds color variables, no positioning/flex/margin changes.
    ----------------------------------------------------------- */
 
 :root {
@@ -29,7 +30,7 @@
   --danger-soft: rgba(220, 38, 38, 0.08);
   
   /* ==== Neutral Balance (preserve existing layout) ==== */
-  --bg-body: #F8F6F3;          /* Warm off-white - MAINTAINS existing layout */
+  --bg-body: #F8F6F3;          /* Warm off-white - matches pre-theme layout */
   --bg-surface: #FFFFFF;       /* Pure white */
   --bg-surface-sunken: #F3E8E8; /* Subtle elevation */
   --bg-surface-raised: #FFFFFF; /* Card backgrounds */
