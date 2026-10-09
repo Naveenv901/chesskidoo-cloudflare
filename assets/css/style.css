@@ -524,7 +524,7 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
   border-radius: 50%; display: flex; align-items: center; justify-content: center;
   color: white; font-size: 0.9rem;
 }
-.player-name { color: #fff; font-weight: 700; font-size: 0.95rem; }
+.player-name { color: #0F1419; font-weight: 700; font-size: 0.95rem; }
 .player-meta { color: #888; font-size: 0.75rem; }
 .live-indicator { 
   background: #dc2626; color: white; font-size: 0.6rem; 
@@ -4849,13 +4849,13 @@ body:has(.page.active:not(#landing-page)) #scrollTopBtn {
 .ot-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.05); }
 .ot-card-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .ot-emoji { font-size: 2rem; }
-.ot-card-name { font-size: 1.1rem; font-weight: 700; color: #fff; }
+.ot-card-name { font-size: 1.1rem; font-weight: 700; color: #0F1419; }
 .ot-card-eco { font-size: 0.8rem; color: var(--p-text-muted); }
 .ot-card-desc { font-size: 0.85rem; color: rgba(255,255,255,0.7); margin-bottom: 16px; line-height: 1.4; }
 .ot-mastery-bar-track { background: rgba(0,0,0,0.5); height: 6px; border-radius: 3px; overflow: hidden; margin-bottom: 6px; }
 .ot-mastery-bar { height: 100%; border-radius: 3px; transition: width 0.5s; }
 .ot-filter-bar { display: flex; gap: 10px; margin-bottom: 20px; }
-.ot-filter-btn { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 6px 16px; border-radius: 20px; cursor: pointer; transition: 0.2s; }
+.ot-filter-btn { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: #0F1419; padding: 6px 16px; border-radius: 20px; cursor: pointer; transition: 0.2s; }
 .ot-filter-btn.active { background: var(--p-blue); border-color: var(--p-blue); }
 .ot-overview { display: flex; gap: 20px; background: rgba(0,0,0,0.2); padding: 16px 24px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
 .ot-ov-stat { text-align: center; }
@@ -4888,7 +4888,7 @@ body:has(.page.active:not(#landing-page)) #scrollTopBtn {
 /* %% GAME TRACKER %% */
 .gt-stats-banner { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
 .gt-stat { background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; padding: 12px 20px; flex: 1; min-width: 100px; text-align: center; }
-.gt-stat-val { font-size: 1.5rem; font-weight: 800; color: #fff; }
+.gt-stat-val { font-size: 1.5rem; font-weight: 800; color: #0F1419; }
 .gt-stat-lbl { font-size: 0.75rem; color: var(--p-text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
 .gt-form { background: rgba(0,0,0,0.2); border: 1px dashed rgba(255,255,255,0.1); border-radius: 12px; padding: 20px; }
 .gt-form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 16px; }
@@ -4897,7 +4897,7 @@ body:has(.page.active:not(#landing-page)) #scrollTopBtn {
 .gt-game-card:hover { background: rgba(255,255,255,0.02); }
 .gt-game-color-strip { width: 6px; flex-shrink: 0; }
 .gt-game-info { padding: 16px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
-.gt-game-title { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 6px; }
+.gt-game-title { font-size: 1.05rem; font-weight: 700; color: #0F1419; margin-bottom: 6px; }
 .gt-game-meta { display: flex; gap: 12px; align-items: center; }
 .gt-game-notes { margin-top: 10px; font-size: 0.85rem; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.3); padding: 8px 12px; border-radius: 6px; }
 .gt-game-result { padding: 16px 20px; border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 100px; }
@@ -5022,7 +5022,7 @@ body:has(.page.active:not(#landing-page)) #scrollTopBtn {
 .offline-badge { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
 .weekly-badge { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
 .ck-t-status { font-size: 0.78rem; font-weight: 700; color: #10b981; display: flex; align-items: center; gap: 6px; }
-.ck-t-title { font-size: 1.25rem; font-weight: 800; color: #ffffff !important; margin-bottom: 6px; }
+.ck-t-title { font-size: 1.25rem; font-weight: 800; color: #0F1419; margin-bottom: 6px; }
 .ck-t-sub { font-size: 0.85rem; color: #94a3b8 !important; margin-bottom: 20px; line-height: 1.45; }
 .ck-t-details {
   background: rgba(15, 23, 42, 0.5); border-radius: 14px;
@@ -5064,7 +5064,7 @@ body:has(.page.active:not(#landing-page)) #scrollTopBtn {
   display: inline-flex; align-items: center; gap: 6px; margin-bottom: 14px;
   width: max-content; border: 1px solid rgba(245, 158, 11, 0.25);
 }
-.ck-job-title { font-size: 1.2rem; font-weight: 800; color: #ffffff !important; margin-bottom: 10px; }
+.ck-job-title { font-size: 1.2rem; font-weight: 800; color: #0F1419; margin-bottom: 10px; }
 .ck-job-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .ck-job-meta span {
   font-size: 0.75rem; font-weight: 600; background: rgba(15, 23, 42, 0.6);
