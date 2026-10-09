@@ -118,11 +118,11 @@ body.modal-open {
   overflow: hidden !important;
   padding: 0 !important;
   background: linear-gradient(180deg, #0c1222 0%, #111827 100%) !important;
-  border: 1px solid rgba(232, 160, 32, 0.25) !important;
+  border: 1px solid rgba(37, 99, 235, 0.25) !important;
   box-shadow:
     0 0 0 1px rgba(255,255,255,0.05),
     0 20px 50px rgba(0, 0, 0, 0.65),
-    0 0 80px rgba(217, 119, 6, 0.08) !important;
+    0 0 80px rgba(37, 99, 235, 0.08) !important;
   color: #fff !important;
   font-family: inherit;
   margin: auto !important;
@@ -146,9 +146,9 @@ body.modal-open {
   display: inline-block;
   font-size: 0.7rem;
   font-weight: 800;
-  color: #fbbf24;
-  background: rgba(251, 191, 36, 0.1);
-  border: 1px solid rgba(251, 191, 36, 0.25);
+  color: #60A5FA;
+  background: rgba(37, 99, 235, 0.1);
+  border: 1px solid rgba(37, 99, 235, 0.25);
   padding: 3px 10px;
   border-radius: 20px;
   margin-bottom: 6px;
@@ -201,16 +201,16 @@ body.modal-open {
   box-sizing: border-box;
   overscroll-behavior: contain;
   scrollbar-width: thin;
-  scrollbar-color: rgba(245,158,11,0.3) transparent;
+  scrollbar-color: rgba(37,99,235,0.3) transparent;
 }
 .ck-demo-modal-body::-webkit-scrollbar { width: 5px; }
 .ck-demo-modal-body::-webkit-scrollbar-track { background: transparent; }
 .ck-demo-modal-body::-webkit-scrollbar-thumb {
-  background: rgba(245,158,11,0.25);
+  background: rgba(37,99,235,0.25);
   border-radius: 10px;
 }
 .ck-demo-modal-body::-webkit-scrollbar-thumb:hover {
-  background: rgba(245,158,11,0.45);
+  background: rgba(37,99,235,0.45);
 }
 
 .ck-demo-actions {
@@ -258,14 +258,14 @@ body.modal-open {
 }
 .ck-chip-item:has(input:checked) {
   background: rgba(245, 158, 11, 0.15) !important;
-  border-color: #f59e0b !important;
-  color: #fbbf24 !important;
+  border-color: #2563EB !important;
+  color: #60A5FA !important;
   box-shadow: 0 0 12px rgba(245, 158, 11, 0.15);
 }
 .ck-chip-item input[type="radio"] {
   appearance: auto !important;
   -webkit-appearance: radio !important;
-  accent-color: #f59e0b !important;
+  accent-color: #2563EB !important;
   width: 16px !important;
   height: 16px !important;
   min-width: 16px !important;
@@ -310,7 +310,7 @@ body.modal-open {
   opacity: 1;
 }
 .ck-form-input:focus, .ck-form-select:focus {
-  border-color: #f59e0b;
+  border-color: #2563EB;
   background: #0f1b33;
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
 }
@@ -377,10 +377,10 @@ body.modal-open {
   padding: 10px 16px;
   font-weight: 700;
   font-size: 0.88rem;
-  background: linear-gradient(135deg, #d97706, #f59e0b);
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
   border: none;
   color: #fff;
-  box-shadow: 0 4px 16px rgba(217, 119, 6, 0.3);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
   cursor: pointer;
   transition: all 0.25s;
 }
@@ -460,9 +460,9 @@ body.modal-open {
   transition: all 0.3s ease;
 }
 .ck-progress-step.active .ck-step-circle {
-  background: linear-gradient(135deg, #d97706, #f59e0b);
-  border-color: #fbbf24;
-  box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  border-color: #60A5FA;
+  box-shadow: 0 0 16px rgba(37, 99, 235, 0.4);
 }
 .ck-step-label {
   font-size: 0.65rem;
@@ -472,7 +472,7 @@ body.modal-open {
   letter-spacing: 0.5px;
 }
 .ck-progress-step.active .ck-step-label {
-  color: #fbbf24;
+  color: #60A5FA;
 }
 .ck-progress-line {
   flex: 1;
@@ -502,9 +502,9 @@ body.modal-open {
   display: inline-block;
   font-size: 0.68rem;
   font-weight: 800;
-  color: #fbbf24;
-  background: rgba(251, 191, 36, 0.12);
-  border: 1px solid rgba(251, 191, 36, 0.25);
+  color: #60A5FA;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.25);
   padding: 3px 10px;
   border-radius: 14px;
   text-transform: uppercase;
@@ -561,7 +561,7 @@ body.modal-open {
 .ck-level-card input:checked + .ck-level-card-content,
 .ck-level-card:has(input:checked) .ck-level-card-content {
   background: linear-gradient(145deg, rgba(245, 158, 11, 0.15) 0%, rgba(15, 23, 42, 0.8) 100%) !important;
-  border-color: #f59e0b !important;
+  border-color: #2563EB !important;
   box-shadow: 0 0 24px rgba(245, 158, 11, 0.25) !important;
 }
 .ck-level-card-top {
@@ -598,7 +598,7 @@ body.modal-open {
 .ck-level-check {
   font-size: 0.68rem;
   font-weight: 800;
-  color: #fbbf24;
+  color: #60A5FA;
   display: none;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -643,7 +643,7 @@ body.modal-open {
 .ck-mode-card input:checked + .ck-mode-card-content,
 .ck-mode-card:has(input:checked) .ck-mode-card-content {
   background: rgba(245, 158, 11, 0.15) !important;
-  border-color: #f59e0b !important;
+  border-color: #2563EB !important;
   box-shadow: 0 0 20px rgba(245, 158, 11, 0.2) !important;
 }
 .ck-mode-icon {
@@ -691,7 +691,7 @@ body.modal-open {
 .ck-slot-item input:checked + .ck-slot-content,
 .ck-slot-item:has(input:checked) {
   background: rgba(245, 158, 11, 0.15) !important;
-  border-color: #f59e0b !important;
+  border-color: #2563EB !important;
 }
 .ck-slot-content {
   display: flex;
@@ -806,7 +806,7 @@ body.modal-open {
   font-weight: 600;
 }
 .ck-summary-val {
-  color: #fbbf24;
+  color: #60A5FA;
   font-weight: 700;
 }
 .ck-success-actions {
@@ -836,7 +836,7 @@ body.modal-open {
 }
 .ck-success-info-value {
   font-size: 0.85rem;
-  color: #fbbf24;
+  color: #60A5FA;
   font-weight: 700;
 }
 
@@ -902,7 +902,7 @@ body.modal-open {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24);
+  background: linear-gradient(90deg, #60A5FA, #2563EB, #60A5FA);
 }
 
 .ck-notice-board-header {
@@ -917,7 +917,7 @@ body.modal-open {
 .ck-notice-badge {
   font-size: 0.78rem;
   font-weight: 800;
-  color: #fbbf24;
+  color: #60A5FA;
   letter-spacing: 0.8px;
   text-transform: uppercase;
   display: flex;
@@ -929,7 +929,7 @@ body.modal-open {
   content: '';
   width: 8px;
   height: 8px;
-  background: #fbbf24;
+  background: #60A5FA;
   border-radius: 50%;
   animation: noticePulse 2s ease-in-out infinite;
 }
@@ -1021,7 +1021,7 @@ body.modal-open {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  background: linear-gradient(90deg, #60A5FA, #2563EB);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -1054,7 +1054,7 @@ body.modal-open {
   letter-spacing: 0.5px;
 }
 
-.fide-badge { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+.fide-badge { background: rgba(37, 99, 235, 0.15); color: #60A5FA; border: 1px solid rgba(37, 99, 235, 0.3); }
 .offline-badge { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
 .weekly-badge { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
 
@@ -1084,10 +1084,10 @@ body.modal-open {
   50% { opacity: 0.4; transform: scale(0.7); }
 }
 
-.ck-t-title { 
-  font-size: 1.3rem; 
-  font-weight: 800; 
-  color: #fff; 
+.ck-t-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #fff;
   margin-bottom: 6px;
   line-height: 1.3;
 }
@@ -1139,7 +1139,7 @@ body.modal-open {
 .ck-fee-amt { 
   font-size: 1.5rem; 
   font-weight: 800; 
-  color: #fbbf24; 
+  color: #60A5FA; 
   line-height: 1;
   text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
 }
@@ -1187,7 +1187,7 @@ body.modal-open {
 }
 .ck-cat-advanced {
   background: rgba(245, 158, 11, 0.12);
-  color: #fbbf24;
+  color: #60A5FA;
   border: 1px solid rgba(245, 158, 11, 0.25);
 }
 .ck-t-cat:hover {
@@ -1241,7 +1241,7 @@ body.modal-open {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #fbbf24, #f59e0b);
+  background: linear-gradient(90deg, #60A5FA, #2563EB);
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -1261,7 +1261,7 @@ body.modal-open {
 .ck-job-badge {
   font-size: 0.75rem;
   font-weight: 800;
-  color: #fbbf24;
+  color: #60A5FA;
   background: rgba(245, 158, 11, 0.12);
   padding: 6px 14px;
   border-radius: 14px;
@@ -1273,10 +1273,10 @@ body.modal-open {
   border: 1px solid rgba(245, 158, 11, 0.2);
 }
 
-.ck-job-title { 
-  font-size: 1.2rem; 
-  font-weight: 800; 
-  color: #f8fafc; 
+.ck-job-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #f8fafc;
   margin-bottom: 12px;
   line-height: 1.3;
 }
@@ -1379,7 +1379,7 @@ body.modal-open {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24);
+  background: linear-gradient(90deg, #60A5FA, #2563EB, #60A5FA);
 }
 
 .ck-nri-pricing-box::after {
@@ -1396,7 +1396,7 @@ body.modal-open {
 .ck-nri-badge {
   font-size: 0.82rem;
   font-weight: 800;
-  color: #fbbf24;
+  color: #60A5FA;
   background: rgba(251, 191, 36, 0.12);
   border: 1px solid rgba(251, 191, 36, 0.3);
   padding: 6px 16px;
@@ -1512,7 +1512,7 @@ body.modal-open {
 .ck-nri-price-tag { 
   font-size: 1.6rem; 
   font-weight: 800; 
-  color: #fbbf24;
+  color: #60A5FA;
   text-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
 }
 
@@ -1552,7 +1552,7 @@ body.modal-open {
 }
 .ck-tournaments-section .section-head .eyebrow,
 .ck-careers-section .section-head .eyebrow {
-  color: #fbbf24 !important;
+  color: #60A5FA !important;
 }
 .ck-tournaments-section .section-head .lead,
 .ck-careers-section .section-head .lead {
@@ -1578,7 +1578,7 @@ body.modal-open {
   margin-right: auto;
 }
 .price-footnote span {
-  color: #fbbf24;
+  color: #60A5FA;
 }
 
 /* ─── Tournament card mobile responsive ─── */

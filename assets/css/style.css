@@ -587,7 +587,7 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
   gap: 32px; flex-wrap: wrap; max-width: 1400px; margin: 0 auto; padding: 0 32px;
 }
 .trust-item {
-  display: flex; align-items: center; gap: 10px; color: white;
+  display: flex; align-items: center; gap: 10px; color: #0f1419;
   font-weight: 600; font-size: 0.85rem; opacity: 0.8;
 }
 .trust-divider { width: 4px; height: 4px; background: var(--amber-light); border-radius: 50%; opacity: 0.3; }
@@ -3214,7 +3214,7 @@ button, input, textarea, select, a {
    ========================================================================== */
 
 /* Animated Trust Bar Marquee */
-.trust-bar { overflow: hidden; padding: 0; background: var(--ink); }
+.trust-bar { overflow: hidden; padding: 0; background: #FDF6EC; border-top: 1px solid rgba(232,160,32,0.15); border-bottom: 1px solid rgba(232,160,32,0.15); }
 .trust-track {
   display: flex; gap: 48px; align-items: center;
   animation: trustMarquee 28s linear infinite;
@@ -3228,12 +3228,12 @@ button, input, textarea, select, a {
 }
 .trust-item {
   display: flex; align-items: center; gap: 10px;
-  font-size: .85rem; font-weight: 700; color: rgba(255,255,255,.75);
+  font-size: .85rem; font-weight: 700; color: #1A1209;
   flex-shrink: 0; padding: 6px 18px;
-  border: 1px solid rgba(232,160,32,.15); border-radius: 99px;
-  background: rgba(232,160,32,.05); transition: all .25s ease;
+  border: 1px solid rgba(232,160,32,0.3); border-radius: 99px;
+  background: rgba(232,160,32,0.08); transition: all .25s ease;
 }
-.trust-item:hover { background: rgba(232,160,32,.12); color: #F5C842; }
+.trust-item:hover { background: rgba(232,160,32,0.18); color: #B8860B; }
 .trust-divider { display: none; }
 
 /* Hero Floating Chess Pieces */
