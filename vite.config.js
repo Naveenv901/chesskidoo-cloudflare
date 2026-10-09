@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve, extname } from 'path';
-import { existsSync, statSync, createReadStream } from 'fs';
+import { existsSync, statSync, createReadStream, cpSync } from 'fs';
 
 const MIME = {
   '.html': 'text/html',            '.js':   'text/javascript',
@@ -17,6 +17,18 @@ const MIME = {
 
 export default defineConfig({
   plugins: [
+    {
+      name: 'ck-copy-assets-build',
+      // Ensure videos (and any assets/videos content) ship in dist during
+      // `vite build` itself, independent of the separate copy-assets step.
+      writeBundle() {
+        const src = resolve(__dirname, 'assets/videos');
+        const dest = resolve(__dirname, 'dist/assets/videos');
+        if (existsSync(src)) {
+          cpSync(src, dest, { recursive: true });
+        }
+      },
+    },
     {
       name: 'ck-serve-lms-from-root',
       configureServer(server) {
