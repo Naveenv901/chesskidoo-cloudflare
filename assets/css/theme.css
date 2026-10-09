@@ -1,108 +1,50 @@
-/* theme.css — Unified Professional Chess Design System
-   Single source of truth for colors, typography, and base styles.
-   ChessKidoo Premium — sophisticated, not overwhelming.
-   Light & dark mode support via data-theme attribute.
+/* theme.css — Professional Chess Color Palette
+   Subtle, sophisticated colors that complement (not overwrite) the existing layout.
+   ChessKidoo Professional — clean, not overwhelming.
    ----------------------------------------------------------- */
 
 :root {
   /* ==== Color Palette ==== */
-  /* Refined palette: reduced gold dominance, balanced neutrals */
-  --bg-body: #F8F6F3;          /* Light surface - warm off-white */
-  --bg-surface: #FFFFFF;       /* Pure white for cards/raised elements */
-  --bg-surface-sunken: #F3E8E8; /* Subtle elevation / alternate rows */
-  --bg-surface-raised: #FFFFFF; /* Card backgrounds */
-  --bg-border: rgba(15, 25, 35, 0.08); /* Light borders */
-  --bg-border-strong: rgba(15, 25, 35, 0.15); /* Stronger borders */
-
-  /* Dark theme */
-  --bg-dark: #0F1419;          /* Primary dark background */
-  --bg-dark-alt: #161B22;      /* Secondary dark */
-  --bg-surface-dark: #1E2530;  /* Dark surfaces */
-
-  /* Ink / Text */
-  --ink: #0F1419;              /* Primary text - nearly black */
-  --ink-secondary: #3D4852;    /* Secondary text */
-  --ink-muted: #6B7A8C;        /* Muted text */
-  --ink-faint: #9CA3AF;        /* faint text */
-  --ink-on-dark: #F8F6F3;      /* Text on dark backgrounds */
-
-  /* Chess Accent Colors - sophisticated, used sparingly */
-  --gold: #B8860B;             /* Primary accent - chess gold, used minimally */
-  --gold-soft: rgba(184, 134, 11, 0.08); /* Gold for shadows/glow */
+  
+  /* Primary accents - chess identity, used as tasteful highlights only */
+  --gold: #B8860B;             /* Chess gold - accent color, used sparingly */
+  --gold-soft: rgba(184, 134, 11, 0.08); /* Gold for subtle highlights/glow */
   --gold-softest: rgba(184, 134, 11, 0.04); /* Subtle gold accents */
   --gold-dim: #9A7009;         /* Darker gold variant */
-
-  --teal: #0D9488;             /* Secondary accent - chess teal */
+  
+  --teal: #0D9488;             /* Chess teal - secondary accent */
   --teal-soft: rgba(13, 148, 136, 0.08); /* Teal opacity */
   --teal-dim: #0F766E;         /* Darker teal */
-
-  --blue: #2563EB;             /* Primary accent - chess blue */
+  
+  --blue: #2563EB;             /* Chess blue - primary accent */
   --blue-soft: rgba(37, 99, 235, 0.08); /* Blue opacity */
   --blue-dim: #1D4ED8;         /* Darker blue */
-
-  /* Semantic colors */
+  
+  /* ==== Semantic Colors ==== */
   --success: #059669;
   --success-soft: rgba(5, 150, 105, 0.08);
   --warning: #D97706;
   --warning-soft: rgba(217, 119, 6, 0.08);
   --danger: #DC2626;
   --danger-soft: rgba(220, 38, 38, 0.08);
-
-  /* ==== Shadows ==== */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.08);
-  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.12);
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.06);
-
-  /* ==== Border Radius ==== */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 24px;
-  --radius-pill: 9999px;
-
-  /* ==== Typography ==== */
-  --font-display: 'Poppins', sans-serif;
-  --font-body: 'Inter', sans-serif;
-  --font-header: 'Poppins', sans-serif;
-
-  /* ==== Spacing ==== */
-  --gap-sm: 8px;
-  --gap-md: 16px;
-  --gap-lg: 24px;
-  --gap-xl: 32px;
-
-  /* ==== Transitions ==== */
-  --transition-fast: 0.2s ease;
-  --transition-medium: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  --transition-slow: 0.4s ease;
+  
+  /* ==== Neutral Balance (preserve existing layout) ==== */
+  --bg-body: #F8F6F3;          /* Warm off-white - MAINTAINS existing layout */
+  --bg-surface: #FFFFFF;       /* Pure white */
+  --bg-surface-sunken: #F3E8E8; /* Subtle elevation */
+  --bg-surface-raised: #FFFFFF; /* Card backgrounds */
+  --bg-border: rgba(15, 25, 35, 0.08); /* Light borders - matches pre-theme */
+  --bg-border-strong: rgba(15, 25, 35, 0.15); /* Stronger borders */
+  
+  /* Ink / Text - MAINTAINS existing readability */
+  --ink: #0F1419;              /* Primary text - same as pre-theme */
+  --ink-secondary: #3D4852;    /* Secondary text */
+  --ink-muted: #6B7A8C;        /* Muted text */
+  --ink-faint: #9CA3AF;        /* Faint text */
+  --ink-on-dark: #F8F6F3;      /* Text on dark backgrounds */
 }
 
-/* Dark theme when data-theme="dark" */
-[data-theme="dark"] {
-  --bg-body: #0F1419;
-  --bg-surface: #1E2530;
-  --bg-surface-sunken: #161B22;
-  --bg-surface-raised: #1E2530;
-  --bg-border: rgba(255, 255, 255, 0.08);
-  --bg-border-strong: rgba(255, 255, 255, 0.15);
-  --ink: #F8F6F3;
-  --ink-secondary: #A3B1C6;
-  --ink-muted: #6B7A8C;
-  --ink-faint: #9CA3AF;
-  --ink-on-dark: #F8F6F3;
-
-  --gold-soft: rgba(184, 134, 11, 0.12);
-  --gold-softest: rgba(184, 134, 11, 0.08);
-  --teal-soft: rgba(13, 148, 136, 0.12);
-  --blue-soft: rgba(37, 99, 235, 0.12);
-
-  --success: #10B981;
-  --warning: #F59E0B;
-  --danger: #EF4444;
-}
-
-/* ==== Preferred color schemes (auto respects user OS) ==== */
+/* ==== Light Mode (no layout changes) ==== */
 @media (prefers-color-scheme: light) {
   :root {
     --bg-body: #F8F6F3;
@@ -110,34 +52,28 @@
   }
 }
 
+/* ==== Dark Mode (no layout changes) ==== */
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-body: #0F1419;
     --ink: #F8F6F3;
+    --bg-surface: #1E2530;
+    --bg-surface-sunken: #161B22;
+    --bg-border: rgba(255, 255, 255, 0.08);
+    --bg-border-strong: rgba(255, 255, 255, 0.15);
+    --ink: #F8F6F3;
+    --ink-secondary: #A3B1C6;
+    --ink-muted: #6B7A8C;
+    --ink-faint: #9CA3AF;
   }
 }
 
-/* ==== Base Typography ==== */
-html {
-  scroll-behavior: smooth;
-}
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg-body);
-  color: var(--ink);
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* ==== Accessibility: Focus Visible ==== */
+/* ==== Accessibility ==== */
 *:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 2px;
 }
 
-/* ==== Reduced Motion ==== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
