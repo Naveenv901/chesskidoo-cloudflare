@@ -71,4 +71,3 @@ public/stockfish/src/old-nn/*.nnue
 public/stockfish/src/*.nnue
 public/stockfish/src/**/*.wasm
 assets/vendor/stockfish/*.wasm
-assets/videos/*.mp4
