@@ -213,13 +213,13 @@
           const ids = Array.isArray(b.student_ids)
             ? b.student_ids.map(String)
             : (window.parseStudentIds ? window.parseStudentIds(b.student_ids) : []);
-          return ids.includes(String(student.id)) || (student.batch_id && String(student.batch_id) === String(b.id)) || (student.batch && String(student.batch) === String(b.name));
+return ids.includes(String(student.id)) || (student.batch_id && String(student.batch_id) === String(b.id)) || (student.batch && (String(student.batch) === String(b.id) || String(student.batch) === String(b.name)));
         });
         console.log("[Schedule] extractScheduleJSON batch lookup found=", !!myBatch, myBatch?.name, myBatch?.days, myBatch?.time_slot);
         if (myBatch) {
           const coaches = window.allCoaches || window.coaches || [];
           const c = coaches.find(
-            (co) => String(co.id) === String(myBatch.coach_id) || (window.ckSameCoach && window.ckSameCoach(co.id, myBatch.coach_id)),
+            (co) => String(co.id) === String(myBatch.coach_id || myBatch.coach) || (window.ckSameCoach && window.ckSameCoach(co.id, myBatch.coach_id || myBatch.coach)),
           );
           const result = {
             regDays: myBatch.days || "TBD",
@@ -1213,8 +1213,23 @@
       return;
     }
 
+    // Wait for batch data if still loading
+    if ((!window.allBatches || window.allBatches.length === 0) && window.isLoadingData) {
+      console.log("[Schedule] Batch data still loading, showing loading state and retrying...");
+      wrapper.innerHTML = `
+        <div class="card" style="padding:40px; text-align:center; color:var(--ivory-dim); width:100%;">
+          <span style="font-size:36px; display:block; margin-bottom:12px;">⏳</span>
+          Loading class schedule...
+          <div class="loading-state" style="margin-top:12px;"><span class="spinner"></span></div>
+        </div>`;
+      // Retry after short delay
+      setTimeout(() => window.renderChildSchedule(student, coachName), 500);
+      return;
+    }
+
     const schedData = window.extractScheduleJSON(student.notes, student);
     console.log("[Schedule] renderChildSchedule id=", student.id, "name=", student.name, "notesLen=", (student.notes || "").length, "schedData=", !!schedData, "allBatches=", (window.allBatches || []).length);
+    console.log("[Schedule] student.batch_id=", student.batch_id, "student.batch=", student.batch, "student.id=", student.id);
 
     if (!schedData) {
       console.log("[Schedule] Using fallback batch data for student", student.id, "student.batch_id=", student.batch_id, "student.batch=", student.batch, "student.days=", student.days);
@@ -1222,10 +1237,8 @@
         const ids = Array.isArray(b.student_ids)
           ? b.student_ids.map(String)
           : (window.parseStudentIds ? window.parseStudentIds(b.student_ids) : []);
-        const match = ids.includes(String(student.id)) || (student.batch_id && String(student.batch_id) === String(b.id)) || (student.batch && String(student.batch) === String(b.name));
-        if (!match) {
-          console.log("[Schedule] batch no-match id=", b.id, "name=", b.name, "days=", b.days, "time_slot=", b.time_slot, "student_ids=", ids.slice(0, 5));
-        }
+        const match = ids.includes(String(student.id)) || (student.batch_id && String(student.batch_id) === String(b.id)) || (student.batch && (String(student.batch) === String(b.id) || String(student.batch) === String(b.name)));
+        console.log("[Schedule] batch check:", { batchId: b.id, batchName: b.name, studentId: student.id, studentBatch: student.batch, studentBatchId: student.batch_id, ids: ids.slice(0, 3), match });
         return match;
       });
       console.log("[Schedule] studentBatches fallback count", studentBatches.length, studentBatches.map(b => ({ id: b.id, name: b.name, days: b.days, time_slot: b.time_slot })));
@@ -1235,7 +1248,7 @@
         const firstBatch = studentBatches[0];
         const coaches = window.allCoaches || window.coaches || [];
         const batchCoach = coaches.find(
-          (co) => String(co.id) === String(firstBatch.coach_id) || (window.ckSameCoach && window.ckSameCoach(co.id, firstBatch.coach_id)),
+          (co) => String(co.id) === String(firstBatch.coach_id || firstBatch.coach) || (window.ckSameCoach && window.ckSameCoach(co.id, firstBatch.coach_id || firstBatch.coach)),
         );
         const fallbackSchedData = {
           regDays: firstBatch.days || "TBD",
@@ -1299,7 +1312,9 @@
       const ids = Array.isArray(b.student_ids)
         ? b.student_ids.map(String)
         : (window.parseStudentIds ? window.parseStudentIds(b.student_ids) : []);
-      return ids.includes(String(student.id)) || (student.batch_id && String(student.batch_id) === String(b.id)) || (student.batch && String(student.batch) === String(b.name));
+      const match = ids.includes(String(student.id)) || (student.batch_id && String(student.batch_id) === String(b.id)) || (student.batch && (String(student.batch) === String(b.id) || String(student.batch) === String(b.name)));
+      console.log("[Schedule] fallback2 batch check:", { batchId: b.id, batchName: b.name, studentId: student.id, studentBatch: student.batch, studentBatchId: student.batch_id, match });
+      return match;
     });
 
     if (!schedData.meetLink && studentBatches.length) {

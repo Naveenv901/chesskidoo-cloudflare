@@ -609,27 +609,6 @@ async function handleChesscom(request, env) {
   }
 }
 
-async function handleMessages(request, env) {
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 200, headers: cors() });
-  }
-
-  if (request.method === 'GET') {
-    const { results } = await env.DB.prepare('SELECT * FROM messages ORDER BY created_at DESC').all();
-    return json(200, { data: results });
-  }
-
-  if (request.method === 'POST') {
-    const body = await request.json();
-    const id = body.id || `msg-${Date.now()}`;
-    await env.DB.prepare(`INSERT INTO messages (id, sender_id, receiver_id, subject, body, read, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.sender_id || null, body.receiver_id || null, body.subject || null, body.body || null, body.read || 0, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM messages WHERE id = ?').bind(id).first();
-    return json(201, row);
-  }
-
-  return methodNotAllowed();
-}
-
 async function handleResources(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
