@@ -1079,12 +1079,16 @@ async function handleComplaintFeedback(request, env) {
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(id, body.name, body.contact, body.category, body.rating || null, body.subject, body.message, 'pending', now, now).run();
     
-    // Also insert into messages for admin notification
-    const msgId = `msg-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
-    await env.DB.prepare(`
-      INSERT INTO messages (id, sender_id, subject, body, category, is_read, created_at)
-      VALUES (?, ?, ?, ?, ?, 0, ?)
-    `).bind(msgId, body.contact, `New ${body.category}: ${body.subject}`, body.message, body.category, now).run();
+    // Also insert into messages for admin notification (non-blocking)
+    try {
+      const msgId = `msg-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+      await env.DB.prepare(`
+        INSERT INTO messages (id, sender_id, subject, body, category, is_read, created_at)
+        VALUES (?, ?, ?, ?, ?, 0, ?)
+      `).bind(msgId, body.contact, `New ${body.category}: ${body.subject}`, body.message, body.category, now).run();
+    } catch (e) {
+      console.warn('Failed to insert admin notification message:', e);
+    }
     
     return json(201, { success: true, id });
   }
@@ -1139,15 +1143,19 @@ async function handleRegistrationQueries(request, env) {
       'new', body.source || 'website', now, now
     ).run();
     
-    // Also create a lead entry for backward compatibility
-    await env.DB.prepare(`
-      INSERT INTO leads (name, phone, parent_name, child_age, city, status, email, message, source, full_name, age, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      body.parent_name, body.phone, body.parent_name, body.child_age || null,
-      body.city || 'Not specified', 'new', null, body.message || null,
-      'website', body.parent_name, body.child_age || null, now
-    ).run();
+    // Also create a lead entry for backward compatibility (non-blocking)
+    try {
+      await env.DB.prepare(`
+        INSERT INTO leads (name, phone, parent_name, child_age, city, status, email, message, source, full_name, age, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        body.parent_name, body.phone, body.parent_name, body.child_age || null,
+        body.city || 'Not specified', 'new', null, body.message || null,
+        'website', body.parent_name, body.child_age || null, now
+      ).run();
+    } catch (e) {
+      console.warn('Failed to create lead entry:', e);
+    }
     
     return json(201, { success: true, id });
   }
