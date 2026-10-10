@@ -897,6 +897,17 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
+/* HERO PHOTO — two students playing chess (left player, right player, board centred) */
+.hero-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 20px;
+  background: #0b0b0b;
+}
+
 /* PLAYER HEADER */
 .players-bar {
   display: grid;
