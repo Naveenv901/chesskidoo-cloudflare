@@ -3120,4 +3120,121 @@
     CK.loadLandingEvents && CK.loadLandingEvents();
   });
 
+  // ═══════════════════════════════════════════════════════════════════
+  // FormWizard Modal Openers
+  // ═══════════════════════════════════════════════════════════════════
+  CK.openComplaintModal = () => new FormWizard({
+    type: 'complaint',
+    title: 'Complaint & Feedback',
+    subtitle: 'Share your concerns, suggestions, or appreciation. We take every voice seriously.',
+    badge: '📋 Complaint & Feedback',
+    steps: [
+      {
+        title: 'Type & Rating',
+        progressLabel: 'Type',
+        instruction: 'What type of feedback are you submitting?',
+        fields: [
+          { name: 'category', type: 'select', label: 'Category *', required: true, options: [
+            { value: 'complaint', label: '😔 Complaint' },
+            { value: 'feedback', label: '💡 Feedback' },
+            { value: 'suggestion', label: '💭 Suggestion' },
+            { value: 'query', label: '❓ General Query' }
+          ]},
+          { name: 'rating', type: 'rating', label: 'Rating (for feedback)', required: false }
+        ]
+      },
+      {
+        title: 'Details',
+        progressLabel: 'Details',
+        instruction: 'Tell us more about your experience.',
+        fields: [
+          { name: 'subject', type: 'text', label: 'Subject *', required: true, placeholder: 'Brief summary' },
+          { name: 'message', type: 'textarea', label: 'Message *', required: true, placeholder: 'Describe your concern, suggestion, or experience in detail...', rows: 5 }
+        ]
+      },
+      {
+        title: 'Contact',
+        progressLabel: 'Contact',
+        instruction: 'Your contact details (kept confidential).',
+        fields: [
+          { name: 'name', type: 'text', label: 'Your Name *', required: true, placeholder: 'e.g. Ramesh Kumar' },
+          { name: 'contact', type: 'tel', label: 'WhatsApp / Phone *', required: true, placeholder: '98765 43210' }
+        ],
+        submitText: '📤 Submit Feedback'
+      }
+    ],
+    onSubmit: async (data) => {
+      const res = await fetch('/api/complaints', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('Failed to submit');
+      return res.json();
+    }
+  }).open();
+
+  CK.openRegistrationModal = () => new FormWizard({
+    type: 'registration',
+    title: 'Register Interest',
+    subtitle: 'Begin your child\'s chess journey. Our FIDE-certified coaches will match the right batch & plan.',
+    badge: '🎓 Student Registration',
+    steps: [
+      {
+        title: 'Parent & Child Info',
+        progressLabel: 'Family',
+        instruction: 'Basic details for our team to reach out.',
+        fields: [
+          { name: 'parent_name', type: 'text', label: 'Parent / Guardian Name *', required: true, placeholder: 'e.g. Dr. Kavitha Sundaram' },
+          { name: 'phone', type: 'tel', label: 'WhatsApp Number *', required: true, placeholder: '98765 43210' },
+          { name: 'child_name', type: 'text', label: 'Child\'s Name *', required: true, placeholder: 'e.g. Mukilan' },
+          { name: 'child_age', type: 'number', label: 'Child\'s Age *', required: true, placeholder: '8', min: 4, max: 18 }
+        ]
+      },
+      {
+        title: 'Preferences',
+        progressLabel: 'Prefs',
+        instruction: 'Help us find the perfect coach and schedule.',
+        fields: [
+          { name: 'city', type: 'text', label: 'City', required: false, placeholder: 'e.g. Chennai / Dubai' },
+          { name: 'country', type: 'text', label: 'Country', required: false, placeholder: 'e.g. India / UAE' },
+          { name: 'preferred_mode', type: 'select', label: 'Preferred Mode *', required: true, options: [
+            { value: 'online', label: '💻 Online (Worldwide)' },
+            { value: 'offline', label: '🏫 Offline Centre (Erode/Thindal/Bhavani)' },
+            { value: 'both', label: '🔄 Either is fine' }
+          ]},
+          { name: 'preferred_slot', type: 'select', label: 'Preferred Time Slot', required: false, options: [
+            { value: 'morning', label: '🌅 Morning (10 AM - 1 PM IST)' },
+            { value: 'afternoon', label: '☀️ Afternoon (2 PM - 5 PM IST)' },
+            { value: 'evening', label: '🌆 Evening (5 PM - 8:30 PM IST)' },
+            { value: 'weekend', label: '⭐ Weekend Special' }
+          ]},
+          { name: 'level', type: 'select', label: 'Current Skill Level *', required: true, options: [
+            { value: 'beginner', label: '🌱 Beginner (New to chess)' },
+            { value: 'intermediate', label: '🌿 Intermediate (Knows basics)' },
+            { value: 'advanced', label: '🌳 Advanced (Tournament player)' }
+          ]}
+        ]
+      },
+      {
+        title: 'Additional Info',
+        progressLabel: 'More',
+        instruction: 'Any other details? (Optional)',
+        fields: [
+          { name: 'message', type: 'textarea', label: 'Additional Notes', required: false, placeholder: 'Any specific goals, schedule constraints, or questions...', rows: 4 }
+        ],
+        submitText: '📋 Submit Registration'
+      }
+    ],
+    onSubmit: async (data) => {
+      const res = await fetch('/api/registrations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('Failed to submit');
+      return res.json();
+    }
+  }).open();
+
 })();

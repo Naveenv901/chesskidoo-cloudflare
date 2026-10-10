@@ -181,6 +181,7 @@
     <div class="nav-item admin-only" id="nav-exp" onclick="setPage('exp')"><span class="ico">💸</span> Expenditures</div>
     <div class="nav-item admin-only" id="nav-access" onclick="setPage('access')"><span class="ico">🔐</span> Access Control</div>
     <div class="nav-item admin-only" id="nav-msgs" onclick="setPage('msgs')"><span class="ico">💬</span> Messages <span id="msg-badge" class="badge badge-level" style="display:none;margin-left:8px">0</span></div>
+    <div class="nav-item admin-only" id="nav-analyze" onclick="setPage('analyze')"><span class="ico">📈</span> Analyze</div>
 
       <!-- Coach -->
       <div class="nav-item coach-only" id="nav-coach-dash" onclick="setPage('coach-dash')"><span class="ico">🏠</span> My Portal</div>
@@ -1533,16 +1534,17 @@
           </div>
            </div>
 
-               <div class="tabs-nav" id="child-portal-tabs">
-               <button class="tab-link active" onclick="setChildTab('overview', this)">Overview</button>
-                <button class="tab-link" onclick="setChildTab('attendance', this)">📅 Attendance &amp; Homework</button>
-                <button class="tab-link" onclick="setChildTab('studypgn', this)">♟️ Study PGN &amp; Tactics</button>
-               <button class="tab-link" onclick="setChildTab('growth', this)">Growth</button>
-               <button class="tab-link" onclick="setChildTab('events', this)">Events</button>
-               <button class="tab-link" onclick="setChildTab('reports', this)">Reports</button>
-               <button class="tab-link" onclick="setChildTab('billing', this)">Billing & Receipts</button>
-               <button class="tab-link" onclick="setChildTab('productivity', this)">Daily Tasks</button>
-             </div>
+<div class="tabs-nav" id="child-portal-tabs">
+                <button class="tab-link active" onclick="setChildTab('overview', this)">Overview</button>
+                <button class="tab-link" onclick="setChildTab('attendance', this)">📅 Attendance & Homework</button>
+                <button class="tab-link" onclick="setChildTab('schedule', this)">🗓️ Class Schedule</button>
+                <button class="tab-link" onclick="setChildTab('studypgn', this)">♟️ Study PGN & Tactics</button>
+                <button class="tab-link" onclick="setChildTab('growth', this)">Growth</button>
+                <button class="tab-link" onclick="setChildTab('events', this)">Events</button>
+                <button class="tab-link" onclick="setChildTab('reports', this)">Reports</button>
+                <button class="tab-link" onclick="setChildTab('billing', this)">Billing & Receipts</button>
+                <button class="tab-link" onclick="setChildTab('productivity', this)">Daily Tasks</button>
+              </div>
 
             <div id="child-tab-overview" class="child-tab-content active">
               <div id="child-profile-section">
@@ -2963,6 +2965,164 @@
     </div>
       <div id="msgs-loading" class="loading-state"><span class="spinner"></span> Loading…</div>
       <div class="msgs-list" id="msgs-list" style="display:none;grid-template-columns:1fr;gap:16px"></div>
+    </div>
+
+    <!-- Analyze Center Page -->
+    <div id="page-analyze" class="page admin-only">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px; flex-wrap: wrap; gap: 15px;">
+        <h2 style="color:var(--gold); margin:0; font-family:var(--font-head);">📈 Analyze Center</h2>
+      </div>
+      <div class="tabs-nav" id="analyze-tabs" style="margin-bottom:20px; background:rgba(0,0,0,0.2); padding:3px; border-radius:8px; border:1px solid var(--border); display:flex; gap:2px; flex-wrap:wrap;">
+        <button type="button" class="tab-link active" id="analyze-tab-complaints" onclick="setAnalyzeTab('complaints', this)" title="View and manage complaints & feedback">
+          <span class="coach-tab-icon">📋</span>
+          <span class="coach-tab-title">Complaints & Feedback</span>
+          <span class="coach-tab-pill" id="analyze-badge-complaints">0</span>
+        </button>
+        <button type="button" class="tab-link" id="analyze-tab-registrations" onclick="setAnalyzeTab('registrations', this)" title="View and manage registration queries">
+          <span class="coach-tab-icon">🎓</span>
+          <span class="coach-tab-title">Registration Queries</span>
+          <span class="coach-tab-pill" id="analyze-badge-registrations">0</span>
+        </button>
+        <button type="button" class="tab-link" id="analyze-tab-demo" onclick="setAnalyzeTab('demo', this)" title="View demo bookings">
+          <span class="coach-tab-icon">📅</span>
+          <span class="coach-tab-title">Demo Bookings</span>
+          <span class="coach-tab-pill" id="analyze-badge-demo">0</span>
+        </button>
+        <button type="button" class="tab-link" id="analyze-tab-analytics" onclick="setAnalyzeTab('analytics', this)" title="Analytics & charts">
+          <span class="coach-tab-icon">📊</span>
+          <span class="coach-tab-title">Analytics</span>
+        </button>
+      </div>
+
+      <!-- Complaints & Feedback Tab -->
+      <div id="analyze-complaints" class="analyze-tab-content active">
+        <div class="filter-bar" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; padding:12px; background:var(--bg2); border:1px solid var(--border); border-radius:8px;">
+          <select id="cf-filter-status" onchange="loadAnalyzeComplaints()" style="padding:8px 12px; background:var(--bg3); border:1px solid var(--border); color:var(--ivory); border-radius:6px; font-size:13px;">
+            <option value="">All Status</option>
+            <option value="pending">⏳ Pending</option>
+            <option value="in_progress">🔄 In Progress</option>
+            <option value="resolved">✅ Resolved</option>
+            <option value="closed">🔒 Closed</option>
+          </select>
+          <select id="cf-filter-category" onchange="loadAnalyzeComplaints()" style="padding:8px 12px; background:var(--bg3); border:1px solid var(--border); color:var(--ivory); border-radius:6px; font-size:13px;">
+            <option value="">All Categories</option>
+            <option value="complaint">😔 Complaint</option>
+            <option value="feedback">💡 Feedback</option>
+            <option value="suggestion">💭 Suggestion</option>
+            <option value="query">❓ Query</option>
+          </select>
+          <input type="text" id="cf-filter-search" placeholder="Search name, contact, subject..." oninput="debounceLoadComplaints()" style="padding:8px 12px; background:var(--bg3); border:1px solid var(--border); color:var(--ivory); border-radius:6px; font-size:13px; min-width:200px;">
+        </div>
+        <div id="analyze-complaints-loading" class="loading-state" style="display:none;"><span class="spinner"></span> Loading…</div>
+        <div class="table-wrap" style="box-shadow: var(--shadow); border-radius: 10px; overflow-x: auto; border: 1px solid var(--border);">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px;">#</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Category</th>
+                <th>Rating</th>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th style="width:120px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="analyze-complaints-tbody">
+              <tr><td colspan="9" class="coach-loading-cell">Loading complaints…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Registration Queries Tab -->
+      <div id="analyze-registrations" class="analyze-tab-content" style="display:none;">
+        <div class="filter-bar" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; padding:12px; background:var(--bg2); border:1px solid var(--border); border-radius:8px;">
+          <select id="reg-filter-status" onchange="loadAnalyzeRegistrations()" style="padding:8px 12px; background:var(--bg3); border:1px solid var(--border); color:var(--ivory); border-radius:6px; font-size:13px;">
+            <option value="">All Status</option>
+            <option value="new">🆕 New</option>
+            <option value="contacted">📞 Contacted</option>
+            <option value="demo_booked">📅 Demo Booked</option>
+            <option value="enrolled">✅ Enrolled</option>
+            <option value="closed">🔒 Closed</option>
+          </select>
+          <input type="text" id="reg-filter-search" placeholder="Search parent, child, phone..." oninput="debounceLoadRegistrations()" style="padding:8px 12px; background:var(--bg3); border:1px solid var(--border); color:var(--ivory); border-radius:6px; font-size:13px; min-width:200px;">
+        </div>
+        <div id="analyze-registrations-loading" class="loading-state" style="display:none;"><span class="spinner"></span> Loading…</div>
+        <div class="table-wrap" style="box-shadow: var(--shadow); border-radius: 10px; overflow-x: auto; border: 1px solid var(--border);">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px;">#</th>
+                <th>Parent</th>
+                <th>Phone</th>
+                <th>Child</th>
+                <th>Age</th>
+                <th>Mode</th>
+                <th>Level</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th style="width:140px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="analyze-registrations-tbody">
+              <tr><td colspan="10" class="coach-loading-cell">Loading registrations…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Demo Bookings Tab -->
+      <div id="analyze-demo" class="analyze-tab-content" style="display:none;">
+        <div class="filter-bar" style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; padding:12px; background:var(--bg2); border:1px solid var(--border); border-radius:8px;">
+          <select id="demo-filter-status" onchange="loadAnalyzeDemo()" style="padding:8px 12px; background:var(--bg3); border:1px solid var(--border); color:var(--ivory); border-radius:6px; font-size:13px;">
+            <option value="">All Status</option>
+            <option value="new">🆕 New</option>
+            <option value="contacted">📞 Contacted</option>
+            <option value="scheduled">📅 Scheduled</option>
+            <option value="completed">✅ Completed</option>
+            <option value="cancelled">❌ Cancelled</option>
+          </select>
+          <input type="text" id="demo-filter-search" placeholder="Search name, phone, level..." oninput="debounceLoadDemo()" style="padding:8px 12px; background:var(--bg3); border:1px solid var(--border); color:var(--ivory); border-radius:6px; font-size:13px; min-width:200px;">
+        </div>
+        <div id="analyze-demo-loading" class="loading-state" style="display:none;"><span class="spinner"></span> Loading…</div>
+        <div class="table-wrap" style="box-shadow: var(--shadow); border-radius: 10px; overflow-x: auto; border: 1px solid var(--border);">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:40px;">#</th>
+                <th>Parent</th>
+                <th>Phone</th>
+                <th>Child</th>
+                <th>Age</th>
+                <th>Level</th>
+                <th>Mode</th>
+                <th>Slot</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th style="width:120px;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="analyze-demo-tbody">
+              <tr><td colspan="11" class="coach-loading-cell">Loading demo bookings…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Analytics Tab -->
+      <div id="analyze-analytics" class="analyze-tab-content" style="display:none;">
+        <div class="dash-grid" style="margin-bottom:20px;">
+          <div class="card"><h3 style="color:var(--gold);margin-bottom:12px;">Complaints by Category</h3><div class="chart-container" style="height:250px;"><canvas id="chart-complaints-category"></canvas></div></div>
+          <div class="card"><h3 style="color:var(--gold);margin-bottom:12px;">Complaints by Status</h3><div class="chart-container" style="height:250px;"><canvas id="chart-complaints-status"></canvas></div></div>
+          <div class="card"><h3 style="color:var(--gold);margin-bottom:12px;">Registrations by Status</h3><div class="chart-container" style="height:250px;"><canvas id="chart-registrations-status"></canvas></div></div>
+          <div class="card"><h3 style="color:var(--gold);margin-bottom:12px;">Response Time (avg days)</h3><div class="chart-container" style="height:250px;"><canvas id="chart-response-time"></canvas></div></div>
+        </div>
+        <div class="dash-grid" style="margin-bottom:20px;">
+          <div class="card" style="grid-column:1/-1;"><h3 style="color:var(--gold);margin-bottom:12px;">Monthly Trends</h3><div class="chart-container" style="height:300px;"><canvas id="chart-monthly-trends"></canvas></div></div>
+        </div>
+      </div>
     </div>
 
     <!-- Access Control Manager Page -->
@@ -4870,8 +5030,9 @@
       <script src="/lms/js/study-pgn.js?v=20260817" charset="utf-8"></script>
       <script src="/lms/js/calculator.js?v=20260817" charset="utf-8"></script>
   
-      <script src="/lms/js/attendance_extension.js?v=2.0&t=20260611a" charset="utf-8"></script>
-      <script src="/lms/js/ceo-dashboard.js?v=1.1" charset="utf-8"></script>
+<script src="/lms/js/attendance_extension.js?v=2.0&t=20260611a" charset="utf-8"></script>
+<script src="/lms/js/schedule.js?v=2.0&t=20261010" charset="utf-8"></script>
+<script src="/lms/js/ceo-dashboard.js?v=1.1" charset="utf-8"></script>
 
 <!-- Combined Class Session (Homework + Attendance) Modal -->
        <div class="modal" id="quick-class-session-modal">

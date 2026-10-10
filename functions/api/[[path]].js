@@ -23,7 +23,8 @@ const ALLOWED_TABLES = [
   'classes', 'monthly_reports', 'puzzle_scores', 'coach_attendance',
   'assignments', 'hw_submissions', 'feedback', 'broadcasts', 'sessions',
   'students', 'payments', 'coaches', 'batches', 'messages', 'achievements',
-  'events', 'audit_log', 'rating_history', 'homework_assignments', 'homework_submissions'
+  'events', 'audit_log', 'rating_history', 'homework_assignments', 'homework_submissions',
+  'complaint_feedback', 'registration_queries'
 ];
 
 async function handleLogin(request, env) {
@@ -1065,6 +1066,285 @@ async function handleCoaches(request, env) {
 
   return methodNotAllowed();
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// NEW: Complaint & Feedback Handler
+// ═══════════════════════════════════════════════════════════════════
+async function handleComplaintFeedback(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 200, headers: cors() });
+
+  if (request.method === 'GET') {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const category = url.searchParams.get('category');
+    const limit = url.searchParams.get('limit') || '50';
+    
+    let query = 'SELECT * FROM complaint_feedback WHERE 1=1';
+    const params = [];
+    if (status) { query += ' AND status = ?'; params.push(status); }
+    if (category) { query += ' AND category = ?'; params.push(category); }
+    query += ' ORDER BY created_at DESC LIMIT ?';
+    params.push(parseInt(limit));
+    
+    const { results } = await env.DB.prepare(query).bind(...params).all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = `cfb-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+    const now = new Date().toISOString();
+    
+    await env.DB.prepare(`
+      INSERT INTO complaint_feedback (id, name, contact, category, rating, subject, message, status, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(id, body.name, body.contact, body.category, body.rating || null, body.subject, body.message, 'pending', now, now).run();
+    
+    // Also insert into messages for admin notification
+    const msgId = `msg-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+    await env.DB.prepare(`
+      INSERT INTO messages (id, sender_id, subject, body, category, is_read, created_at)
+      VALUES (?, ?, ?, ?, ?, 0, ?)
+    `).bind(msgId, body.contact, `New ${body.category}: ${body.subject}`, body.message, body.category, now).run();
+    
+    return json(201, { success: true, id });
+  }
+
+  if (request.method === 'PUT') {
+    const body = await request.json();
+    const { id, status, admin_notes, assigned_to } = body;
+    const now = new Date().toISOString();
+    
+    await env.DB.prepare(`
+      UPDATE complaint_feedback SET status = ?, admin_notes = ?, assigned_to = ?, updated_at = ? WHERE id = ?
+    `).bind(status, admin_notes || null, assigned_to || null, now, id).run();
+    
+    return json(200, { success: true });
+  }
+  return methodNotAllowed();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// NEW: Registration Queries Handler
+// ═══════════════════════════════════════════════════════════════════
+async function handleRegistrationQueries(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 200, headers: cors() });
+
+  if (request.method === 'GET') {
+    const url = new URL(request.url);
+    const status = url.searchParams.get('status');
+    const limit = url.searchParams.get('limit') || '50';
+    
+    let query = 'SELECT * FROM registration_queries WHERE 1=1';
+    const params = [];
+    if (status) { query += ' AND status = ?'; params.push(status); }
+    query += ' ORDER BY created_at DESC LIMIT ?';
+    params.push(parseInt(limit));
+    
+    const { results } = await env.DB.prepare(query).bind(...params).all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = `reg-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+    const now = new Date().toISOString();
+    
+    await env.DB.prepare(`
+      INSERT INTO registration_queries (id, parent_name, phone, child_name, child_age, city, country, preferred_mode, preferred_slot, level, message, status, source, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      id, body.parent_name, body.phone, body.child_name || null, body.child_age || null,
+      body.city || null, body.country || null, body.preferred_mode || 'online',
+      body.preferred_slot || null, body.level || 'beginner', body.message || null,
+      'new', body.source || 'website', now, now
+    ).run();
+    
+    // Also create a lead entry for backward compatibility
+    await env.DB.prepare(`
+      INSERT INTO leads (name, phone, parent_name, child_age, city, status, email, message, source, full_name, age, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      body.parent_name, body.phone, body.parent_name, body.child_age || null,
+      body.city || 'Not specified', 'new', null, body.message || null,
+      'website', body.parent_name, body.child_age || null, now
+    ).run();
+    
+    return json(201, { success: true, id });
+  }
+
+  if (request.method === 'PUT') {
+    const body = await request.json();
+    const { id, status } = body;
+    const now = new Date().toISOString();
+    
+    await env.DB.prepare(`
+      UPDATE registration_queries SET status = ?, updated_at = ? WHERE id = ?
+    `).bind(status, now, id).run();
+    
+    return json(200, { success: true });
+  }
+  return methodNotAllowed();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Admin Analyze Handler - Unified view of complaints, feedback, registrations
+// ═══════════════════════════════════════════════════════════════════
+async function handleAdminAnalyze(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 200, headers: cors() });
+
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+  const isDetail = pathname.includes('/api/admin/analyze/') && pathname.split('/').length > 4;
+
+  if (request.method === 'GET') {
+    if (isDetail) {
+      const id = pathname.split('/').pop();
+      const type = url.searchParams.get('type');
+      
+      if (!type || !['complaint_feedback', 'registration_queries', 'leads'].includes(type)) {
+        return json(400, { error: 'Invalid type parameter' });
+      }
+
+      const row = await env.DB.prepare(`SELECT * FROM ${type} WHERE id = ?`).bind(id).first();
+      if (!row) return json(404, { error: 'Not found' });
+      return json(200, { data: row });
+    }
+
+    const type = url.searchParams.get('type');
+    const status = url.searchParams.get('status');
+    const dateFrom = url.searchParams.get('dateFrom');
+    const dateTo = url.searchParams.get('dateTo');
+    const search = url.searchParams.get('search');
+    const limit = parseInt(url.searchParams.get('limit') || '100');
+
+    const tables = type ? [type] : ['complaint_feedback', 'registration_queries', 'leads'];
+    const allResults = [];
+
+    for (const table of tables) {
+      let query = `SELECT *, '${table}' as type FROM ${table} WHERE 1=1`;
+      const params = [];
+
+      if (status) {
+        query += ' AND status = ?';
+        params.push(status);
+      }
+      if (dateFrom) {
+        query += ' AND date(created_at) >= date(?)';
+        params.push(dateFrom);
+      }
+      if (dateTo) {
+        query += ' AND date(created_at) <= date(?)';
+        params.push(dateTo);
+      }
+      if (search) {
+        query += ' AND (name LIKE ? OR email LIKE ? OR phone LIKE ? OR message LIKE ? OR parent_name LIKE ? OR child_name LIKE ?)';
+        const s = `%${search}%`;
+        params.push(s, s, s, s, s, s);
+      }
+      query += ' ORDER BY created_at DESC LIMIT ?';
+      params.push(limit);
+
+      const { results } = await env.DB.prepare(query).bind(...params).all();
+      allResults.push(...results);
+    }
+
+    allResults.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    return json(200, { data: allResults.slice(0, limit) });
+  }
+
+  if (request.method === 'PUT' && isDetail) {
+    const id = pathname.split('/').pop();
+    const type = url.searchParams.get('type');
+    
+    if (!type || !['complaint_feedback', 'registration_queries', 'leads'].includes(type)) {
+      return json(400, { error: 'Invalid type parameter' });
+    }
+
+    const body = await request.json();
+    const { status, admin_notes, assigned_to } = body;
+    const now = new Date().toISOString();
+
+    let query = `UPDATE ${type} SET updated_at = ?`;
+    const params = [now];
+
+    if (status) {
+      query += ', status = ?';
+      params.push(status);
+    }
+    if (admin_notes !== undefined) {
+      query += ', admin_notes = ?';
+      params.push(admin_notes);
+    }
+    if (assigned_to !== undefined) {
+      query += ', assigned_to = ?';
+      params.push(assigned_to);
+    }
+
+    query += ' WHERE id = ?';
+    params.push(id);
+
+    await env.DB.prepare(query).bind(...params).run();
+    return json(200, { success: true });
+  }
+
+  return methodNotAllowed();
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ENHANCED: Messages Handler
+// ═══════════════════════════════════════════════════════════════════
+async function handleMessages(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 200, headers: cors() });
+
+  if (request.method === 'GET') {
+    const url = new URL(request.url);
+    const filter = url.searchParams.get('filter') || 'all';
+    const limit = url.searchParams.get('limit') || '100';
+    
+    let query = 'SELECT * FROM messages WHERE 1=1';
+    const params = [];
+    if (filter === 'unread') query += ' AND is_read = 0';
+    else if (filter === 'demo') query += " AND category LIKE '%demo%'";
+    else if (filter === 'complaint') query += " AND category LIKE '%complaint%'";
+    else if (filter === 'feedback') query += " AND category LIKE '%feedback%'";
+    else if (filter === 'query') query += " AND category LIKE '%query%'";
+    query += ' ORDER BY created_at DESC LIMIT ?';
+    params.push(parseInt(limit));
+    
+    const { results } = await env.DB.prepare(query).bind(...params).all();
+    return json(200, { data: results });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const id = `msg-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+    const now = new Date().toISOString();
+    
+    await env.DB.prepare(`
+      INSERT INTO messages (id, sender_id, receiver_id, subject, body, category, is_read, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(id, body.sender_id || null, body.receiver_id || null, body.subject, body.body, body.category || 'general', 0, now).run();
+    
+    return json(201, { success: true, id });
+  }
+
+  if (request.method === 'PUT') {
+    const body = await request.json();
+    const { id, is_read } = body;
+    
+    await env.DB.prepare(`UPDATE messages SET is_read = ? WHERE id = ?`).bind(is_read ? 1 : 0, id).run();
+    return json(200, { success: true });
+  }
+
+  if (request.method === 'DELETE') {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    await env.DB.prepare(`DELETE FROM messages WHERE id = ?`).bind(id).run();
+    return json(200, { success: true });
+  }
+  return methodNotAllowed();
+}
 export async function onRequest(context) {
   try {
     const { request, env } = context;
@@ -1129,6 +1409,14 @@ export async function onRequest(context) {
       return handleLeads(request, env);
     }
 
+    if (pathname === '/api/complaints' || pathname.startsWith('/api/complaints')) {
+      return handleComplaintFeedback(request, env);
+    }
+
+    if (pathname === '/api/registrations' || pathname.startsWith('/api/registrations')) {
+      return handleRegistrationQueries(request, env);
+    }
+
     if (pathname === '/api/demo-sheet' || pathname.startsWith('/api/demo-sheet')) {
       return handleDemoSheet(request, env);
     }
@@ -1187,6 +1475,10 @@ export async function onRequest(context) {
 
     if (pathname === '/api/coaches' || pathname.startsWith('/api/coaches')) {
       return handleCoaches(request, env);
+    }
+
+    if (pathname === '/api/admin/analyze' || pathname.startsWith('/api/admin/analyze')) {
+      return handleAdminAnalyze(request, env);
     }
 
     return notFound(pathname, request.method);

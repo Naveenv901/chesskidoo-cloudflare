@@ -1223,17 +1223,17 @@
           <div style="background:var(--cream-dark); border:1px solid var(--border); border-radius:20px; padding:48px 40px; text-align:center; box-shadow:var(--shadow-lg);">
             <div style="font-size:20px; color:var(--ink); margin-bottom:12px; font-weight:500;">Register Your Complaint Now</div>
             <p style="color:var(--ink); opacity:0.6; margin-bottom:28px; font-size:15px; line-height:1.6;">
-              Click below to open our secure Google Form and submit your feedback directly.
+              Click below to submit your complaint or feedback directly — we take every voice seriously.
             </p>
-            <a href="https://forms.gle/43cDaTKgYkT9pdEp8" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex; align-items:center; gap:12px; padding:18px 48px; border-radius:12px; border:none; background:linear-gradient(135deg, var(--amber), var(--amber-light)); color:var(--ink); font-weight:800; font-size:17px; cursor:pointer; text-decoration:none; box-shadow:0 6px 28px rgba(232,160,32,0.4); transition:all 0.3s ease; position:relative; overflow:hidden;">
-              <span style="position:relative; z-index:1;">📝 Register Your Complaint</span>
+            <button type="button" onclick="CK.openComplaintModal()" 
+               style="display:inline-flex; align-items:center; gap:12px; padding:18px 48px; border-radius:12px; border:none; background:linear-gradient(135deg, var(--amber), var(--amber-light)); color:var(--ink); font-weight:800; font-size:17px; cursor:pointer; box-shadow:0 6px 28px rgba(232,160,32,0.4); transition:all 0.3s ease; position:relative; overflow:hidden;">
+              <span style="position:relative; z-index:1;">📝 Register Complaint / Feedback</span>
               <span style="position:absolute; inset:0; background:linear-gradient(135deg, #FFE082 0%, var(--amber) 100%); opacity:0; transition:opacity 0.3s;"></span>
-            </a>
+            </button>
             <style>
               @media (prefers-reduced-motion: no-preference) {
-                #complaint-feedback a:hover { transform:translateY(-3px); box-shadow:0 10px 36px rgba(232,160,32,0.5) !important; }
-                #complaint-feedback a:hover span:last-child { opacity:1 !important; }
+                #complaint-feedback button:hover { transform:translateY(-3px); box-shadow:0 10px 36px rgba(232,160,32,0.5) !important; }
+                #complaint-feedback button:hover span:last-child { opacity:1 !important; }
               }
             </style>
           </div>
@@ -1258,10 +1258,10 @@
               Share your child's age, location, preferred schedule & any chess background. Our FIDE-certified coaches will personally match the right batch & fee plan.
             </p>
 
-            <a href="https://forms.gle/E4XD6DwnV1uLV58z9" target="_blank" rel="noopener noreferrer"
-               style="display:inline-flex; align-items:center; gap:10px; padding:16px 40px; border-radius:10px; border:none; background:linear-gradient(135deg, var(--amber), var(--amber-light)); color:var(--ink); font-weight:800; font-size:16px; cursor:pointer; text-decoration:none; box-shadow:0 4px 20px rgba(232,160,32,0.35); transition:all 0.3s ease;">
-              📝 Click Here to Register
-            </a>
+            <button type="button" onclick="CK.openRegistrationModal()"
+               style="display:inline-flex; align-items:center; gap:10px; padding:16px 40px; border-radius:10px; border:none; background:linear-gradient(135deg, var(--amber), var(--amber-light)); color:var(--ink); font-weight:800; font-size:16px; cursor:pointer; box-shadow:0 4px 20px rgba(232,160,32,0.35); transition:all 0.3s ease;">
+              📝 Register Interest
+            </button>
 
             <p style="margin-top:20px; font-size:14px; color:var(--ink); opacity:0.55;">
               Or WhatsApp us at <a href="https://wa.me/919514266505" style="color:var(--amber); font-weight:600; text-decoration:none; border-bottom:1px solid var(--amber-pale); transition:all 0.2s;">+91 95142 66505</a>
@@ -4174,6 +4174,7 @@
   <script defer type="module" src="assets/js/anti-cheat.js?v=20260728k"></script>
   <!-- TOM AI: classic script (not a module) so it always runs even if a sibling module errors -->
   <script defer src="assets/js/tomai.js?v=20260728k"></script>
+  <script defer src="assets/js/form-wizard.js?v=20260728k"></script>
   <script defer type="module" src="assets/js/main.js?v=20260728k"></script>
   <script defer src="assets/js/enterprise.js?v=20260728k"></script>
   <script defer src="assets/js/calculator.js?v=20260728k"></script>
