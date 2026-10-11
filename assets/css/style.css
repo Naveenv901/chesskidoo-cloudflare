@@ -888,13 +888,28 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
   50% { transform: scale(1.2); }
 }
 
+/* ── Trust Bar: force light text on dark bg ── */
+.trust-bar { background: var(--text-primary); }
+.trust-item { color: var(--bg-primary) !important; }
+
+/* ── Hero badge items ── */
+.hero-badge { background: var(--accent-mist); border-color: rgba(245,158,11,0.3); color: var(--accent-hover); }
+
 /* ── Sections with cream/cream-dark backgrounds (need light text in dark mode) ── */
 #testimonial-videos,
 #academy-events,
 #reviews,
 #complaint-feedback,
 #register-student,
-#why-choose {
+#why-choose,
+#levels,
+#features,
+#pricing,
+#achievements,
+#coaches,
+#tournaments,
+#ck-world,
+#faq {
   color: var(--text-primary);
 }
 #testimonial-videos .section-head h2,
@@ -902,23 +917,74 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
 #reviews .section-head h2,
 #complaint-feedback .section-head h2,
 #register-student .section-head h2,
-#why-choose .section-head h2 { color: var(--text-primary); }
+#why-choose .section-head h2,
+#levels .section-head h2,
+#features .section-head h2,
+#pricing .section-head h2,
+#achievements .section-head h2,
+#coaches .section-head h2,
+#tournaments .section-head h2,
+#ck-world .section-head h2,
+#faq .section-head h2 { color: var(--text-primary); }
 #testimonial-videos .lead,
 #academy-events .lead,
 #reviews .lead,
 #complaint-feedback .lead,
 #register-student .lead,
-#why-choose .lead { color: var(--text-secondary); }
+#why-choose .lead,
+#levels .lead,
+#features .lead,
+#pricing .lead,
+#achievements .lead,
+#coaches .lead,
+#tournaments .lead,
+#ck-world .lead,
+#faq .lead { color: var(--text-secondary); }
 #testimonial-videos .eyebrow,
 #academy-events .eyebrow,
 #reviews .eyebrow,
 #complaint-feedback .eyebrow,
 #register-student .eyebrow,
-#why-choose .eyebrow { color: var(--accent-primary); }
+#why-choose .eyebrow,
+#levels .eyebrow,
+#features .eyebrow,
+#pricing .eyebrow,
+#achievements .eyebrow,
+#coaches .eyebrow,
+#tournaments .eyebrow,
+#ck-world .eyebrow,
+#faq .eyebrow { color: var(--accent-primary); }
+
+/* Feature cards - ensure text visibility */
+.feat-card h3 { color: var(--text-primary); }
+.feat-card p { color: var(--text-secondary); }
+.feat-card .feat-tag { color: var(--accent-hover); background: var(--accent-mist); border-color: rgba(245,158,11,0.35); }
+
+/* Level cards - ensure text visibility */
+.level-card h3 { color: var(--text-primary); }
+.level-card p { color: var(--text-secondary); }
+.level-card li { color: var(--text-secondary); }
+.level-card .level-meta .meta-pill { background: var(--accent-mist); border-color: rgba(245,158,11,0.2); color: var(--accent-hover); }
+.level-card .level-card-cta { color: var(--accent-primary); }
+
+/* Coach cards */
+.coach-name { color: var(--text-primary) !important; }
+.coach-bio { color: var(--text-muted) !important; }
 
 /* Video cards */
 .tvid-card { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 20px; overflow: hidden; box-shadow: var(--shadow-md); }
 .tvid-caption { color: var(--text-secondary); padding: 16px; font-weight: 600; background: var(--bg-subtle); border-top: 1px solid var(--border-subtle); }
+
+/* Pricing cards - already handled but ensure */
+.price-card { color: var(--text-primary); }
+.price-title { color: var(--text-primary); }
+.price-amount { color: var(--text-primary); }
+.price-features li { color: var(--text-secondary); }
+.price-desc { color: var(--text-muted); }
+.price-meta { color: var(--text-muted); }
+.price-tier-label { color: var(--text-muted); }
+.price-tier-amount { color: var(--text-primary); }
+.price-tier-unit { color: var(--text-muted); }
 
 /* ─── Portal / Dashboard ─── */
 .page { display: revert; }
