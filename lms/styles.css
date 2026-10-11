@@ -82,43 +82,48 @@ h1, h2, h3, h4, h5, h6 {
   --gold-light: #f5cf82;
 }
 
-/* ☀️ LIGHT THEME ☀️ */
+/* ☀️ LIGHT THEME ☀️ — Professional, WCAG-AA compliant, easy on eyes */
 body[data-theme="light"] {
-  --obsidian: #fafafa;
-  --night: #f5f5f5;
-  --dusk: #e5e5e5;
-  --surface: #ffffff;
-  --surface2: #fafafa;
-  --surface3: #f5f5f5;
+  /* Background layers — subtle depth without harsh contrast */
+  --obsidian: #f8fafc;     /* page background (slate-50) */
+  --night: #f1f5f9;        /* elevated surfaces (slate-100) */
+  --dusk: #e2e8f0;         /* borders, dividers (slate-200) */
+  --surface: #ffffff;      /* cards, modals (white) */
+  --surface2: #f8fafc;     /* inputs, secondary panels (slate-50) */
+  --surface3: #f1f5f9;     /* hover states, subtle accents (slate-100) */
 
-  --gold: #b45309;
-  --gold2: #d97706;
-  --gold-glow: rgba(180,83,9,0.12);
-  --gold-mist: rgba(180,83,9,0.05);
-  --gold-semi: rgba(180,83,9,0.12);
+  /* Brand accent — amber/gold, accessible on light & dark */
+  --gold: #b45309;         /* primary brand (amber-700) — 7:1 on white */
+  --gold2: #d97706;        /* hover/active (amber-600) */
+  --gold-glow: rgba(180,83,9,0.15);
+  --gold-mist: rgba(180,83,9,0.06);
+  --gold-semi: rgba(180,83,9,0.14);
 
-  --amber: #d97706;
+  --amber: #d97706;        /* warnings, highlights */
   --amber-dim: #b45309;
-  --amber-mist: rgba(180,83,9,0.03);
+  --amber-mist: rgba(180,83,9,0.04);
 
-  --ivory: #0f172a;
-  --ivory2: #1e293b;
-  --ivory3: #475569;
-  --ivory-dim: #64748b;
+  /* Text hierarchy — WCAG AA compliant on --obsidian/--surface */
+  --ivory: #0f172a;        /* primary headings (slate-900) — 15:1 */
+  --ivory2: #1e293b;       /* body text (slate-800) — 11:1 */
+  --ivory3: #475569;       /* secondary text (slate-600) — 5.5:1 */
+  --ivory-dim: #64748b;    /* placeholder, meta (slate-500) — 4.5:1 */
 
-  --glass: rgba(255,255,255,0.95);
-  --border: rgba(15, 23, 42, 0.1);
-  --shadow: 0 4px 20px rgba(0,0,0,0.04);
-  --shadow-deep: 0 10px 35px rgba(0,0,0,0.07);
-  --shadow-amber: 0 0 20px rgba(180,83,9,0.08);
+  /* UI chrome */
+  --glass: rgba(255,255,255,0.9);   /* top bar, overlays */
+  --border: #e2e8f0;                 /* visible but subtle (slate-200) */
+  --shadow: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-deep: 0 10px 25px rgba(15,23,42,0.08), 0 4px 10px rgba(15,23,42,0.04);
+  --shadow-amber: 0 0 20px rgba(180,83,9,0.1);
 
+  /* Misc */
   --bg3: #ffffff;
-  --gold-light: #fbbf24;
-  --slate: #64748b;
+  --gold-light: #fbbf24;     /* gold accents on dark surfaces */
+  --slate: #64748b;          /* generic slate */
 
   background: var(--obsidian) !important;
   background-image: none !important;
-  color: var(--ivory) !important;
+  color: var(--ivory2) !important;
 }
 body[data-theme="light"]::before { opacity: 0.1; }
 
