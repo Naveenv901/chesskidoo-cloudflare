@@ -84,12 +84,12 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ☀️ LIGHT THEME ☀️ */
 body[data-theme="light"] {
-  --obsidian: #f8fafc;
-  --night: #f1f5f9;
-  --dusk: #e2e8f0;
+  --obsidian: #fafafa;
+  --night: #f5f5f5;
+  --dusk: #e5e5e5;
   --surface: #ffffff;
-  --surface2: #f8fafc;
-  --surface3: #f1f5f9;
+  --surface2: #fafafa;
+  --surface3: #f5f5f5;
 
   --gold: #b45309;
   --gold2: #d97706;
