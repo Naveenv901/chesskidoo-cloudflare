@@ -6799,10 +6799,8 @@ window.openQuickClassSessionModal = async function () {
 
       if (!silent)
 
-        toast(
-
-          
-o pending/due fees (or within 4-day deadline) for students under ${getCoachName(c)}`,
+toast(
+          `No pending/due fees (or within 4-day deadline) for students under ${getCoachName(c)}`,
 
           "info",
 
