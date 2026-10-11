@@ -96990,7 +96990,7 @@
 
 
 
-        ? (window.allBatches || []).filter((batch) => window.ckSameCoach?.(batch.coach_id, currentCoachId))
+        ? (window.allBatches || []).filter((batch) => (window.ckSameCoach || ((a, b) => String(a).trim().toLowerCase().replace(/-/g, "") === String(b).trim().toLowerCase().replace(/-/g, "")))(batch.coach_id, currentCoachId))
 
 
 
@@ -99422,7 +99422,7 @@
 
 
 
-    if (isCoach && (!batch || !window.ckSameCoach?.(batch.coach_id, currentCoachId))) {
+    if (isCoach && (!batch || !(window.ckSameCoach || ((a, b) => String(a).trim().toLowerCase().replace(/-/g, "") === String(b).trim().toLowerCase().replace(/-/g, "")))(batch.coach_id, currentCoachId)))) {
 
 
 

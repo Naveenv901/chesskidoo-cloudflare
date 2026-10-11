@@ -2078,7 +2078,7 @@ if (typeof window.setPage === 'function') {
       return;
     }
     const batch = (window.allBatches || []).find((b) => String(b.id) === String(id));
-    if (!batch || !window.ckSameCoach(batch.coach_id, coachId)) {
+    if (!batch || !(window.ckSameCoach || ((a, b) => String(a).trim().toLowerCase().replace(/-/g, "") === String(b).trim().toLowerCase().replace(/-/g, "")))(batch.coach_id, coachId)) {
       toast('Access denied: You can only delete your own batches.', 'error');
       return;
     }
