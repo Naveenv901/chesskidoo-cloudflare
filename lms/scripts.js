@@ -5542,10 +5542,10 @@
 
   }
 
-  window.openQuickClassSessionModal = function () {
+window.openQuickClassSessionModal = async function () {
 
     // Ensure batch data is loaded for coach batch filtering
-    if ((!window.allBatches || window.allBatches.length === 0) && typeof loadAllData === 'function') {
+    if ((!window.allBatches || window.allBatches.length === 0) && typeof loadAllData === "function") {
       await loadAllData(false);
     }
 
