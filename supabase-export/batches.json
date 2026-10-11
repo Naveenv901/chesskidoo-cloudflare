@@ -1,0 +1,517 @@
+[
+  {
+    "id": "08ffbc42-8018-48cb-9829-024d03af05c3",
+    "name": "SHANMUGA BATCH 1",
+    "coach_id": null,
+    "level": "Beginner",
+    "days": "MON,TUE,WED",
+    "time_slot": "7-8PM",
+    "student_ids": [
+      "23dbf2a0-fe1f-4a39-bbc8-cde3e0e41ff4"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:49:35.192+00:00",
+    "updated_at": "2026-08-25T23:49:35.192+00:00"
+  },
+  {
+    "id": "8efdf5d0-72f3-486d-b786-b08f69e3f4e5",
+    "name": "GYAN SURYA BATCH 20",
+    "coach_id": "c_gyanasurya",
+    "level": "Beginner",
+    "days": "Tuesday, Wednesday and Thursday",
+    "time_slot": "5.40am to 6.20am",
+    "student_ids": [
+      "s17770398426543o38oy"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "https://meet.google.com/dey-dybd-tvs",
+    "chessable_url": "",
+    "created_at": "2026-09-01T16:22:24.174+00:00",
+    "updated_at": "2026-09-01T16:23:52.76+00:00"
+  },
+  {
+    "id": "ed4e892c-0e86-444d-b0dc-dfba9d3b01e7",
+    "name": "RANJITH BATCH 2",
+    "coach_id": "bbc9f0c3-95ac-44bc-843a-72eb2e5e2102",
+    "level": "Advanced",
+    "days": "",
+    "time_slot": "5:00 PM - 6:00 PM",
+    "student_ids": [
+      "83256c80-5470-4aa4-ab89-6f0cdb1f23f1",
+      "s1776570409510nzt3aq",
+      "s1777040027196izu2po",
+      "s1776570417093zc1qsu"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "https://meet.google.com/",
+    "chessable_url": "",
+    "created_at": "2026-06-11T08:20:34.88531+00:00",
+    "updated_at": "2026-09-21T22:19:47.077+00:00"
+  },
+  {
+    "id": "db36a9b4-daa2-4e23-b7eb-2f1f8ed6aa5a",
+    "name": "SUDHIN BATCH 1",
+    "coach_id": "e348a0d74ecc07e5b30860e7117844fb",
+    "level": "Beginner",
+    "days": "TUE,THU",
+    "time_slot": "7-8PM",
+    "student_ids": [
+      "9febacc2-5864-4334-860d-5e34ea055153"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:34:24.897+00:00",
+    "updated_at": "2026-09-25T13:06:03.059+00:00"
+  },
+  {
+    "id": "f052499d-578c-43d8-9cf7-8ea59bf6a14f",
+    "name": "SUDHIN BATCH 2",
+    "coach_id": "e348a0d74ecc07e5b30860e7117844fb",
+    "level": "Beginner",
+    "days": "MON,FRI",
+    "time_slot": "7-8PM",
+    "student_ids": [
+      "962eca8b-188e-450f-9034-dc3db8771c06"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:36:20.351+00:00",
+    "updated_at": "2026-08-25T23:36:20.351+00:00"
+  },
+  {
+    "id": "2b47beb1-d68c-4571-b2fe-52b125131985",
+    "name": "OFFLINE BATCH 1",
+    "coach_id": "f28a3c85-f5e4-4f24-8407-7cdf8e2950b4",
+    "level": "Beginner",
+    "days": "MON,FRI",
+    "time_slot": "5.30-7.30PM",
+    "student_ids": [
+      "397201dc-1cad-423c-98ee-4e0f83de3293",
+      "1010d0d5-5e17-4b08-90c6-82e6004d683a",
+      "3aafdc25-0f6c-40f7-bf33-e60e3e64a60f",
+      "e28132cc-bc48-4e6a-a893-4ce599f91112",
+      "c5046119-11e3-486a-88f5-26027ecfc773",
+      "08af0678-20ab-4199-ba80-9fc933c779bf",
+      "864cfaf4-b9d6-406d-af38-242b9f8c1561",
+      "c8035b43-c10b-408f-8216-2a4c9f2e4b94",
+      "edf708a5-1ce5-4475-ac2a-ecae6bc1a010",
+      "9e429356-3163-40b0-b913-933c30b7c786"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "ALL OFFLINE STUDENTS IN LAXMI NAGAR",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:48:58.976+00:00",
+    "updated_at": "2026-08-25T23:53:14.495+00:00"
+  },
+  {
+    "id": "bbe1a981-4d47-46f5-aea4-526d53e1e808",
+    "name": "VISHNU BATCH 1",
+    "coach_id": "c_vishnu",
+    "level": "Beginner",
+    "days": "FRI,SAT",
+    "time_slot": "7-8PM",
+    "student_ids": [
+      "deb2d01b-cffd-4ad1-b9b3-01f93b27b77a",
+      "s1777039680914bzr0xg",
+      "98d88790-d2b6-4dd5-b538-1eb9dbd560f8",
+      "s1776570396454jz42w7",
+      "s1777039708270xrop2u",
+      "9052d92b-12f7-4500-a9b5-9dd3d1c1af6a"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "https://meet.google.com/cdp-znqr-iuv",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:46:16.778+00:00",
+    "updated_at": "2026-09-12T12:30:19.531+00:00"
+  },
+  {
+    "id": "9d5c9199-c61d-4c2e-911c-cdd48c7b9bbb",
+    "name": "RANJITH BATCH 1",
+    "coach_id": "bbc9f0c3-95ac-44bc-843a-72eb2e5e2102",
+    "level": "Beginner",
+    "days": "",
+    "time_slot": "",
+    "student_ids": [
+      "a3050100-996b-4de3-b637-b2809aa727d3"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-09-16T07:26:35.74+00:00",
+    "updated_at": "2026-09-21T22:19:29.336+00:00"
+  },
+  {
+    "id": "e03079eb-27e4-4cc7-8d58-ce5622b14ecb",
+    "name": "SHRIPATHY BATCH 1",
+    "coach_id": "e2ae515b-2e06-4218-9561-ae75a2a2eccf",
+    "level": "Beginner",
+    "days": "MON,TUE,WED,THUR",
+    "time_slot": "5-6PM",
+    "student_ids": [
+      "s1776570387463ipwyaw"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:42:54.431+00:00",
+    "updated_at": "2026-08-25T23:42:54.431+00:00"
+  },
+  {
+    "id": "f45cc289-92eb-455d-99da-c9c3580b267d",
+    "name": "SUDHIN BATCH 3",
+    "coach_id": "e348a0d74ecc07e5b30860e7117844fb",
+    "level": "Beginner",
+    "days": "WED,FRI",
+    "time_slot": "5-6AM",
+    "student_ids": [
+      "5d3cc88d-d707-434f-951d-e27aa1a87ae7"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:38:46.509+00:00",
+    "updated_at": "2026-08-25T23:51:19.732+00:00"
+  },
+  {
+    "id": "2745a4d1-fb4d-4e46-ad45-2fb015fee748",
+    "name": "KIRUBHAKARAN BATCH 4",
+    "coach_id": "0d02d369-fdf5-4251-8949-e5387f6af28b",
+    "level": "Beginner",
+    "days": "MON,TUE,WED,THUR,FRI",
+    "time_slot": "6-6.45PM",
+    "student_ids": [
+      "74099ef6-6943-4101-a2c3-b93c8120f030"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-09-10T08:38:41.282+00:00",
+    "updated_at": "2026-09-10T08:39:28.64+00:00"
+  },
+  {
+    "id": "b8a62af5-b96a-4fee-a377-f636972a80ea",
+    "name": "SUJITH BATCH 1",
+    "coach_id": "90ded1b3-2919-48a4-aefe-69da2d3038f4",
+    "level": "Beginner",
+    "days": "Mon&Thur",
+    "time_slot": "5-6AM",
+    "student_ids": [
+      "71dcad88-0929-4032-967e-d0bf19615e51"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:44:27.709+00:00",
+    "updated_at": "2026-09-23T23:35:27.64+00:00"
+  },
+  {
+    "id": "8076aeeb-8559-40bc-a6c1-e5f883b8ced6",
+    "name": "YOGESH BATCH 3",
+    "coach_id": "c_yogesh",
+    "level": "Beginner",
+    "days": "WED,FRI",
+    "time_slot": "8-9PM",
+    "student_ids": [
+      "92486897-45ff-4fe0-a214-f0439789eb76",
+      "8a5199b2-aa98-4472-a818-13a96ee2db22"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-09-25T15:44:03.782+00:00",
+    "updated_at": "2026-09-29T10:06:30.433+00:00"
+  },
+  {
+    "id": "45b17d90-86aa-4079-9f91-b5c7467b2b0f",
+    "name": "SHRIPATHY BATCH 2",
+    "coach_id": "e2ae515b-2e06-4218-9561-ae75a2a2eccf",
+    "level": "Beginner",
+    "days": "TUE,THU",
+    "time_slot": "3.30 -4.30AM",
+    "student_ids": [
+      "f3b31575-5407-427e-9585-90e887ac2db3"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:30:29.488+00:00",
+    "updated_at": "2026-08-25T23:47:00.621+00:00"
+  },
+  {
+    "id": "7b98e079-f7e0-43de-b924-1fb3b300253e",
+    "name": "KIRUBHAKARAN BATCH 2",
+    "coach_id": "0d02d369-fdf5-4251-8949-e5387f6af28b",
+    "level": "Beginner",
+    "days": "WED,THU,FRI",
+    "time_slot": "7-7.40PM",
+    "student_ids": [
+      "2bb1988d-9f19-402e-bff9-8f1c1bc9be70"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:31:52.074+00:00",
+    "updated_at": "2026-08-25T23:47:15.179+00:00"
+  },
+  {
+    "id": "b3dfcd2c-c440-4322-8510-af97eb4a2ee2",
+    "name": "Kirisiya batch",
+    "coach_id": "0d02d369-fdf5-4251-8949-e5387f6af28b",
+    "level": "Beginner",
+    "days": "Mon & Tue",
+    "time_slot": "6:00 PM - 7:00 PM",
+    "student_ids": [],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-10-06T17:17:21.042+00:00",
+    "updated_at": "2026-10-06T17:17:21.042+00:00"
+  },
+  {
+    "id": "257ac1ea-ec20-4946-8c51-6f3fa7509d84",
+    "name": "ROHINTH BATCH 1",
+    "coach_id": "c_rohit",
+    "level": "Beginner",
+    "days": "TUE,WED,SAT",
+    "time_slot": "5-5.40AM",
+    "student_ids": [
+      "s1777039718139wxdhwz"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T22:50:03.527+00:00",
+    "updated_at": "2026-08-25T22:50:03.527+00:00"
+  },
+  {
+    "id": "c0e8ad29-7a75-48cf-a496-f5241037187f",
+    "name": "ROHITH BATCH 2",
+    "coach_id": "c_rohit",
+    "level": "Beginner",
+    "days": "WED,THU",
+    "time_slot": "10-11PM",
+    "student_ids": [
+      "d881ddd8-4572-4f3a-bcda-0d3f6cec37f3"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T22:51:25.465+00:00",
+    "updated_at": "2026-08-25T22:51:25.465+00:00"
+  },
+  {
+    "id": "ca684303-acb1-42ff-aece-871416c84a1f",
+    "name": "RANJITH BATCH 3",
+    "coach_id": "bbc9f0c3-95ac-44bc-843a-72eb2e5e2102",
+    "level": "Advanced",
+    "days": "WED,FRI",
+    "time_slot": "2.45-3.45PM",
+    "student_ids": [
+      "s177657041140598u6a3"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T09:38:10.831+00:00",
+    "updated_at": "2026-08-25T22:54:26.476+00:00"
+  },
+  {
+    "id": "a0834c97-bdf2-461b-8004-41c927bcc003",
+    "name": "YOGESH BATCH 1",
+    "coach_id": "c_yogesh",
+    "level": "Beginner",
+    "days": "THU,FRI",
+    "time_slot": "6-7AM",
+    "student_ids": [
+      "s1776570395859f9yles"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:11:26.95+00:00",
+    "updated_at": "2026-08-25T23:11:26.95+00:00"
+  },
+  {
+    "id": "28a46516-f8e5-4c43-97c5-64e2c344db48",
+    "name": "ARIVUSELVAM BATCH 1",
+    "coach_id": "c_arivuselevam",
+    "level": "Advanced",
+    "days": "MON,WED",
+    "time_slot": "7-8PM",
+    "student_ids": [
+      "dfa2f7b2-3bbe-4823-b9ae-cc5af41ad886",
+      "c9db01d3-af40-4066-92c7-b591615f9704"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "https://meet.google.com/opn-etqe-qbw",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:04:09.308+00:00",
+    "updated_at": "2026-09-01T16:03:59.869+00:00"
+  },
+  {
+    "id": "aff7a4a7-85e3-4b30-ae20-a27e6a28553f",
+    "name": "ARIVUSELVAM BATCH 2",
+    "coach_id": "c_arivuselevam",
+    "level": "Advanced",
+    "days": "MON,WED",
+    "time_slot": "8-9PM",
+    "student_ids": [
+      "s1777039844599f2rmrq",
+      "4c9720e1-ae66-4d6b-87cc-b8886b55884f"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "https://meet.google.com/opn-etqe-qbw",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:05:58.197+00:00",
+    "updated_at": "2026-09-01T16:04:47.636+00:00"
+  },
+  {
+    "id": "c62499c0-67d4-449b-a411-dc42892fdeb0",
+    "name": "Sudikshaa",
+    "coach_id": "90ded1b3-2919-48a4-aefe-69da2d3038f4",
+    "level": "Beginner",
+    "days": "Sat & Sun",
+    "time_slot": "6:00 PM - 7:00PM",
+    "student_ids": [],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-31T16:32:17.29+00:00",
+    "updated_at": "2026-09-07T16:29:43.408+00:00"
+  },
+  {
+    "id": "5bc95705-a53f-4fa5-91ac-f50b07f44881",
+    "name": "YOGESH BATCH 2",
+    "coach_id": "c_yogesh",
+    "level": "Beginner",
+    "days": "FRI,SAT",
+    "time_slot": "6-7pm",
+    "student_ids": [
+      "82ceda77-955f-4af7-8801-f8fd5bfe4d80",
+      "20422495-6bf8-455a-95ef-d2092e721c51"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:15:50.025+00:00",
+    "updated_at": "2026-09-13T14:17:33.287+00:00"
+  },
+  {
+    "id": "febfde97-8249-4c5a-8c44-4d69d8337ece",
+    "name": "KIRUBHAKARAN BATCH 1",
+    "coach_id": "0d02d369-fdf5-4251-8949-e5387f6af28b",
+    "level": "Beginner",
+    "days": "Mon,Tue",
+    "time_slot": "6pm-7pm",
+    "student_ids": [
+      "s1777841856126wgbqme",
+      "s1777284264580v7a39t",
+      "7e1f0676-f274-4964-88e8-e8af7d71ca2c"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:27:37.409+00:00",
+    "updated_at": "2026-09-21T14:39:08.385+00:00"
+  },
+  {
+    "id": "d3cf0a38-ea65-4bc2-a29d-3993bb48c8be",
+    "name": "YOGESH BATCH 4",
+    "coach_id": "c_yogesh",
+    "level": "Intermediate",
+    "days": "MON,WED",
+    "time_slot": "7-8PM",
+    "student_ids": [
+      "cc643886-6c27-4b70-a5ce-34533c7541fd",
+      "1702b3e1-c776-44b2-a212-5a40e64fe5aa"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:21:06.108+00:00",
+    "updated_at": "2026-09-23T17:11:09.196+00:00"
+  },
+  {
+    "id": "ee4d1964-bd46-441d-9173-befbd06fdca0",
+    "name": "ARIVUSELVAM BATCH 3",
+    "coach_id": "c_arivuselevam",
+    "level": "Advanced",
+    "days": "Tue & Thu",
+    "time_slot": "7:00 PM - 8:00 PM",
+    "student_ids": [
+      "89d28640-0817-4d24-9eb6-b72013fff23c",
+      "s17770396910665ovgle"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "https://meet.google.com/opn-etqe-qbw",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:08:08.625+00:00",
+    "updated_at": "2026-09-24T17:04:42.91+00:00"
+  },
+  {
+    "id": "76a8da37-beea-4768-b945-6e78d4603aa9",
+    "name": "GYAN SURYA BATCH 1",
+    "coach_id": "c_gyanasurya",
+    "level": "Beginner",
+    "days": "Tue & Fri",
+    "time_slot": "7:00 PM - 8:00 PM",
+    "student_ids": [
+      "3fa9c52f-e54c-453e-856b-0483c343d589",
+      "s1777039719737empux8"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:00:57.811+00:00",
+    "updated_at": "2026-09-24T18:20:59.224+00:00"
+  },
+  {
+    "id": "ea7c9143-1b9c-4e88-9dca-6d5c1378085f",
+    "name": "GYAN SURIYA BATCH 11",
+    "coach_id": "c_gyanasurya",
+    "level": "Intermediate",
+    "days": "Sun & Sat",
+    "time_slot": "7:00 PM - 8:00 PM",
+    "student_ids": [
+      "s1777039731155saw8pk"
+    ],
+    "max_capacity": 10,
+    "status": "active",
+    "notes": "",
+    "chessable_url": "",
+    "created_at": "2026-08-25T23:02:12.035+00:00",
+    "updated_at": "2026-09-30T16:24:56.639+00:00"
+  }
+]

@@ -1,0 +1,214 @@
+/* ChessKidoo Unified Theme System — Single source of truth for colors */
+/* Version: 2026-10-11 */
+
+:root {
+  /* ══════════════════════════════════════════════════════════════
+     BRAND SCALE — Chess Gold (amber) — primary identity color
+     ══════════════════════════════════════════════════════════════ */
+  --brand-50:  #fffbeb;
+  --brand-100: #fef3c7;
+  --brand-200: #fde68a;
+  --brand-300: #fcd34d;
+  --brand-400: #fbbf24;
+  --brand-500: #f59e0b;   /* PRIMARY — accessible on dark & light */
+  --brand-600: #d97706;
+  --brand-700: #b45309;   /* dark mode primary */
+  --brand-800: #92400e;
+  --brand-900: #78350f;
+
+  /* ══════════════════════════════════════════════════════════════
+     NEUTRAL SCALE — Slate — works in both themes
+     ══════════════════════════════════════════════════════════════ */
+  --neutral-50:  #f8fafc;
+  --neutral-100: #f1f5f9;
+  --neutral-200: #e2e8f0;
+  --neutral-300: #cbd5e1;
+  --neutral-400: #94a3b8;
+  --neutral-500: #64748b;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1e293b;
+  --neutral-900: #0f172a;
+  --neutral-950: #020617;
+
+  /* ══════════════════════════════════════════════════════════════
+     SEMANTIC TOKENS — What components actually use
+     ══════════════════════════════════════════════════════════════ */
+  /* Backgrounds */
+  --bg-primary:    var(--neutral-950);
+  --bg-surface:    var(--neutral-900);
+  --bg-elevated:   var(--neutral-800);
+  --bg-subtle:     var(--neutral-800);
+  --bg-glass:      rgba(15, 23, 42, 0.7);
+
+  /* Borders */
+  --border-subtle: var(--neutral-700);
+  --border-focus:  var(--brand-500);
+  --border-input:  var(--neutral-700);
+
+  /* Text */
+  --text-primary:   var(--neutral-50);
+  --text-secondary: var(--neutral-300);
+  --text-muted:     var(--neutral-500);
+  --text-inverse:   var(--neutral-950);
+
+  /* Accents */
+  --accent-primary:  var(--brand-500);
+  --accent-hover:    var(--brand-400);
+  --accent-subtle:   var(--brand-900);
+  --accent-glow:     rgba(245, 158, 11, 0.25);
+  --accent-mist:     rgba(245, 158, 11, 0.06);
+
+  /* Status colors (keep accessible) */
+  --success: #22c55e;
+  --success-bg: rgba(34, 197, 94, 0.12);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245, 158, 11, 0.12);
+  --danger:  #ef4444;
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --info:    #3b82f6;
+  --info-bg: rgba(59, 130, 246, 0.12);
+
+  /* Shadows — layered system */
+  --shadow-sm:  0 1px 2px  rgba(0, 0, 0, 0.3);
+  --shadow-md:  0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg:  0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-xl:  0 20px 50px rgba(0, 0, 0, 0.6);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+
+  /* Radius */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  20px;
+  --radius-full: 9999px;
+
+  /* Typography */
+  --font-head: 'Cinzel', Georgia, serif;
+  --font-ui:   'Syne', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  /* Transitions */
+  --transition-fast:  150ms ease;
+  --transition-base:  250ms ease;
+  --transition-slow:  350ms ease;
+
+  /* Z-index scale */
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-fixed:    300;
+  --z-modal:    400;
+  --z-popover:  500;
+  --z-toast:    600;
+  --z-tooltip:  700;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE — Flip semantic tokens only
+   ══════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  /* Backgrounds */
+  --bg-primary:    var(--neutral-50);
+  --bg-surface:    #ffffff;
+  --bg-elevated:   var(--neutral-100);
+  --bg-subtle:     var(--neutral-100);
+  --bg-glass:      rgba(255, 255, 255, 0.9);
+
+  /* Borders */
+  --border-subtle: var(--neutral-200);
+  --border-input:  var(--neutral-300);
+
+  /* Text */
+  --text-primary:   var(--neutral-900);
+  --text-secondary: var(--neutral-700);
+  --text-muted:     var(--neutral-500);
+  --text-inverse:   #ffffff;
+
+  /* Accents */
+  --accent-primary:  var(--brand-700);
+  --accent-hover:    var(--brand-600);
+  --accent-subtle:   var(--brand-100);
+  --accent-glow:     rgba(180, 83, 9, 0.18);
+  --accent-mist:     rgba(180, 83, 9, 0.05);
+
+  /* Status */
+  --success-bg: rgba(34, 197, 94, 0.1);
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --danger-bg:  rgba(239, 68, 68, 0.1);
+  --info-bg:    rgba(59, 130, 246, 0.1);
+
+  /* Shadows — lighter, colored */
+  --shadow-sm:  0 1px 2px  rgba(15, 23, 42, 0.06);
+  --shadow-md:  0 4px 12px rgba(15, 23, 42, 0.08);
+  --shadow-lg:  0 12px 28px rgba(15, 23, 42, 0.12);
+  --shadow-xl:  0 20px 40px rgba(15, 23, 42, 0.15);
+  --shadow-accent: 0 0 24px var(--accent-glow);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LEGACY ALIASES — Map old variable names to new system
+   (gradual migration, safe to remove later)
+   ══════════════════════════════════════════════════════════════ */
+:root {
+  --obsidian:    var(--bg-primary);
+  --night:       var(--bg-surface);
+  --dusk:        var(--border-subtle);
+  --surface:     var(--bg-surface);
+  --surface2:    var(--bg-subtle);
+  --surface3:    var(--bg-elevated);
+  --gold:        var(--accent-primary);
+  --gold2:       var(--accent-hover);
+  --gold-glow:   var(--accent-glow);
+  --gold-mist:   var(--accent-mist);
+  --gold-semi:   var(--accent-subtle);
+  --amber:       var(--accent-primary);
+  --amber-dim:   var(--accent-hover);
+  --amber-mist:  var(--accent-mist);
+  --ivory:       var(--text-primary);
+  --ivory2:      var(--text-secondary);
+  --ivory3:      var(--text-muted);
+  --ivory-dim:   var(--neutral-500);
+  --glass:       var(--bg-glass);
+  --border:      var(--border-subtle);
+  --radius-lg:   var(--radius-lg);
+  --radius-sm:   var(--radius-sm);
+  --font-head:   var(--font-head);
+  --font-ui:     var(--font-ui);
+  --font-mono:   var(--font-mono);
+  --shadow:      var(--shadow-md);
+  --shadow-deep: var(--shadow-xl);
+  --shadow-amber: var(--shadow-accent);
+  --slate:       var(--neutral-500);
+  --bg3:         var(--bg-surface);
+  --gold-light:  var(--brand-400);
+}
+
+/* Light mode legacy overrides */
+[data-theme="light"] {
+  --obsidian:    var(--bg-primary);
+  --night:       var(--bg-surface);
+  --dusk:        var(--border-subtle);
+  --surface:     var(--bg-surface);
+  --surface2:    var(--bg-subtle);
+  --surface3:    var(--bg-elevated);
+  --gold:        var(--accent-primary);
+  --gold2:       var(--accent-hover);
+  --gold-glow:   var(--accent-glow);
+  --gold-mist:   var(--accent-mist);
+  --gold-semi:   var(--accent-subtle);
+  --amber:       var(--accent-primary);
+  --amber-dim:   var(--accent-hover);
+  --amber-mist:  var(--accent-mist);
+  --ivory:       var(--text-primary);
+  --ivory2:      var(--text-secondary);
+  --ivory3:      var(--text-muted);
+  --ivory-dim:   var(--text-muted);
+  --glass:       var(--bg-glass);
+  --border:      var(--border-subtle);
+  --shadow:      var(--shadow-md);
+  --shadow-deep: var(--shadow-xl);
+  --shadow-amber: var(--shadow-accent);
+  --slate:       var(--neutral-500);
+  --bg3:         var(--bg-surface);
+  --gold-light:  var(--brand-400);
+}

@@ -1,0 +1,13 @@
+id,name,email,phone,specialization,experience,rating,bio,status,hourly_rate,availability,created_at,updated_at,monthly_fee,batch_count,pay_level,role,address,account_status,salary,payment_status,photo_url
+0d02d369-fdf5-4251-8949-e5387f6af28b,Kirubhakaran,kirubhakaran@gmail.com,919003419713,,4000,0,,active,0,,2026-07-31 18:48:28.058,2026-08-05 18:52:49.321,,,,coach,,active,0,Pending,
+7a2ec563-b272-4638-ac3a-1b7aff63afa2,SIVARAM,sivaram@gmail.com,919629159456,,2,0,,active,0,,2026-09-24 16:46:58.478,2026-09-24 16:46:58.478,,,,coach,,active,0,Pending,
+90ded1b3-2919-48a4-aefe-69da2d3038f4,SUJITH,sujith@gmail.com,917395892155,,2200,0,,active,0,,2026-07-31 18:48:47.875,2026-08-05 18:52:39.039,,,,coach,,active,0,Pending,
+bbc9f0c3-95ac-44bc-843a-72eb2e5e2102,RANJITH,ranjith@gmail.com,919025846663,Advanced,2,0,FIDE-certified coach with 2 years of experience in training young talents.,active,1,,2026-04-16 00:44:24.096922,2026-07-31 15:28:08.881,,,,,,active,0,Paid,
+c_arivuselevam,ARIVUSELVAM,arivuselvam@gmail.com,917550151974,,0,0,,active,8300,,2026-04-11 09:56:07.891215,2026-07-07 06:25:37.132,1200,,1200,COACH,,active,0,Paid,
+c_gyanasurya,GYAN SURYA,gyanasurya@gmail.com,917904776060,"Beginner, Intermediate",0,0,Beginner coach of child specialist. AFM title player,active,3700,,2026-04-11 09:49:00.800749,2026-08-24 10:22:38.662,2000,,2000,coach,,active,0,Paid,
+c_rohit,ROHINTH,rohinthselvaraj@gmail.com,9185688722,Intermediate,0,0,FIDE-certified coach with 2 years of experience.,active,4150,,2026-04-11 09:49:00.800749,2026-08-24 10:23:10.237,3000,,3000,coach,,active,0,Paid,
+c_vishnu,VISHNU,vishnu@gmail.com,916379175193,Intermediate,0,0,2 years of experience in Hindustan Incubation Chess Club.,active,3800,,2026-04-11 09:49:00.800749,2026-07-07 06:26:21.474,1500,,1500,COACH,,active,0,Pending,
+c_yogesh,YOGESH,yogesh@gmail.com,918056735058,Intermediate,0,0,"Anna University Player Team of South , Sri Eshwar College of Engineering",active,3500,,2026-04-11 09:49:00.800749,2026-06-04 14:09:34.375,1200,,1200,COACH,,active,0,Pending,
+e2ae515b-2e06-4218-9561-ae75a2a2eccf,SHRIPATHY,shripathy@gmail.com,917358881906,,,0,,active,0,,2026-07-31 18:50:27.206,2026-07-31 18:50:27.206,,,,coach,,active,0,Pending,
+e348a0d74ecc07e5b30860e7117844fb,SUDHIN,sudhin@gmail.com,916379809220,,0,0,,active,1700,,2026-04-18 17:41:53.419153,2026-05-20 09:52:23.401,,,,,,active,0,Pending,
+f28a3c85-f5e4-4f24-8407-7cdf8e2950b4,JAGANATHAN - OFFLINE,rameshsiroffline@gmail.com,,,1000,0,,active,4300,,2026-06-02 10:53:19.597,2026-08-14 14:48:11.921,,,,coach,,active,0,Pending,
