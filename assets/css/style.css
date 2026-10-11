@@ -1009,12 +1009,28 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
 
 /* Team Showcase - dark mode support */
 .team-showcase-lead { color: var(--text-secondary) !important; }
-.team-action-card { background: var(--bg-surface) !important; border-color: var(--border-subtle) !important; }
-.team-action-body { background: var(--bg-surface) !important; }
-.team-action-title { color: var(--text-primary) !important; }
-.team-action-desc { color: var(--text-secondary) !important; }
-.team-action-img-wrap { background: var(--bg-primary) !important; }
-.team-action-tag { background: var(--bg-glass) !important; border-color: var(--border-subtle) !important; color: var(--accent-hover) !important; }
+.team-action-card { background: var(--bg-surface) !important; border: 1px solid var(--border-subtle) !important; border-radius: 20px !important; overflow: hidden !important; box-shadow: var(--shadow-md) !important; display: flex !important; flex-direction: column !important; }
+.team-action-body { padding: 24px 22px !important; background: var(--bg-surface) !important; flex: 1 !important; display: flex !important; flex-direction: column !important; justify-content: center !important; }
+.team-action-title { font-family: var(--font-display) !important; font-size: 1.35rem !important; font-weight: 800 !important; color: var(--text-primary) !important; margin: 0 0 8px 0 !important; line-height: 1.3 !important; }
+.team-action-desc { font-size: 0.95rem !important; line-height: 1.6 !important; color: var(--text-secondary) !important; margin: 0 !important; font-weight: 500 !important; }
+.team-action-img-wrap { position: relative !important; width: 100% !important; height: 290px !important; overflow: hidden !important; background: var(--bg-primary) !important; flex: 0 0 auto !important; }
+.team-action-tag { position: absolute !important; top: 14px !important; left: 14px !important; background: var(--bg-glass) !important; border: 1px solid var(--border-subtle) !important; color: var(--accent-hover) !important; font-size: 0.78rem !important; font-weight: 700 !important; padding: 6px 14px !important; border-radius: 20px !important; backdrop-filter: blur(8px) !important; -webkit-backdrop-filter: blur(8px) !important; box-shadow: var(--shadow-sm) !important; }
+.team-action-tag.trophy-tag { color: var(--accent-primary) !important; border-color: rgba(245,158,11,0.5) !important; }
+
+/* Showcase gallery */
+.showcase-gallery-title { color: var(--text-primary) !important; text-align: center !important; font-family: var(--font-display) !important; font-size: 2rem !important; font-weight: 800 !important; margin-bottom: 40px !important; letter-spacing: -0.02em !important; }
+
+/* Complaint/Register cards */
+.complaint-card,
+.register-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 20px !important;
+  padding: 48px 40px !important;
+  text-align: center !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+.register-card { padding: 40px 32px !important; }
 
 /* ─── Portal / Dashboard ─── */
 .page { display: revert; }
