@@ -7104,10 +7104,8 @@ toast(
 
     if (
 
-      !confirm(
-
-        
-otify parents of ${dueStudents.length} students with pending/due payments? This will open multiple WhatsApp tabs.`,
+!confirm(
+          `Notify parents of ${dueStudents.length} students with pending/due payments? This will open multiple WhatsApp tabs.`,
 
       )
 
@@ -35894,6 +35892,7 @@ window.viewAnalyzeDetail = async function(id, type) {
     alert('Failed to load detail');
   }
 };
+
 
 
 
