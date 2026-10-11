@@ -8657,7 +8657,7 @@ if ((!window.allBatches || window.allBatches.length === 0) && typeof loadAllData
 
     //
 
-    // targetMonthEnd is built with Date.UTC, and `now` is local — comparing the
+    // targetMonthEnd is built with Date.UTC, and now` is local — comparing the
 
     // two would hold the flip back to 05:30 on the 1st in IST. Rebuild the
 
@@ -17650,8 +17650,6 @@ setTimeout(function () {
 
         .map((s, i) => {
 
-          try {
-
             const status = getStudentPaymentStatus(s, targetMonth, targetYear);
 
             const time = s.session_time || s.class_time || s.batch_time || "";
@@ -18096,9 +18094,7 @@ setTimeout(function () {
 
             </tr>`;
 
-          } catch (rowErr) {
-
-            console.error(`[UI] Error rendering student row ${i}:`, rowErr, s);
+          :`, rowErr, s);
 
             return `<tr><td colspan="13" style="color:var(--danger)">Error rendering student ${s.name || i}</td></tr>`;
 
@@ -35880,7 +35876,7 @@ window.viewAnalyzeDetail = async function(id, type) {
           <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()">Close</button>
         </div>
       </div>
-    `;
+    `};
     // Click the backdrop (not the card) to dismiss.
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
     document.body.appendChild(modal);
