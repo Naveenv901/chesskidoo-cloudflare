@@ -1146,20 +1146,11 @@ async function handleRegistrationQueries(request, env) {
       'new', body.source || 'website', now, now
     ).run();
     
-    // Also create a lead entry for backward compatibility (non-blocking)
-    try {
-      await env.DB.prepare(`
-        INSERT INTO leads (name, phone, parent_name, child_age, city, status, email, message, source, full_name, age, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).bind(
-        body.parent_name, body.phone, body.parent_name, body.child_age || null,
-        body.city || 'Not specified', 'new', null, body.message || null,
-        'website', body.parent_name, body.child_age || null, now
-      ).run();
-    } catch (e) {
-      console.warn('Failed to create lead entry:', e);
-    }
-    
+    // NOTE: do not also insert into `leads` here. Registration queries and demo
+    // bookings are separate sources (leads is filled by the demo-booking form);
+    // the old "backward compatibility" insert duplicated every registration into
+    // the Demo Bookings tab of Admin → Analyze.
+
     return json(201, { success: true, id });
   }
 

@@ -251086,7 +251086,14 @@ setTimeout(function () {
 
         window.initProductivityPage();
 
-        if (p === "analyze" && window.loadAnalyzeComplaints) window.loadAnalyzeComplaints();
+        if (p === "analyze" && window.loadAnalyzeComplaints) {
+          // Load every tab's data on open so the badge counts are correct immediately
+          // (previously only the complaints badge updated, leaving registrations and
+          // demo bookings showing 0 until their tab was clicked).
+          window.loadAnalyzeComplaints();
+          if (window.loadAnalyzeRegistrations) window.loadAnalyzeRegistrations();
+          if (window.loadAnalyzeDemo) window.loadAnalyzeDemo();
+        }
 
         if (p === "access") {
 
