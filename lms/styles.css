@@ -102,9 +102,9 @@ body[data-theme="light"] {
   --amber-mist: rgba(180,83,9,0.03);
 
   --ivory: #0f172a;
-  --ivory2: #334155;
-  --ivory3: #64748b;
-  --ivory-dim: #94a3b8;
+  --ivory2: #1e293b;
+  --ivory3: #475569;
+  --ivory-dim: #64748b;
 
   --glass: rgba(255,255,255,0.95);
   --border: rgba(15, 23, 42, 0.1);
