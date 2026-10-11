@@ -238891,100 +238891,11 @@ try {
 
 
   function startNotificationPolling() {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     if (notificationPolling) return;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // Only poll on pages that show notifications
+    const currentPage = window.location.hash.slice(1);
+    const notificationPages = ['msgs', 'dash', 'stud', 'coach-mgmt', 'batches', 'events', 'bills', 'exp', 'insights', 'access', 'ai'];
+    if (!notificationPages.includes(currentPage)) return;
 
     notificationPolling = setInterval(async () => {
 
@@ -242924,99 +242835,16 @@ try {
 
     }, 15000);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // Expose stopNotificationPolling on window
+  window.stopNotificationPolling = function () {
+    if (notificationPolling) {
+      clearInterval(notificationPolling);
+      notificationPolling = null;
+      console.log('[Notification] Polling stopped');
+    }
+  };
 
   async function updateMsgBadge() {
 
@@ -249100,7 +248928,7 @@ setTimeout(function () {
 
 
 
-       console.warn('[CEO] setPage timeout p=', p, 'stack=', new Error().stack);
+       // console.warn('[CEO] setPage timeout p=', p, 'stack=', new Error().stack);
 
 
 
@@ -618576,24 +618404,43 @@ window.viewAnalyzeDetail = async function(id, type) {
       headers: { 'Authorization': `Bearer ${getAuthToken()}` }
     });
     if (!res.ok) throw new Error('Failed to load detail');
-    const data = await res.json();
+    const payload = await res.json();
+    const row = (payload && payload.data && typeof payload.data === 'object') ? payload.data : payload;
+
+    const TYPE_LABELS = {
+      registration_queries: 'Registration Query',
+      complaint_feedback: 'Complaint / Feedback',
+      leads: 'Demo Booking'
+    };
+    const label = TYPE_LABELS[type] || type;
+    const humanKey = (k) => k.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+    const rowsHtml = Object.entries(row).map(([k, v]) => {
+      let display;
+      if (v === null || v === undefined || v === '') display = '<span class="adetail-empty">—</span>';
+      else if (typeof v === 'object') display = escapeHtml(JSON.stringify(v, null, 2));
+      else display = escapeHtml(String(v));
+      return `<div class="adetail-row"><div class="adetail-key">${escapeHtml(humanKey(k))}</div><div class="adetail-val">${display}</div></div>`;
+    }).join('');
 
     const modal = document.createElement('div');
     modal.className = 'modal-overlay';
     modal.innerHTML = `
-      <div class="modal modal-lg">
+      <div class="modal modal-lg" role="dialog" aria-modal="true" aria-label="${escapeHtml(label)} details">
         <div class="modal-header">
-          <h3>${escapeHtml(type)} #${id}</h3>
-          <button class="btn btn-icon" onclick="this.closest('.modal-overlay').remove()">&times;</button>
+          <h3>${escapeHtml(label)}</h3>
+          <button class="btn btn-icon" aria-label="Close" onclick="this.closest('.modal-overlay').remove()">&times;</button>
         </div>
         <div class="modal-body">
-          <pre class="json-view">${JSON.stringify(data, null, 2)}</pre>
+          <div class="adetail-list">${rowsHtml || '<div class="adetail-empty">No details found.</div>'}</div>
         </div>
         <div class="modal-footer">
           <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()">Close</button>
         </div>
       </div>
     `;
+    // Click the backdrop (not the card) to dismiss.
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
     document.body.appendChild(modal);
   } catch (e) {
     console.error('Detail load error:', e);

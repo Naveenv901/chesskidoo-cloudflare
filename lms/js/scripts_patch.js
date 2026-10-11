@@ -125,7 +125,7 @@ if (typeof window.capitalizeFirst !== 'function') {
      };
    }
 
-  /* ── FIX 9: MESSAGE FUNCTIONS EXPOSURE ───────────────────────────────
+/* ── FIX 9: MESSAGE FUNCTIONS EXPOSURE ───────────────────────────────
    * deleteMsg, markMsgRead, replyToMessage, sendMsg, sendFeedback are
    * defined inside scripts.js IIFE but called via inline onclick handlers.
    * Expose them as no-ops if scripts.js hasn't loaded them yet.
@@ -176,4 +176,45 @@ if (typeof window.capitalizeFirst !== 'function') {
    };
 
    console.log('[ChessKidoo Patch v2.1] Applied successfully.');
+
+  /* ── FIX 10: NOTIFICATION POLLING OPTIMIZATION ──────────────────────
+   * The original startNotificationPolling runs on ALL pages every 15s,
+   * causing excessive API calls (/api/messages, /api/students, /api/audit).
+   * This fix:
+   * 1. startNotificationPolling (in scripts.js IIFE) now checks current page before starting
+   * 2. stopNotificationPolling exposed on window to stop when leaving pages
+   * 3. Hooks into setPage to auto-start/stop based on current page
+   */
+  const NOTIFICATION_PAGES = ['msgs', 'dash', 'stud', 'coach-mgmt', 'batches', 'events', 'bills', 'exp', 'insights', 'access', 'ai'];
+
+  function isNotificationPage(page) {
+    return NOTIFICATION_PAGES.includes(page);
+  }
+
+  // Hook into setPage to auto-start/stop polling
+  const _origSetPage = window.setPage;
+  if (typeof _origSetPage === 'function') {
+    window.setPage = function (page) {
+      const wasNotificationPage = isNotificationPage(window.location.hash.slice(1));
+      const willBeNotificationPage = isNotificationPage(page);
+
+      _origSetPage(page);
+
+      // Small delay to let hash update
+      setTimeout(() => {
+        const nowNotificationPage = isNotificationPage(window.location.hash.slice(1));
+        if (nowNotificationPage && !wasNotificationPage) {
+          if (window.startNotificationPolling) window.startNotificationPolling();
+        } else if (!nowNotificationPage && wasNotificationPage) {
+          if (window.stopNotificationPolling) window.stopNotificationPolling();
+        }
+      }, 50);
+    };
+  }
+
+  // Also stop polling on page unload
+  window.addEventListener('beforeunload', () => {
+    if (window.stopNotificationPolling) window.stopNotificationPolling();
+  });
+
 })();
