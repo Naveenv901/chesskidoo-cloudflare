@@ -84,36 +84,36 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ☀️ LIGHT THEME ☀️ */
 body[data-theme="light"] {
-  --obsidian: #fdfbf7;
-  --night: #ffffff;
-  --dusk: #f6f3eb;
-  --surface: #ffffff;
-  --surface2: #f9f7f2;
-  --surface3: #f0ede4;
+  --obsidian: #faf8f3;
+  --night: #f5f2eb;
+  --dusk: #efece4;
+  --surface: #fdfbf6;
+  --surface2: #f6f3eb;
+  --surface3: #eeebe3;
 
-  --gold: #b3851b;
-  --gold2: #d4a017;
-  --gold-glow: rgba(179,133,27,0.15);
-  --gold-mist: rgba(179,133,27,0.06);
-  --gold-semi: rgba(179,133,27,0.14);
+  --gold: #a67c1a;
+  --gold2: #c4961a;
+  --gold-glow: rgba(166,124,26,0.12);
+  --gold-mist: rgba(166,124,26,0.05);
+  --gold-semi: rgba(166,124,26,0.12);
 
-  --amber: #e8a830;
-  --amber-dim: #c49028;
-  --amber-mist: rgba(179,133,27,0.04);
+  --amber: #d4962a;
+  --amber-dim: #b88424;
+  --amber-mist: rgba(166,124,26,0.03);
 
-  --ivory: #0f172a;
-  --ivory2: #334155;
+  --ivory: #1e293b;
+  --ivory2: #475569;
   --ivory3: #64748b;
   --ivory-dim: #94a3b8;
 
-  --glass: rgba(255,255,255,0.9);
-  --border: rgba(15, 23, 42, 0.1);
-  --shadow: 0 8px 30px rgba(0,0,0,0.05);
-  --shadow-deep: 0 15px 45px rgba(0,0,0,0.1);
-  --shadow-amber: 0 0 20px rgba(179,133,27,0.1);
+  --glass: rgba(250,248,243,0.95);
+  --border: rgba(30, 41, 59, 0.12);
+  --shadow: 0 8px 30px rgba(0,0,0,0.04);
+  --shadow-deep: 0 15px 45px rgba(0,0,0,0.08);
+  --shadow-amber: 0 0 20px rgba(166,124,26,0.08);
 
-  --bg3: #ffffff;
-  --gold-light: #d4a017;
+  --bg3: #fdfbf6;
+  --gold-light: #c4961a;
   --slate: #64748b;
 
   background: var(--obsidian) !important;
@@ -5014,3 +5014,139 @@ body.ceo-mode .ceo-only[class*="nav-item"] { display: flex !important; }
 /* ─── Daily Tasks hidden from nav (not needed currently) ─── */
 #nav-coach-productivity,
 #nav-parent-productivity { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Admin → Analyze detail modal (registration queries / complaints / queries)
+   .modal-overlay / .modal / .modal-lg are used only by the analyze detail
+   view; rules are scoped so the legacy .modal overlay (rest of the LMS)
+   is unaffected.
+   ══════════════════════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  background: rgba(4, 4, 10, 0.8);
+  backdrop-filter: blur(4px);
+  overflow-y: auto;
+}
+
+/* the dialog card (scoped: a bare .modal is the legacy LMS overlay) */
+.modal-overlay .modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100dvh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
+  color: var(--ivory);
+  overflow: hidden;
+}
+.modal-overlay .modal-lg { max-width: 720px; }
+
+.modal-overlay .modal-header,
+.modal-overlay .modal-body,
+.modal-overlay .modal-footer { padding: 14px 20px; }
+
+.modal-overlay .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.modal-overlay .modal-header h3 {
+  margin: 0;
+  font-family: var(--font-head);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--gold);
+  letter-spacing: 0.3px;
+}
+
+.modal-overlay .modal-body { flex: 1 1 auto; overflow-y: auto; overscroll-behavior: contain; }
+.modal-overlay .modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  background: var(--surface2);
+  border-top: 1px solid var(--border);
+}
+
+/* readable key/value rows instead of a raw JSON dump */
+.adetail-list { display: grid; gap: 8px; }
+.adetail-row {
+  display: grid;
+  grid-template-columns: minmax(110px, 34%) 1fr;
+  gap: 10px 14px;
+  align-items: start;
+  padding: 10px 12px;
+  background: var(--surface2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-sm);
+}
+.adetail-key {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ivory-dim);
+  padding-top: 2px;
+}
+.adetail-val {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #f4f1e8;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.adetail-empty { color: var(--ivory3); font-style: italic; }
+
+/* button variants used inside this modal have no global LMS styles */
+.modal-overlay .btn { color: var(--ivory); }
+.modal-overlay .btn-icon {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  font-size: 20px;
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: var(--ivory);
+}
+.modal-overlay .btn-icon:hover {
+  background: rgba(255, 77, 79, 0.2);
+  border-color: var(--danger);
+  color: #ffb3b5;
+}
+.modal-overlay .btn-primary {
+  padding: 9px 22px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #161208;
+  border: none;
+}
+.modal-overlay .btn-primary:hover { filter: brightness(1.08); }
+.modal-overlay .btn-primary:focus-visible,
+.modal-overlay .btn-icon:focus-visible { outline: 2px solid var(--gold2); outline-offset: 2px; }
+
+@media (max-width: 640px) {
+  .modal-overlay { padding: 10px; align-items: flex-end; }
+  .modal-overlay .modal { max-width: 100%; max-height: calc(100dvh - 20px); }
+  .modal-overlay .modal-header,
+  .modal-overlay .modal-body,
+  .modal-overlay .modal-footer { padding: 12px 14px; }
+  .modal-overlay .modal-header h3 { font-size: 16px; }
+  .adetail-row { grid-template-columns: 1fr; gap: 3px; }
+  .adetail-val { font-size: 13.5px; }
+}
