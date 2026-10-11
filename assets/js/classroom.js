@@ -623,6 +623,24 @@ CK.classroom = (() => {
      STUDENT — HOMEWORK LIST
   ═══════════════════════════════════════════════════════════════════ */
 
+  /* ─── Homework targets ───
+     D1 stores `assignedTo` as a JSON string (e.g. '["all"]'); Supabase stored a
+     real array. Normalise to an array before matching. */
+  const assignedList = (a) => {
+    const raw = a && (a.assignedTo || a.assigned_to);
+    if (raw === undefined || raw === null || raw === '') return null;
+    if (Array.isArray(raw)) return raw.map(String);
+    if (typeof raw === 'string') {
+      const t = raw.trim();
+      if (t.startsWith('[')) {
+        try { const parsed = JSON.parse(t); return (Array.isArray(parsed) ? parsed : [parsed]).map(String); }
+        catch { return [t]; }
+      }
+      return [t];
+    }
+    return [String(raw)];
+  };
+
   async function renderStudentHomework() {
     const list = document.getElementById('scHomeworkList');
     if (!list) return;
@@ -634,13 +652,12 @@ CK.classroom = (() => {
 
     // Only show homework actually addressed to this student (or to everyone).
     const assignments = allAssignments.filter(a => {
-      const to = a.assignedTo || a.assigned_to;
-      if (!to || (Array.isArray(to) && to.length === 0)) return true; // legacy → visible to all
-      const arr = Array.isArray(to) ? to : [to];
+      const arr = assignedList(a);
+      if (!arr || arr.length === 0) return true; // legacy → visible to all
       return arr.includes('all')
-          || arr.includes(userId)
-          || arr.includes(prof.id) || arr.includes(prof.email)
-          || (myBatch && arr.includes(myBatch));
+          || arr.includes(String(userId))
+          || arr.includes(String(prof.id)) || arr.includes(String(prof.email))
+          || (myBatch && arr.includes(String(myBatch)));
     });
 
     if (!assignments.length) {
@@ -687,9 +704,8 @@ CK.classroom = (() => {
     const prof = (window.CK && CK.currentUser) ? CK.currentUser : {};
     const myBatch = prof.batch || prof.session || prof.batch_id || null;
     return (allAssignments || []).filter(a => {
-      const to = a.assignedTo || a.assigned_to;
-      if (!to || (Array.isArray(to) && to.length === 0)) return true;
-      const arr = (Array.isArray(to) ? to : [to]).map(String);
+      const arr = assignedList(a);
+      if (!arr || arr.length === 0) return true;
       const matchesStudent = arr.includes('all') || arr.includes(String(userId)) || (prof.id && arr.includes(String(prof.id))) || (prof.email && arr.includes(String(prof.email)));
       const matchesBatch = myBatch && (arr.includes(String(myBatch)) || arr.includes('batch:' + String(myBatch)) || (prof.batch_id && (arr.includes(String(prof.batch_id)) || arr.includes('batch:' + String(prof.batch_id)))));
       return matchesStudent || matchesBatch;
@@ -1269,9 +1285,8 @@ CK.classroom = (() => {
       return u ? (u.full_name || u.name || id) : id;
     };
     const recipients = (a) => {
-      const to = a.assignedTo || a.assigned_to;
-      if (!to || (Array.isArray(to) && (to.length === 0 || to.includes('all')))) return 'All students';
-      const arr = Array.isArray(to) ? to : [to];
+      const arr = assignedList(a);
+      if (!arr || arr.length === 0 || arr.includes('all')) return 'All students';
       const names = arr.map(nameOf);
       return names.length <= 2 ? names.join(', ') : `${names.slice(0, 2).join(', ')} +${names.length - 2} more`;
     };
@@ -1337,7 +1352,7 @@ CK.classroom = (() => {
     const fInput = document.getElementById('ccHwFiles'); if (fInput) fInput.value = '';
     await populateAssignTo();
     const sel = document.getElementById('ccHwAssignTo');
-    if (sel) { const to = a.assignedTo || a.assigned_to; sel.value = (!to || (Array.isArray(to) && to.includes('all'))) ? 'all' : (Array.isArray(to) ? to[0] : to); }
+    if (sel) { const arr = assignedList(a); sel.value = (!arr || arr.length === 0 || arr.includes('all')) ? 'all' : arr[0]; }
     const btn = document.getElementById('ccHwAssignBtn');
     if (btn) btn.textContent = '💾 Update Homework';
     CK.showToast('Editing homework — change details and click Update.', 'info');

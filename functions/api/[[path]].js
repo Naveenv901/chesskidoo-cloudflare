@@ -494,7 +494,10 @@ async function handleHomework(request, env) {
       const { count } = await env.DB.prepare('SELECT COUNT(*) as c FROM hw_submissions').bind().first();
       return json(200, { data: results, total: count?.c || 0, page, limit });
     }
-    const { results } = await env.DB.prepare('SELECT * FROM hw_submissions ORDER BY submittedAt DESC').all();
+    // Homework list = the assignments themselves (Supabase `homework_assignments`,
+    // aliased to the D1 `assignments` table). This used to return hw_submissions,
+    // which made every homework list render empty.
+    const { results } = await env.DB.prepare('SELECT * FROM assignments ORDER BY created DESC').all();
     return json(200, { data: results });
   }
 
@@ -508,7 +511,7 @@ async function handleHomework(request, env) {
       const existing = await env.DB.prepare('SELECT * FROM hw_submissions WHERE assignment_id = ? AND student_id = ?').bind(assignmentId, studentId).first();
       const id = existing?.id || `sub-${Date.now()}`;
       const now = new Date().toISOString();
-      await env.DB.prepare(`INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, assignmentId, studentId, body.submission_text || '', body.submission_url || '', JSON.stringify(body.file_urls || []), 'submitted', now, now).run();
+      await env.DB.prepare(`INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at, submittedAt, completed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`).bind(id, assignmentId, studentId, body.submission_text || '', body.submission_url || '', JSON.stringify(body.file_urls || []), 'submitted', now, now, now, now).run();
       const row = await env.DB.prepare('SELECT * FROM hw_submissions WHERE id = ?').bind(id).first();
       return json(201, { data: row, success: true });
     }

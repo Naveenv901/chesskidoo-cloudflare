@@ -56,7 +56,7 @@
         window.apiCall('/api/attendance', { silent: true }),
         window.apiCall('/api/events', { silent: true }),
         window.apiCall('/api/batches', { silent: true }),
-        window.apiCall('/api/homework', { silent: true }),
+        window.apiCall('/api/homework?view=submissions', { silent: true }),
       ]);
       const s1 = r1.ok ? await r1.json().catch(() => ({})) : {};
       const s2 = r2.ok ? await r2.json().catch(() => ({})) : {};
