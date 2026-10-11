@@ -1790,8 +1790,7 @@
 
           const p = window.parseAttendanceNotes ? window.parseAttendanceNotes(a.notes || "") : { cw: "", hw: "", general: "" };
 
-          const notes = [p.cw && `Classwork: ${p.cw}`, p.hw && `Homework: ${p.hw}`, p.general && 
-otes: ${p.general}`]
+const notes = [p.cw && `Classwork: ${p.cw}`, p.hw && `Homework: ${p.hw}`, p.general && `Notes: ${p.general}`]
 
             .filter(Boolean).join(" · ");
 
