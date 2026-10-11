@@ -5544,6 +5544,11 @@
 
   window.openQuickClassSessionModal = function () {
 
+    // Ensure batch data is loaded for coach batch filtering
+    if ((!window.allBatches || window.allBatches.length === 0) && typeof loadAllData === 'function') {
+      await loadAllData(false);
+    }
+
     const coachSel = $("qcs-coach");
 
     const batchSel = $("qcs-batch");
@@ -5764,7 +5769,7 @@
 
     }
 
-    if (isCoach && (!batch || !(window.ckSameCoach || ((a, b) => String(a).trim().toLowerCase().replace(/-/g, "") === String(b).trim().toLowerCase().replace(/-/g, "")))(batch.coach_id, currentCoachId))) {
+    if (isCoach && (!batch || !(window.ckSameCoach || ((a, b) => String(a).trim().toLowerCase().replace(/-/g, "") === String(b).trim().toLowerCase().replace(/-/g, "")))(batch.coach_id, currentCoachId)) {
 
       sl.innerHTML = '<div class="empty-state" style="padding:14px">You can only select one of your assigned batches</div>';
 
@@ -35848,6 +35853,10 @@ window.viewAnalyzeDetail = async function(id, type) {
     alert('Failed to load detail');
   }
 };
+
+
+
+
 
 
 
