@@ -6974,7 +6974,7 @@
 
 
 
-    const isLight = document.body && document.body.getAttribute('data-theme') === 'light';
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
 
 
 
@@ -62622,7 +62622,7 @@
 
 
 
-      const isLight = document.body.dataset.theme === "light";
+      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
 
 
 
@@ -266123,7 +266123,7 @@ setTimeout(function () {
 
 
 
-    const isLight = document.body.dataset.theme === "light";
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
 
 
 
