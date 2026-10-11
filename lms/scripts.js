@@ -8657,8 +8657,7 @@ if ((!window.allBatches || window.allBatches.length === 0) && typeof loadAllData
 
     //
 
-    // targetMonthEnd is built with Date.UTC, and 
-ow` is local — comparing the
+    // targetMonthEnd is built with Date.UTC, and `now` is local — comparing the
 
     // two would hold the flip back to 05:30 on the 1st in IST. Rebuild the
 
@@ -17917,7 +17916,7 @@ setTimeout(function () {
 
                     </div>
 
-                  `;
+};
 
               moreActions = `
 
@@ -35890,6 +35889,16 @@ window.viewAnalyzeDetail = async function(id, type) {
     alert('Failed to load detail');
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 
 
