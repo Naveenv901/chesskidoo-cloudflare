@@ -1790,7 +1790,8 @@
 
           const p = window.parseAttendanceNotes ? window.parseAttendanceNotes(a.notes || "") : { cw: "", hw: "", general: "" };
 
-          const notes = [p.cw && `Classwork: ${p.cw}`, p.hw && `Homework: ${p.hw}`, p.general && `Notes: ${p.general}`]
+          const notes = [p.cw && `Classwork: ${p.cw}`, p.hw && `Homework: ${p.hw}`, p.general && 
+otes: ${p.general}`]
 
             .filter(Boolean).join(" · ");
 
@@ -5546,7 +5547,9 @@ window.openQuickClassSessionModal = async function () {
 
     // Ensure batch data is loaded for coach batch filtering
     if ((!window.allBatches || window.allBatches.length === 0) && typeof loadAllData === "function") {
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
     }
 
     const coachSel = $("qcs-coach");
@@ -6799,7 +6802,8 @@ window.openQuickClassSessionModal = async function () {
 
         toast(
 
-          `No pending/due fees (or within 4-day deadline) for students under ${getCoachName(c)}`,
+          
+o pending/due fees (or within 4-day deadline) for students under ${getCoachName(c)}`,
 
           "info",
 
@@ -7105,7 +7109,8 @@ window.openQuickClassSessionModal = async function () {
 
       !confirm(
 
-        `Notify parents of ${dueStudents.length} students with pending/due payments? This will open multiple WhatsApp tabs.`,
+        
+otify parents of ${dueStudents.length} students with pending/due payments? This will open multiple WhatsApp tabs.`,
 
       )
 
@@ -8659,7 +8664,8 @@ window.openQuickClassSessionModal = async function () {
 
     //
 
-    // targetMonthEnd is built with Date.UTC, and `now` is local — comparing the
+    // targetMonthEnd is built with Date.UTC, and 
+ow` is local — comparing the
 
     // two would hold the flip back to 05:30 on the 1st in IST. Rebuild the
 
@@ -10451,7 +10457,9 @@ window.openQuickClassSessionModal = async function () {
 
       closeModal("event-expenditure-modal");
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       window.openEventManagement(eventId);
 
@@ -10509,7 +10517,9 @@ window.openQuickClassSessionModal = async function () {
 
       toast(data.message || `Removed ${studentName}`, "success");
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       window.openEventManagement(eventId);
 
@@ -10593,7 +10603,9 @@ window.openQuickClassSessionModal = async function () {
 
       toast("Payment recorded successfully!", "success");
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       // Refresh modal
 
@@ -10661,7 +10673,9 @@ window.openQuickClassSessionModal = async function () {
 
       toast(data.message || "Student registered successfully!", "success");
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       window.openEventManagement(eventId);
 
@@ -10755,7 +10769,9 @@ window.openQuickClassSessionModal = async function () {
 
       toast("Updated successfully!", "success");
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       window.openEventManagement(eventId);
 
@@ -10863,7 +10879,9 @@ window.openQuickClassSessionModal = async function () {
 
       toast("Bulk update complete!", "success");
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       window.openEventManagement(eventId);
 
@@ -11003,7 +11021,9 @@ window.openQuickClassSessionModal = async function () {
 
       closeModal("external-student-modal");
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       window.openEventManagement(eventId);
 
@@ -18534,7 +18554,8 @@ setTimeout(function () {
 
               const nv = typeof log.new_value === "string" ? JSON.parse(log.new_value) : log.new_value;
 
-              if (nv.name) details = `Name: ${nv.name}`;
+              if (nv.name) details = 
+ame: ${nv.name}`;
 
               else if (nv.status) details = `Status: ${nv.status}`;
 
@@ -19512,7 +19533,9 @@ setTimeout(function () {
 
         // Full sync with database - loadAllData will re-render all pages automatically
 
-        await loadAllData(false);
+        console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
+      await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
         // Reset editing flag after a short delay
 
@@ -19614,7 +19637,8 @@ setTimeout(function () {
 
       } else {
 
-        toast(`No payment history record found for ${targetKey}`, "warning");
+        toast(
+o payment history record found for ${targetKey}`, "warning");
 
       }
 
@@ -19754,7 +19778,9 @@ setTimeout(function () {
 
     }
 
-    if (typeof loadAllData === "function") await loadAllData(false);
+    if (typeof loadAllData === "function") console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
+      await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
   };
 
@@ -23506,7 +23532,9 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
         toast("Student added to batch", "success");
 
-        await loadAllData(false);
+        console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
+      await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
         window.openViewBatchModal(batchId);
 
@@ -23564,7 +23592,9 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
         toast("Student removed from batch", "success");
 
-        await loadAllData(false);
+        console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
+      await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
         window.openViewBatchModal(batchId);
 
@@ -24056,7 +24086,9 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
         closeModal("edit-batch-modal");
 
-        await loadAllData(false);
+        console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
+      await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
         if (window.renderBatchesGrid) window.renderBatchesGrid();
 
@@ -24118,7 +24150,9 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
             closeModal("edit-batch-modal");
 
-            await loadAllData(false);
+            console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
+      await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
             if (window.renderBatchesGrid) window.renderBatchesGrid();
 
@@ -24944,7 +24978,9 @@ Best regards,
 
       // SYNC: Force fresh data fetch and re-render dashboard
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       renderDash();
 
@@ -24994,7 +25030,9 @@ Best regards,
 
       toast("Status reverted to Due", "info");
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       renderDash();
 
@@ -25320,7 +25358,8 @@ Best regards,
 
       if (sent) {
 
-        toast(`Notification sent via ${channel}`, "success");
+        toast(
+otification sent via ${channel}`, "success");
 
         closeModals();
 
@@ -25486,7 +25525,9 @@ Best regards,
 
         toast("Record deleted", "success");
 
-        await loadAllData(false);
+        console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
+      await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
         renderDash();
 
@@ -30428,7 +30469,8 @@ loadAllData(true);
 
       return this.fetchWithCache(
 
-        `news-${category}`,
+        
+ews-${category}`,
 
         async () => {
 
@@ -35190,7 +35232,9 @@ window.deleteStudent = deleteStudent;
 
       closeModal("qr-poster-modal");
 
+      console.log("[QuickClassSession] Loading all data, batches:", window.allBatches?.length);
       await loadAllData(false);
+      console.log("[QuickClassSession] After load, batches:", window.allBatches?.length);
 
       window.openEventManagement(eventId);
 
@@ -35853,6 +35897,8 @@ window.viewAnalyzeDetail = async function(id, type) {
     alert('Failed to load detail');
   }
 };
+
+
 
 
 
