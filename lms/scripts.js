@@ -235307,69 +235307,11 @@ try {
 
 
         (allBatches || [])
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          .slice()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+          .filter((b) => {
+            // Filter batches by coach when user is a coach
+            const coachId = window.currentCoachId || window.userId;
+            return !coachId || !window.ckSameCoach || window.ckSameCoach(b.coach, coachId);
+          })
           .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
 
 
