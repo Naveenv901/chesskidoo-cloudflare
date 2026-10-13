@@ -35878,7 +35878,7 @@ window.viewAnalyzeDetail = async function(id, type) {
           <button class="btn btn-primary" onclick="this.closest('.modal-overlay').remove()">Close</button>
         </div>
       </div>
-    `};
+    `
     // Click the backdrop (not the card) to dismiss.
     modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
     document.body.appendChild(modal);
@@ -35888,28 +35888,4 @@ window.viewAnalyzeDetail = async function(id, type) {
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+})();
