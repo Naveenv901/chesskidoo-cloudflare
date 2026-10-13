@@ -311,7 +311,7 @@
     const coachFilter = getCoachFilterPredicate();
     const myStudents = coachFilter ? (window.allStudents || []).filter(s => coachFilter(s)) : null;
     const coachStudentIds = myStudents ? new Set(myStudents.map(s => String(s.id))) : null;
-    const coachId = window.role === 'coach' ? (window.currentCoachId || window.userId) : null;
+    const coachId = String(window.role).toLowerCase() === 'coach' ? (window.currentCoachId || window.userId) : null;
     const coachBatchIds = coachId ? new Set((window.allBatches || []).filter(b => window.ckSameCoach ? window.ckSameCoach(b.coach_id, coachId) : String(b.coach_id) === String(coachId)).map(b => String(b.id))) : null;
 
     return sortHomework((window.allHomework || []).filter((assignment) => {
@@ -419,7 +419,7 @@ let homeworkSubmissionCache = [];
 
   function getCoachFilterPredicate() {
     const role = window.role || (window.currentUser && window.currentUser.role);
-    const isCoach = role === 'coach';
+    const isCoach = String(role).toLowerCase() === 'coach';
     if (!isCoach) return null;
 
     const currentCoachId = window.currentCoachId || window.userId || (window.currentUser && window.currentUser.id);
@@ -1026,13 +1026,13 @@ let homeworkSubmissionCache = [];
 
   function canEditOrDeleteHomework() {
     const role = (window.role || window.userRole || 'student').toLowerCase();
-    return role === 'admin' || role === 'master' || role === 'coach' || typeof isAdminUser === 'function' && isAdminUser();
+    return role === 'admin' || role === 'master' || String(role).toLowerCase() === 'coach' || typeof isAdminUser === 'function' && isAdminUser();
   }
 
   async function deleteHomeworkAssignment(id) {
     if (!canEditOrDeleteHomework()) return window.toast ? window.toast('Only coaches and administrators can delete homework.', 'error') : null;
     const role = (window.role || window.userRole || 'student').toLowerCase();
-    if (role === 'coach') {
+    if (String(role).toLowerCase() === 'coach') {
       const hw = (window.allHomework || []).find(h => String(h.id) === String(id));
       const cId = window.currentCoachId || window.userId;
       if (hw && cId && window.ckSameCoach) {
@@ -1109,7 +1109,7 @@ let homeworkSubmissionCache = [];
 
     // Check if coach is the owner of the homework
     const role = (window.role || window.userRole || 'student').toLowerCase();
-    if (role === 'coach') {
+    if (String(role).toLowerCase() === 'coach') {
       const cId = window.currentCoachId || window.userId;
       if (hw && cId && window.ckSameCoach) {
         const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, cId)).map(b => String(b.id));

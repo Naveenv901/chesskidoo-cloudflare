@@ -254578,6 +254578,11 @@ setTimeout(function () {
 
 
     window.role = userRole; // keep window in sync for modules (access.js, etc.) on both fresh login & session restore
+    
+    // Set currentCoachId for coaches
+    if (userRole === "coach" && data.user) {
+      window.currentCoachId = data.user.coach_id || data.user.id;
+    }
 
 
 
@@ -402353,7 +402358,7 @@ due_date: (function () {
 
 
 
-    const isCoach = role === "coach" && currentCoachId;
+    const isCoach = String(role).toLowerCase() === "coach" && currentCoachId;
 
 
 
@@ -409537,7 +409542,7 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
 
 
-    const isCoach = role === "coach" && currentCoachId;
+    const isCoach = String(role).toLowerCase() === "coach" && currentCoachId;
 
 
 
