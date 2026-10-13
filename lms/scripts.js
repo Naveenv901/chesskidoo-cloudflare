@@ -17941,7 +17941,7 @@ setTimeout(function () {
 
                     </div>
 
-\`;
+`;
 
               moreActions = `
 
@@ -18091,6 +18091,7 @@ setTimeout(function () {
 
               : `<span class="badge badge-success" style="font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600;">Group</span>`;
 
+          try {
             return `<tr>
 
               <td>${checkboxHtml}</td>
@@ -18137,7 +18138,7 @@ setTimeout(function () {
 
             </tr>`;
 
-          :`, rowErr, s);
+          } catch (rowErr) {
 
             return `<tr><td colspan="13" style="color:var(--danger)">Error rendering student ${s.name || i}</td></tr>`;
 
@@ -18586,7 +18587,7 @@ setTimeout(function () {
               const nv = typeof log.new_value === "string" ? JSON.parse(log.new_value) : log.new_value;
 
               if (nv.name) details = 
-ame: ${nv.name}`;
+details = `Name: ${nv.name}`;
 
               else if (nv.status) details = `Status: ${nv.status}`;
 
@@ -18688,7 +18689,7 @@ ame: ${nv.name}`;
 
           } catch (rowErr) {
 
-            console.error(`[UI] Error rendering coach student row ${i}:`, rowErr, s);
+            console.error(`[UI] Error rendering coach student row ${i}`);
 
             return `<tr><td colspan="3" style="color:var(--danger)">Error rendering student</td></tr>`;
 
@@ -19668,8 +19669,7 @@ ame: ${nv.name}`;
 
       } else {
 
-        toast(
-o payment history record found for ${targetKey}`, "warning");
+        toast(`No payment history record found for ${targetKey}`, "warning");
 
       }
 
@@ -25389,8 +25389,7 @@ Best regards,
 
       if (sent) {
 
-        toast(
-otification sent via ${channel}`, "success");
+        toast(`Notification sent via ${channel}`, "success");
 
         closeModals();
 
@@ -35515,9 +35514,7 @@ window.deleteStudent = deleteStudent;
 
       "Portal v5.8 (Clean Messages & Excel)";
 
-    })();
-
-// ---- Homework Manager Tabs ----
+    // ---- Homework Manager Tabs ----
 
 function switchHomeworkTab(tabId) {
 
