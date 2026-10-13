@@ -254579,9 +254579,12 @@ setTimeout(function () {
 
     window.role = userRole; // keep window in sync for modules (access.js, etc.) on both fresh login & session restore
     
-    // Set currentCoachId for coaches
-    if (userRole === "coach" && data.user) {
-      window.currentCoachId = data.user.coach_id || data.user.id;
+    // Set currentCoachId for coaches (guard: data may be undefined or data.user may be a display-name string)
+    if (String(userRole).toLowerCase() === "coach") {
+      const coachIdFromData = (data && typeof data.user === "object" && data.user)
+        ? (data.user.coach_id || data.user.id || data.userid || data.coach_id)
+        : null;
+      if (coachIdFromData) window.currentCoachId = coachIdFromData;
     }
 
 
@@ -618394,60 +618397,3 @@ window.viewAnalyzeDetail = async function(id, type) {
     alert('Failed to load detail');
   }
 };
-
-
-
-// Login function - handles login form submission
-window.doLogin = async function() {
-  const userInput = document.getElementById("li-user");
-  const passInput = document.getElementById("li-pass");
-  
-  if (!userInput || !passInput) {
-    console.error("Login form elements not found");
-    return;
-  }
-  
-  const username = userInput.value.trim();
-  const password = passInput.value;
-  
-  if (!username || !password) {
-    window.toast("Please enter both username/email and password", "error");
-    return;
-  }
-  
-  const submitBtn = document.getElementById("login-submit-btn");
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Signing in...";
-  }
-  
-  try {
-    const res = await fetch(window.API_BASE + "/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
-    });
-    
-    const data = await res.json();
-    
-    if (!res.ok) {
-      throw new Error(data.error || "Login failed");
-    }
-    
-    // Success - call finishLogin with user data
-    if (data.user) {
-      window.finishLogin(data.user.name || data.user.username, data.user.role, data.user.student_id, data);
-    } else {
-      throw new Error("Invalid response from server");
-    }
-  } catch (err) {
-    console.error("Login error:", err);
-    window.toast(err.message || "Login failed. Please try again.", "error");
-  } finally {
-    if (submitBtn) {
-      submitBtn.disabled = false;
-      submitBtn.textContent = "Sign In";
-    }
-  }
-};
-
