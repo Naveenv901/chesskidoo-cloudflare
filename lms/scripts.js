@@ -254513,7 +254513,7 @@ setTimeout(function () {
 
 
 
-  function finishLogin(displayName, userRole, studentId) {
+  function finishLogin(displayName, userRole, studentId, data) {
 
 
 
@@ -618436,7 +618436,7 @@ window.doLogin = async function() {
     
     // Success - call finishLogin with user data
     if (data.user) {
-      window.finishLogin(data.user.name || data.user.username, data.user.role, data.user.student_id);
+      window.finishLogin(data.user.name || data.user.username, data.user.role, data.user.student_id, data);
     } else {
       throw new Error("Invalid response from server");
     }
