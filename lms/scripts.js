@@ -27901,7 +27901,9 @@ loadAllData(true);
 
                 detail: `${p.description || "Monthly Tuition payment processed"} (Amount: ₹${p.amount})`,
 
-              };
+};
+
+})();
 
               window.gatewaySecurityLogs.unshift(log);
 
