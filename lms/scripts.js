@@ -17914,7 +17914,7 @@ setTimeout(function () {
 
                     </div>
 
-};
+\`;
 
               moreActions = `
 
