@@ -82991,39 +82991,8 @@
 
 
 
-          if ($("att-coach-filter") && batch.coach_id) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            $("att-coach-filter").value = batch.coach_id;
+          if ($("att-coach-filter") && (batch.coach || batch.coach_id)) {
+              $("att-coach-filter").value = batch.coach || batch.coach_id;
 
 
 
@@ -99476,7 +99445,7 @@
 
 
 
-    if (isCoach && (!batch || !(window.ckSameCoach || (((a, b) => String(a).trim().toLowerCase().replace(/-/g, "") === String(b).trim().toLowerCase().replace(/-/g, "")))(batch.coach_id, currentCoachId)))) {
+    if (isCoach && (!batch || !window.batchMatchesCoachId(batch, currentCoachId))) {
 
 
 
@@ -101172,7 +101141,7 @@
 
 
 
-      if (!selectedBatch || !window.ckSameCoach?.(selectedBatch.coach_id, currentCoachId)) {
+      if (!selectedBatch || !window.batchMatchesCoachId(selectedBatch, currentCoachId)) {
 
 
 
@@ -130164,7 +130133,7 @@
 
 
 
-        if (!batch || String(batch.coach_id) !== String(currentCoachId)) {
+        if (!batch || !window.batchMatchesCoachId(batch, currentCoachId)) {
 
 
 
