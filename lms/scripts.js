@@ -106805,7 +106805,8 @@
 
 
 
-      return toast(`Homework could not be saved for ${failedCount} student(s). Attendance was not submitted.`, "error");
+      const hwErr = (homeworkResults.find((r) => !r || r.success !== true) || {}).error;
+      return toast(`Homework could not be saved for ${failedCount} student(s). Attendance was not submitted.${hwErr ? " Reason: " + hwErr : ""}`, "error");
 
 
 

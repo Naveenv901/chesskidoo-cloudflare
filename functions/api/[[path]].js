@@ -515,9 +515,65 @@ async function handleHomework(request, env) {
       const row = await env.DB.prepare('SELECT * FROM hw_submissions WHERE id = ?').bind(id).first();
       return json(201, { data: row, success: true });
     }
-    return json(400, { error: 'Unsupported action' });
-  }
 
+    // ── Create a homework ASSIGNMENT ────────────────────────────────────────
+    // The LMS homework UI was built for the Supabase `homework_assignments`
+    // table, so it POSTs snake_case fields. D1 stores these in `assignments`,
+    // which only has a subset of those columns. Build the INSERT from the
+    // columns that actually exist (introspected via PRAGMA) so this keeps
+    // working regardless of which migrations have been applied.
+    const now = new Date().toISOString();
+    const hwId = body.id || `asn-${Date.now()}`;
+    const targetType = body.target_type || body.targetType || 'student';
+
+    const fileList = Array.isArray(body.attachment_urls) ? body.attachment_urls
+      : Array.isArray(body.questions_files) ? body.questions_files
+      : [];
+
+    const wanted = {
+      id: hwId,
+      title: body.title || '',
+      pgn: body.pgn || null,
+      type: body.type || 'homework',
+      // Legacy/camelCase columns kept in sync for older readers
+      assignedTo: targetType === 'student' ? (body.student_id || null)
+        : targetType === 'batch' ? (body.batch_id || null) : 'all',
+      dueDate: body.due_date || body.dueDate || null,
+      due_date: body.due_date || body.dueDate || null,
+      description: body.description || '',
+      coach: body.coach || null,
+      moves: Array.isArray(body.moves) ? JSON.stringify(body.moves) : (body.moves || null),
+      max_marks: body.max_marks || null,
+      status: body.status || 'active',
+      created: Date.now(),
+      created_at: now,
+      created_by: body.coach_id || body.created_by || body.coachId || null,
+      updated_at: now,
+      // LMS/Supabase-compatible columns
+      target_type: targetType,
+      student_id: targetType === 'student' ? (body.student_id || null) : null,
+      batch_id: targetType === 'batch' ? (body.batch_id || null) : null,
+      coach_id: body.coach_id || body.created_by || body.coachId || null,
+      questions_files: JSON.stringify(fileList),
+      attachment_urls: JSON.stringify(fileList),
+      present_student_ids: Array.isArray(body.present_student_ids)
+        ? JSON.stringify(body.present_student_ids)
+        : (body.present_student_ids || null)
+    };
+
+    // Only keep keys that exist on the `assignments` table
+    const cols = await env.DB.prepare('PRAGMA table_info(assignments)').all();
+    const existing = new Set((cols.results || []).map(c => c.name));
+    const keys = Object.keys(wanted).filter(kk => existing.has(kk));
+    if (keys.length === 0) return json(500, { error: 'assignments table has no compatible columns' });
+
+    const values = keys.map(kk => wanted[kk]);
+    const placeholders = keys.map(() => '?').join(', ');
+    await env.DB.prepare(`INSERT OR REPLACE INTO assignments (${keys.join(', ')}) VALUES (${placeholders})`).bind(...values).run();
+
+    const row = await env.DB.prepare('SELECT * FROM assignments WHERE id = ?').bind(hwId).first();
+    return json(201, { data: row, success: true });
+  }
   return methodNotAllowed();
 }
 
