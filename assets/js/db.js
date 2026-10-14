@@ -1561,14 +1561,11 @@
   ───────────────────────────────────────────────────────── */
   CK.accessManager = {
     _getAdminAuth() {
-      if (!window.APP_CONFIG?.SUPABASE_URL || !window.APP_CONFIG?.SUPABASE_ANON_KEY) return null;
-      if (!this._tempClient && window.supabase) {
-        // Create a temporary, non-persisting client so creating users doesn't log the admin out!
-        this._tempClient = window.supabase.createClient(
-          window.APP_CONFIG.SUPABASE_URL, 
-          window.APP_CONFIG.SUPABASE_ANON_KEY, 
-          { auth: { persistSession: false, autoRefreshToken: false } }
-        );
+      // Cloudflare-native: auth is handled by our own API (/api/auth/*) through the
+      // Supabase-compatible client. There is no separate SDK client to create and
+      // no session to disturb.
+      if (window.supabaseClient && window.supabaseClient.auth) {
+        return window.supabaseClient.auth;
       }
       return this._tempClient ? this._tempClient.auth : null;
     },

@@ -18,13 +18,17 @@ function notFound(pathname, method) {
 }
 
 const ALLOWED_TABLES = [
-  'users', 'expenses', 'document', 'attendance', 'ratings', 'tourRatings',
+  'users', 'expenses', 'document', 'documents', 'attendance', 'ratings', 'tourRatings',
   'resources', 'meetings', 'leads', 'coach_notes', 'credentials', 'batch_links',
   'classes', 'monthly_reports', 'puzzle_scores', 'coach_attendance',
   'assignments', 'hw_submissions', 'feedback', 'broadcasts', 'sessions',
   'students', 'payments', 'coaches', 'batches', 'messages', 'achievements',
   'events', 'audit_log', 'rating_history', 'homework_assignments', 'homework_submissions',
-  'complaint_feedback', 'registration_queries'
+  'complaint_feedback', 'registration_queries', 'homework', 'elibrary', 'elibrary_progress',
+  'productivity_tasks', 'productivity_notes', 'puzzle_assignments', 'opening_mastery',
+  'scheduled_meetings', 'student_games', 'multiplayer_games', 'tournaments',
+  'tournament_interests', 'vault_recordings', 'video_progress', 'live_class_chats',
+  'timetable_matrix', 'coach_payments', 'reviews', 'document_links'
 ];
 
 async function handleLogin(request, env) {
@@ -175,64 +179,115 @@ async function handleMe(request, env) {
   return json(200, { user });
 }
 
+async function filterOpToSQL(op) {
+  switch (op) {
+    case 'eq': return '=';
+    case 'neq': return '!=';
+    case 'gt': return '>';
+    case 'gte': return '>=';
+    case 'lt': return '<';
+    case 'lte': return '<=';
+    case 'like': return 'LIKE';
+    case 'ilike': return 'LIKE';
+    case 'is': return 'IS';
+    default: return '=';
+  }
+}
+
+// Only allow simple, safe SQL identifiers so client-supplied column names can
+// never inject SQL.
+function safeIdent(name) {
+  if (typeof name !== 'string') return null;
+  const trimmed = name.trim();
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(trimmed)) return null;
+  return trimmed;
+}
+
+// Cache of real column names per table so INSERT/UPDATE only reference columns
+// that actually exist (avoids "no such column" when a migration is missing).
+const _columnCache = new Map();
+async function tableColumns(env, table) {
+  if (_columnCache.has(table)) return _columnCache.get(table);
+  let set = null;
+  try {
+    const info = await env.DB.prepare(`PRAGMA table_info(${table})`).all();
+    if (info && info.results) set = new Set(info.results.map(r => r.name));
+  } catch (_) {}
+  if (!set) set = new Set(['id']);
+  _columnCache.set(table, set);
+  return set;
+}
+
+function resolveTable(table) {
+  const TABLE_ALIASES = {
+    'homework_submissions': 'hw_submissions',
+    'homework_assignments': 'assignments',
+    'students': 'users',
+    'coaches': 'users'
+  };
+  return TABLE_ALIASES[table] || table;
+}
+
 async function handleQuery(request, env) {
   const url = new URL(request.url);
   const table = url.searchParams.get('table');
   const op = url.searchParams.get('op') || 'select';
   const cols = url.searchParams.get('cols') || '*';
 
-  const TABLE_ALIASES = {
-    'homework_submissions': 'hw_submissions',
-    'students': 'users',
-    'coaches': 'users',
-    'homework_assignments': 'assignments'
-  };
-  const actualTable = TABLE_ALIASES[table] || table;
-
-  const COLUMN_ALIASES = {
-    'homework_submissions': { submitted_at: 'created_at' }
-  };
-  const columnAliases = COLUMN_ALIASES[table] || {};
-
   if (!table || !ALLOWED_TABLES.includes(table)) {
     return json(400, { error: 'Invalid table' });
   }
-
-  function normalizeColumn(col) {
-    return columnAliases[col] || col;
-  }
+  const actualTable = resolveTable(table);
 
   try {
     if (op === 'select') {
-      let query = `SELECT ${cols} FROM ${actualTable} WHERE 1=1`;
+      let colList = cols;
+      if (cols !== '*') {
+        const realCols = await tableColumns(env, actualTable);
+        const wanted = cols.split(',').map(c => c.trim()).filter(Boolean);
+        const safe = wanted.filter(c => realCols.has(c));
+        colList = safe.length ? safe.join(', ') : '*';
+      }
+      let query = `SELECT ${colList} FROM ${actualTable} WHERE 1=1`;
       const params = [];
 
       for (const [key, value] of url.searchParams) {
-        if (key.startsWith('filter_')) {
-          const parts = key.split('_');
-          const filterOp = parts[1];
-          const field = normalizeColumn(parts.slice(2).join('_'));
-          query += ` AND ${field} ${filterOpToSQL(filterOp)} ?`;
+        if (!key.startsWith('filter_')) continue;
+        const rest = key.slice('filter_'.length);
+        const us = rest.indexOf('_');
+        if (us <= 0) continue;
+        const filterOp = rest.slice(0, us);
+        const field = safeIdent(rest.slice(us + 1));
+        if (!field) continue;
+        const sqlOp = filterOpToSQL(filterOp);
+        if (!sqlOp) continue;
+        if (filterOp === 'in') {
+          const list = String(value).split(',').map(v => v.trim()).filter(Boolean);
+          if (!list.length) continue;
+          query += ` AND ${field} IN (${list.map(() => '?').join(', ')})`;
+          params.push(...list);
+        } else if (filterOp === 'is') {
+          query += ` AND ${field} IS ?`;
+          params.push((value === 'null' || value === '') ? null : value);
+        } else {
+          query += ` AND ${field} ${sqlOp} ?`;
           params.push(value);
         }
       }
 
-      const sortField = url.searchParams.get('sort');
-      const sortOrder = url.searchParams.get('order') || 'asc';
+      const sortField = safeIdent(url.searchParams.get('sort') || '');
       if (sortField) {
-        query += ` ORDER BY ${normalizeColumn(sortField)} ${sortOrder === 'desc' ? 'DESC' : 'ASC'}`;
+        const sortOrder = url.searchParams.get('order') === 'desc' ? 'DESC' : 'ASC';
+        query += ` ORDER BY ${sortField} ${sortOrder}`;
       }
-
       const limit = url.searchParams.get('limit');
       if (limit) {
         query += ' LIMIT ?';
-        params.push(parseInt(limit));
+        params.push(parseInt(limit, 10));
       }
-
       const { results } = await env.DB.prepare(query).bind(...params).all();
       return json(200, { data: results });
     }
-
     return json(400, { error: 'Unsupported operation' });
   } catch (e) {
     return json(500, { error: e.message });
@@ -244,83 +299,75 @@ async function handleMutate(request, env) {
     const body = await request.json();
     const { table, op, data } = body;
 
-    const TABLE_ALIASES = {
-      'homework_submissions': 'hw_submissions',
-      'students': 'users',
-      'coaches': 'users',
-      'homework_assignments': 'assignments'
-    };
-    const actualTable = TABLE_ALIASES[table] || table;
-
     if (!table || !ALLOWED_TABLES.includes(table)) {
       return json(400, { error: 'Invalid table' });
     }
+    const actualTable = resolveTable(table);
+    if (!data || typeof data !== 'object') {
+      return json(400, { error: 'Missing data' });
+    }
 
-    if (op === 'insert' && data) {
-      const keys = Object.keys(data);
-      const placeholders = keys.map(() => '?').join(', ');
-      const values = keys.map(k => {
-        const v = data[k];
-        if (typeof v === 'object' && v !== null) return JSON.stringify(v);
-        return v;
-      });
+    const toVal = (v) => (typeof v === 'object' && v !== null ? JSON.stringify(v) : v);
 
+    if (op === 'insert') {
+      const realCols = await tableColumns(env, actualTable);
       const id = data.id || `${table.slice(0, 4)}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-      keys.push('id');
-      values.unshift(id);
-      const allPlaceholders = keys.map(() => '?').join(', ');
-
-      await env.DB.prepare(`INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${allPlaceholders})`).bind(...values).run();
-
-      const row = await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first();
+      const keys = Object.keys(data).filter(k => safeIdent(k) && realCols.has(k));
+      if (!keys.includes('id') && realCols.has('id')) keys.push('id');
+      if (!keys.length) return json(400, { error: 'No insertable columns' });
+      const values = keys.map(k => (k === 'id' ? id : toVal(data[k])));
+      await env.DB.prepare(`INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${keys.map(() => '?').join(', ')})`).bind(...values).run();
+      const row = realCols.has('id')
+        ? await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first()
+        : null;
       return json(201, { data: row });
     }
 
-    if (op === 'update' && data) {
+    if (op === 'update') {
       const id = data.id;
       if (!id) return json(400, { error: 'ID required' });
-
+      const realCols = await tableColumns(env, actualTable);
       const fields = [];
       const values = [];
       for (const [key, value] of Object.entries(data)) {
         if (key === 'id') continue;
-        fields.push(`${key} = ?`);
-        values.push(typeof value === 'object' && value !== null ? JSON.stringify(value) : value);
+        const f = safeIdent(key);
+        if (!f || !realCols.has(f)) continue;
+        fields.push(`${f} = ?`);
+        values.push(toVal(value));
       }
+      if (!fields.length) return json(400, { error: 'No updatable columns' });
       values.push(id);
-
       await env.DB.prepare(`UPDATE ${actualTable} SET ${fields.join(', ')} WHERE id = ?`).bind(...values).run();
       const row = await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first();
       return json(200, { data: row });
     }
 
-    if (op === 'delete' && data?.id) {
-      await env.DB.prepare(`DELETE FROM ${actualTable} WHERE id = ?`).bind(data.id).run();
+    if (op === 'delete') {
+      const id = data.id;
+      if (!id) return json(400, { error: 'ID required' });
+      await env.DB.prepare(`DELETE FROM ${actualTable} WHERE id = ?`).bind(id).run();
       return json(200, { success: true });
     }
 
-    if (op === 'upsert' && data) {
+    if (op === 'upsert') {
+      const realCols = await tableColumns(env, actualTable);
       const id = data.id || `${table.slice(0, 4)}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-      const keys = Object.keys(data);
-      const placeholders = keys.map(() => '?').join(', ');
-      const values = keys.map(k => {
-        const v = data[k];
-        if (typeof v === 'object' && v !== null) return JSON.stringify(v);
-        return v;
-      });
-
+      const keys = Object.keys(data).filter(k => safeIdent(k) && realCols.has(k));
+      if (!keys.includes('id') && realCols.has('id')) keys.push('id');
+      if (!keys.length) return json(400, { error: 'No upsertable columns' });
+      const values = keys.map(k => (k === 'id' ? id : toVal(data[k])));
       try {
-        await env.DB.prepare(`INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${placeholders})`).bind(...values).run();
-      } catch {
-        const fields = keys.filter(k => k !== 'id').map(k => `${k} = ?`).join(', ');
-        const updateValues = keys.filter(k => k !== 'id').map(k => {
-          const v = data[k];
-          return typeof v === 'object' && v !== null ? JSON.stringify(v) : v;
-        });
-        await env.DB.prepare(`UPDATE ${actualTable} SET ${fields} WHERE id = ?`).bind(...updateValues, id).run();
+        await env.DB.prepare(`INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${keys.map(() => '?').join(', ')})`).bind(...values).run();
+      } catch (_) {
+        const updKeys = keys.filter(k => k !== 'id');
+        if (!updKeys.length) return json(400, { error: 'Nothing to update' });
+        await env.DB.prepare(`UPDATE ${actualTable} SET ${updKeys.map(k => `${k} = ?`).join(', ')} WHERE id = ?`)
+          .bind(...updKeys.map(k => toVal(data[k])), id).run();
       }
-
-      const row = await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first();
+      const row = realCols.has('id')
+        ? await env.DB.prepare(`SELECT * FROM ${actualTable} WHERE id = ?`).bind(id).first()
+        : null;
       return json(200, { data: row });
     }
 
@@ -330,15 +377,6 @@ async function handleMutate(request, env) {
   }
 }
 
-function filterOpToSQL(op) {
-  switch (op) {
-    case 'eq': return '=';
-    case 'neq': return '!=';
-    case 'ilike': return 'LIKE';
-    case 'in': return 'IN';
-    default: return '=';
-  }
-}
 
 async function hashPassword(password) {
   const encoder = new TextEncoder();
@@ -1382,6 +1420,81 @@ async function handleMessages(request, env) {
   }
   return methodNotAllowed();
 }
+
+// ── Cloudflare R2 storage (replaces Supabase Storage) ───────────────────────
+// Objects are keyed as "<bucket>/<path>" inside one R2 bucket.
+async function handleUpload(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 200, headers: cors() });
+
+  // DELETE ?key=<bucket>/<path>
+  if (request.method === 'DELETE') {
+    const bucket = env.MEDIA;
+    if (!bucket) return json(500, { error: 'Storage not configured (R2 binding MEDIA missing)' });
+    const url = new URL(request.url);
+    const key = url.searchParams.get('key');
+    if (!key) return json(400, { error: 'Missing key' });
+    try {
+      await bucket.delete(String(key).replace(/\.\./g, ''));
+      return json(200, { success: true });
+    } catch (e) {
+      return json(500, { error: e.message });
+    }
+  }
+
+  if (request.method !== 'POST') return methodNotAllowed();
+  const bucket = env.MEDIA;
+  if (!bucket) return json(500, { error: 'Storage not configured (R2 binding MEDIA missing)' });
+
+  try {
+    const url = new URL(request.url);
+    const contentType = request.headers.get('content-type') || '';
+    let objectKey = url.searchParams.get('key') || '';
+    let body = null;
+    let fileType = 'application/octet-stream';
+
+    if (contentType.includes('multipart/form-data')) {
+      const form = await request.formData();
+      const file = form.get('file');
+      if (!file || typeof file === 'string') return json(400, { error: 'No file provided' });
+      objectKey = objectKey || (form.get('key') || '');
+      body = file;
+      fileType = file.type || fileType;
+    } else {
+      body = await request.arrayBuffer();
+      fileType = contentType.split(';')[0] || fileType;
+    }
+
+    if (!objectKey) {
+      objectKey = `upload_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.bin`;
+    }
+    const r2Key = String(objectKey).replace(/\.\./g, '').replace(/^\/+/, '');
+
+    await bucket.put(r2Key, body, { httpMetadata: { contentType: fileType } });
+    const publicUrl = `/api/files/${r2Key}`;
+    return json(201, { data: { key: r2Key, path: r2Key, url: publicUrl, publicUrl } });
+  } catch (e) {
+    return json(500, { error: e.message || 'Upload failed' });
+  }
+}
+
+async function handleFileServe(request, env, pathname) {
+  const bucket = env.MEDIA;
+  if (!bucket) return json(500, { error: 'Storage not configured' });
+  const key = decodeURIComponent(pathname.replace(/^\/api\/files\/?/, ''));
+  if (!key) return json(400, { error: 'Missing key' });
+  try {
+    const object = await bucket.get(key);
+    if (!object) return json(404, { error: 'Not found' });
+    const headers = new Headers(cors());
+    object.writeHttpMetadata(headers);
+    headers.set('etag', object.httpEtag);
+    headers.set('cache-control', 'public, max-age=31536000, immutable');
+    return new Response(object.body, { headers });
+  } catch (e) {
+    return json(500, { error: e.message });
+  }
+}
+
 export async function onRequest(context) {
   try {
     const { request, env } = context;
@@ -1490,6 +1603,12 @@ export async function onRequest(context) {
       return handleEvents(request, env);
     }
 
+    if (pathname === '/api/upload' || pathname === '/upload') {
+      return handleUpload(request, env);
+    }
+    if (pathname === '/api/files' || pathname.startsWith('/api/files/')) {
+      return handleFileServe(request, env, pathname);
+    }
     if (pathname === '/api/audit' || pathname.startsWith('/api/audit')) {
       return handleAudit(request, env);
     }

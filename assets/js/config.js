@@ -87,39 +87,16 @@ window.CK.esc = function(str) {
     .replace(/'/g, '&#39;');
 };
 
-// Initialize Supabase Client
-(function initSupabase() {
-  const maxRetries = 10;
-  let retries = 0;
-
-  function attemptInit() {
-    if (window.supabase) {
-      try {
-        window.supabaseClient = window.supabase.createClient(
-          window.APP_CONFIG.SUPABASE_URL,
-          window.APP_CONFIG.SUPABASE_ANON_KEY,
-          {
-            auth: {
-              autoRefreshToken: true,
-              persistSession: true,
-              detectSessionInUrl: false
-            }
-          }
-        );
-      } catch (e) {
-        console.error("[ChessKidoo] Supabase init failed:", e);
-      }
-    } else {
-      retries++;
-      if (retries < maxRetries) {
-        setTimeout(attemptInit, 500);
-      } else {
-        console.error("[ChessKidoo] Supabase SDK failed to load. Check the CDN <script> in index.html.");
-      }
-    }
+// Initialize the data client.
+// NOTE: All data + storage now lives on Cloudflare (D1 + R2), NOT Supabase.
+// assets/js/cloudflare-client.js provides a Supabase-compatible client and runs
+// before this file, so we simply adopt it here.
+(function initClient() {
+  if (window.supabaseClient) {
+    // Cloudflare shim (or another client) is already installed - keep it.
+    return;
   }
-
-  attemptInit();
+  console.error('[ChessKidoo] cloudflare-client.js did not load; data features are unavailable.');
 })();
 
 
