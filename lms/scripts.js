@@ -1247,6 +1247,151 @@
 
 
   };
+  // ── Shared helper: does this entity (batch/student) belong to the logged-in coach? ──
+  // Returns TRUE for admins/masters/ceo (they see everything).
+  // Matches the coach reference stored on batches by ANY of: coach, coach_id, assigned_coach
+  // and compares against the coach id AND the coach display name, because the batches
+  // table stores the coach as a NAME while login yields a user UUID.
+  window.currentCoachIdResolved = function () {
+    return String(window.currentCoachId || window.userId || "").trim();
+  };
+
+  // Does `batch` belong to the coach identified by `coachId`?
+  // Batches store the coach in the `coach` column (often a NAME), while a coach id
+  // from login is a user UUID — so match by id AND by name/email local-part.
+  window.batchMatchesCoachId = function (batch, coachId) {
+    if (!batch) return false;
+    const cid = String(coachId == null ? "" : coachId).trim();
+    if (!cid) return false;
+
+    const norm = (v) => String(v == null ? "" : v).toLowerCase().trim();
+    const ncid = norm(cid);
+
+    // Resolve the coach profile so we can also compare by display name
+    const coaches = window.allCoaches || [];
+    const coachObj = coaches.find(c =>
+      norm(c.id) === ncid ||
+      (c.email && norm(c.email) === ncid) ||
+      (c.name && norm(c.name) === ncid) ||
+      (c.full_name && norm(c.full_name) === ncid) ||
+      (c.userid && norm(c.userid) === ncid)
+    );
+
+    const refs = [batch.coach, batch.coach_id, batch.assigned_coach, batch.coach_name]
+      .map(norm).filter(Boolean);
+    if (!refs.length) return false;
+
+    const ids = [ncid].filter(Boolean);
+    const names = [];
+    const addName = (v) => { const n = norm(v); if (n) names.push(n); };
+
+    if (coachObj) {
+      addName(coachObj.name); addName(coachObj.full_name); addName(coachObj.email);
+      if (coachObj.id != null) ids.push(norm(coachObj.id));
+      if (coachObj.userid != null) ids.push(norm(coachObj.userid));
+    }
+    // Fallbacks when allCoaches is not populated yet
+    const cc = window.currentCoach;
+    if (cc) {
+      addName(cc.name); addName(cc.full_name); addName(cc.email);
+      if (cc.id != null) ids.push(norm(cc.id));
+    }
+    const cu = window.currentUser;
+    if (cu) { addName(cu.name); addName(cu.full_name); addName(cu.email); }
+    try {
+      const authRaw = sessionStorage.getItem("chesskidoo_auth") ||
+                      sessionStorage.getItem("twoknights_auth") ||
+                      localStorage.getItem("chesskidoo_auth") ||
+                      localStorage.getItem("twoknights_auth");
+      if (authRaw) {
+        const a = JSON.parse(authRaw) || {};
+        const em = norm(a.user || a.email || "");
+        if (em && em.indexOf("@") > -1) { addName(em); addName(em.split("@")[0]); }
+        else if (a.user) addName(a.user);
+        if (a.name) addName(a.name);
+      }
+    } catch (_) {}
+
+    return refs.some(ref => {
+      if (ids.some(id => id && (id === ref || ref.includes(id) || id.includes(ref)))) return true;
+      if (names.some(n => n && (n === ref || ref.includes(n) || n.includes(ref)))) return true;
+      if (window.ckSameCoach && window.ckSameCoach(ref, cid)) return true;
+      return false;
+    });
+  };
+
+  window.isCurrentCoachEntity = function (entity) {
+    if (!entity) return false;
+    const role = String(window.role || (window.currentUser && window.currentUser.role) || "").toLowerCase();
+    const isCoach = role === "coach";
+    if (!isCoach) return true; // non-coaches are unrestricted
+
+    const cid = window.currentCoachIdResolved();
+    if (!cid) return true; // no coach context -> don't restrict
+
+    const coaches = window.allCoaches || [];
+    const norm = (v) => String(v == null ? "" : v).toLowerCase().trim();
+    const coachObj = coaches.find(c =>
+      norm(c.id) === norm(cid) ||
+      (c.email && norm(c.email) === norm(cid)) ||
+      (c.name && norm(c.name) === norm(cid)) ||
+      (c.userid && norm(c.userid) === norm(cid))
+    );
+
+    // Collect every plausible stored reference on the entity
+    const refs = [entity.coach, entity.coach_id, entity.assigned_coach, entity.coach_name]
+      .map(norm).filter(Boolean);
+    if (!refs.length) return false;
+
+    const ids = [norm(cid)].filter(Boolean);
+    const names = [];
+    if (coachObj) {
+      names.push(norm(coachObj.name), norm(coachObj.full_name), norm(coachObj.email));
+      if (coachObj.id != null) ids.push(norm(coachObj.id));
+      if (coachObj.userid != null) ids.push(norm(coachObj.userid));
+    }
+    // Also try matching the raw login username / stored auth email as a name,
+    // because batches frequently store the coach as a NAME (e.g. "Vishnu")
+    // while login only yields a UUID + email.
+    if (window.currentUser && window.currentUser.name) names.push(norm(window.currentUser.name));
+    if (window.currentUser && window.currentUser.email) {
+      const em = norm(window.currentUser.email);
+      names.push(em);
+      names.push(em.split("@")[0]);
+    }
+    try {
+      const authRaw = sessionStorage.getItem("chesskidoo_auth") ||
+                      sessionStorage.getItem("twoknights_auth") ||
+                      localStorage.getItem("chesskidoo_auth") ||
+                      localStorage.getItem("twoknights_auth");
+      if (authRaw) {
+        const authObj = JSON.parse(authRaw) || {};
+        const authEmail = norm(authObj.user || authObj.email || "");
+        if (authEmail && authEmail.indexOf("@") > -1) {
+          names.push(authEmail, authEmail.split("@")[0]);
+        }
+        if (authObj.user && authObj.user.indexOf("@") === -1) names.push(norm(authObj.user));
+        if (authObj.name) names.push(norm(authObj.name));
+      }
+    } catch (_) {}
+    names.filter(Boolean);
+
+    return refs.some(ref => {
+      if (ids.some(id => id && (id === ref || ref.includes(id) || id.includes(ref)))) return true;
+      if (names.some(n => n && (n === ref || ref.includes(n) || n.includes(ref)))) return true;
+      if (window.ckSameCoach && window.ckSameCoach(ref, cid)) return true;
+      return false;
+    });
+  };
+
+  window.filterBatchesForCurrentCoach = function (batches) {
+    const list = Array.isArray(batches) ? batches : [];
+    const role = String(window.role || "").toLowerCase();
+    const isCoach = role === "coach";
+    if (!isCoach) return list;
+    return list.filter(b => window.isCurrentCoachEntity(b));
+  };
+
 
 
 
@@ -96927,101 +97072,10 @@
 
 
     if (batchSel) {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      // FIX: batches table stores coach in the `coach` column (a NAME); login yields a user
+      // UUID. Use the shared helper which matches by id OR name.
       const batches = isCoach
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        ? (window.allBatches || []).filter((batch) => (window.ckSameCoach || (((a, b) => String(a).trim().toLowerCase().replace(/-/g, "") === String(b).trim().toLowerCase().replace(/-/g, "")))(batch.coach_id, currentCoachId)))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        ? window.filterBatchesForCurrentCoach(window.allBatches || [])
         : (window.allBatches || []);
 
 
@@ -138622,7 +138676,7 @@
 
 
 
-    const batches = (window.allBatches || []).filter(b => window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId));
+    const batches = (window.allBatches || []).filter(b => window.batchMatchesCoachId(b, coachId));
 
 
 
@@ -139614,7 +139668,7 @@
 
 
 
-      const batches = (window.allBatches || []).filter(b => window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId));
+      const batches = (window.allBatches || []).filter(b => window.batchMatchesCoachId(b, coachId));
 
 
 
@@ -235307,11 +235361,7 @@ try {
 
 
         (allBatches || [])
-          .filter((b) => {
-            // Filter batches by coach when user is a coach
-            const coachId = window.currentCoachId || window.userId;
-            return !coachId || !window.ckSameCoach || window.ckSameCoach(b.coach, coachId);
-          })
+          .filter((b) => window.isCurrentCoachEntity(b))
           .sort((a, b) => (a.name || "").localeCompare(b.name || ""))
 
 
@@ -357945,71 +357995,7 @@ due_date: (function () {
 
 
 
-    const batches = window.allBatches.filter(
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      (b) => (window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId)) && b.status !== "archived"
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    );
+    const batches = window.allBatches.filter((b) => window.batchMatchesCoachId(b, coachId) && b.status !== "archived");
 
 
 

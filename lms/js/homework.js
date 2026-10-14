@@ -418,31 +418,15 @@ let homeworkSubmissionCache = [];
   }
 
   function getCoachFilterPredicate() {
-    const role = window.role || (window.currentUser && window.currentUser.role);
-    const isCoach = String(role).toLowerCase() === 'coach';
+    const role = String(window.role || (window.currentUser && window.currentUser.role) || "").toLowerCase();
+    const isCoach = role === "coach";
     if (!isCoach) return null;
-
-    const currentCoachId = window.currentCoachId || window.userId || (window.currentUser && window.currentUser.id);
-    const coaches = window.allCoaches || [];
-    const currentCoachObj = coaches.find(c =>
-      String(c.id).toLowerCase() === String(currentCoachId).toLowerCase() ||
-      (c.email && c.email.toLowerCase() === String(currentCoachId).toLowerCase()) ||
-      (c.name && c.name.toLowerCase() === String(currentCoachId).toLowerCase())
-    );
-    const cId = currentCoachId ? String(currentCoachId).toLowerCase() : '';
-    const cProfId = currentCoachObj ? String(currentCoachObj.id).toLowerCase() : '';
-    const cName = currentCoachObj ? (currentCoachObj.name || currentCoachObj.full_name || '').toLowerCase() : '';
-
-    return function(entity) {
-      if (!entity) return false;
-      const eCoach = entity.coach_id || entity.coach || entity.assigned_coach;
-      if (window.ckSameCoach && window.ckSameCoach(eCoach, currentCoachId)) return true;
-      const eName = String(entity.name || entity.full_name || '').toLowerCase();
-      const ecStr = String(eCoach || '').toLowerCase();
-      const matchesId = (cId && ecStr.includes(cId)) || (cProfId && ecStr.includes(cProfId));
-      const matchesName = cName && (ecStr.includes(cName) || eName.includes(cName));
-      return matchesId || matchesName;
-    };
+    // Delegate to the shared helper in scripts.js so batch/student coach matching
+    // is consistent everywhere (matches by id OR name, across coach/coach_id/assigned_coach).
+    if (typeof window.isCurrentCoachEntity === "function") {
+      return function (entity) { return window.isCurrentCoachEntity(entity); };
+    }
+    return null;
   }
 
   function populateHomeworkSelectors() {
