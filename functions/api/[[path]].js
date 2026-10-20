@@ -23,12 +23,7 @@ const ALLOWED_TABLES = [
   'classes', 'monthly_reports', 'puzzle_scores', 'coach_attendance',
   'assignments', 'hw_submissions', 'feedback', 'broadcasts', 'sessions',
   'students', 'payments', 'coaches', 'batches', 'messages', 'achievements',
-  'events', 'audit_log', 'rating_history', 'homework_assignments', 'homework_submissions',
-  'complaint_feedback', 'registration_queries', 'homework', 'elibrary', 'elibrary_progress',
-  'productivity_tasks', 'productivity_notes', 'puzzle_assignments', 'opening_mastery',
-  'scheduled_meetings', 'student_games', 'multiplayer_games', 'tournaments',
-  'tournament_interests', 'vault_recordings', 'video_progress', 'live_class_chats',
-  'timetable_matrix', 'coach_payments', 'reviews', 'document_links'
+  'events', 'audit_log', 'rating_history'
 ];
 
 async function handleLogin(request, env) {
@@ -179,6 +174,22 @@ async function handleMe(request, env) {
   return json(200, { user });
 }
 
+// Verifies the Bearer token against the D1 `sessions` table (same check as /api/auth/me).
+async function getSessionUser(request, env) {
+  const auth = request.headers.get('Authorization') || '';
+  const token = auth.replace('Bearer ', '').trim();
+  if (!token) return null;
+  try {
+    const session = await env.DB.prepare(
+      'SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?'
+    ).bind(token).first();
+    if (!session || new Date(session.expires_at) < new Date()) return null;
+    return session;
+  } catch (_) {
+    return null;
+  }
+}
+
 async function filterOpToSQL(op) {
   switch (op) {
     case 'eq': return '=';
@@ -240,40 +251,54 @@ async function handleQuery(request, env) {
   const actualTable = resolveTable(table);
 
   try {
+    // Shared WHERE clause so count and select stay in sync.
+    let where = ' WHERE 1=1';
+    const params = [];
+
+    for (const [key, value] of url.searchParams) {
+      if (!key.startsWith('filter_')) continue;
+      const rest = key.slice('filter_'.length);
+      const us = rest.indexOf('_');
+      if (us <= 0) continue;
+      const filterOp = rest.slice(0, us);
+      const field = safeIdent(rest.slice(us + 1));
+      if (!field) continue;
+      const sqlOp = filterOpToSQL(filterOp);
+      if (!sqlOp) continue;
+      if (filterOp === 'in') {
+        const list = String(value).split(',').map(v => v.trim()).filter(Boolean);
+        if (!list.length) continue;
+        where += ` AND ${field} IN (${list.map(() => '?').join(', ')})`;
+        params.push(...list);
+      } else if (filterOp === 'is') {
+        where += ` AND ${field} IS ?`;
+        params.push((value === 'null' || value === '') ? null : value);
+      } else {
+        where += ` AND ${field} ${sqlOp} ?`;
+        params.push(value);
+      }
+    }
+
+    // Cheap count probe for the realtime poller: COUNT(*) never saturates the way
+    // "SELECT id LIMIT 1000" + rows.length does on large tables.
+    if (op === 'count') {
+      const row = await env.DB.prepare(`SELECT COUNT(*) AS n FROM ${actualTable}${where}`)
+        .bind(...params).first();
+      return json(200, { data: { n: row && row.n !== undefined ? Number(row.n) : 0 } });
+    }
+
     if (op === 'select') {
       let colList = cols;
       if (cols !== '*') {
         const realCols = await tableColumns(env, actualTable);
         const wanted = cols.split(',').map(c => c.trim()).filter(Boolean);
-        const safe = wanted.filter(c => realCols.has(c));
-        colList = safe.length ? safe.join(', ') : '*';
+        const unknown = wanted.filter(c => !realCols.has(c));
+        // Never fall back to SELECT *: an unknown column would silently return
+        // every column of the row (e.g. credentials.password).
+        if (unknown.length) return json(400, { error: 'Unknown columns: ' + unknown.join(', ') });
+        colList = wanted.length ? wanted.join(', ') : '*';
       }
-      let query = `SELECT ${colList} FROM ${actualTable} WHERE 1=1`;
-      const params = [];
-
-      for (const [key, value] of url.searchParams) {
-        if (!key.startsWith('filter_')) continue;
-        const rest = key.slice('filter_'.length);
-        const us = rest.indexOf('_');
-        if (us <= 0) continue;
-        const filterOp = rest.slice(0, us);
-        const field = safeIdent(rest.slice(us + 1));
-        if (!field) continue;
-        const sqlOp = filterOpToSQL(filterOp);
-        if (!sqlOp) continue;
-        if (filterOp === 'in') {
-          const list = String(value).split(',').map(v => v.trim()).filter(Boolean);
-          if (!list.length) continue;
-          query += ` AND ${field} IN (${list.map(() => '?').join(', ')})`;
-          params.push(...list);
-        } else if (filterOp === 'is') {
-          query += ` AND ${field} IS ?`;
-          params.push((value === 'null' || value === '') ? null : value);
-        } else {
-          query += ` AND ${field} ${sqlOp} ?`;
-          params.push(value);
-        }
-      }
+      let query = `SELECT ${colList} FROM ${actualTable}${where}`;
 
       const sortField = safeIdent(url.searchParams.get('sort') || '');
       if (sortField) {
@@ -282,8 +307,10 @@ async function handleQuery(request, env) {
       }
       const limit = url.searchParams.get('limit');
       if (limit) {
+        const parsed = parseInt(limit, 10);
+        if (!Number.isFinite(parsed) || parsed <= 0) return json(400, { error: 'Invalid limit' });
         query += ' LIMIT ?';
-        params.push(parseInt(limit, 10));
+        params.push(parsed);
       }
       const { results } = await env.DB.prepare(query).bind(...params).all();
       return json(200, { data: results });
@@ -603,7 +630,14 @@ async function handleHomework(request, env) {
     const cols = await env.DB.prepare('PRAGMA table_info(assignments)').all();
     const existing = new Set((cols.results || []).map(c => c.name));
     const keys = Object.keys(wanted).filter(kk => existing.has(kk));
-    if (keys.length === 0) return json(500, { error: 'assignments table has no compatible columns' });
+
+    // If no wanted columns exist in the table, fall back to inserting only the guaranteed columns
+    if (keys.length === 0) {
+      const fallbackKeys = ['id', 'title', 'description', 'due_date', 'status', 'created_at', 'updated_at', 'target_type', 'student_id', 'batch_id', 'coach_id', 'created_by', 'questions_files', 'attachment_urls', 'present_student_ids'];
+      const fallbackExisting = fallbackKeys.filter(k => existing.has(k));
+      if (fallbackExisting.length === 0) return json(500, { error: 'assignments table has no compatible columns' });
+      keys.push(...fallbackExisting);
+    }
 
     const values = keys.map(kk => wanted[kk]);
     const placeholders = keys.map(() => '?').join(', ');
@@ -1423,8 +1457,16 @@ async function handleMessages(request, env) {
 
 // ── Cloudflare R2 storage (replaces Supabase Storage) ───────────────────────
 // Objects are keyed as "<bucket>/<path>" inside one R2 bucket.
+const MAX_UPLOAD_BYTES = 16 * 1024 * 1024;
+
 async function handleUpload(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 200, headers: cors() });
+
+  // Writes and deletes require a valid session, otherwise anyone could overwrite
+  // or remove any object (keys are client-chosen).
+  if (!await getSessionUser(request, env)) {
+    return json(401, { error: 'Unauthorized' });
+  }
 
   // DELETE ?key=<bucket>/<path>
   if (request.method === 'DELETE') {
@@ -1456,11 +1498,17 @@ async function handleUpload(request, env) {
       const form = await request.formData();
       const file = form.get('file');
       if (!file || typeof file === 'string') return json(400, { error: 'No file provided' });
+      if (file.size > MAX_UPLOAD_BYTES) return json(413, { error: 'File too large (max 16 MB)' });
       objectKey = objectKey || (form.get('key') || '');
       body = file;
       fileType = file.type || fileType;
     } else {
+      const cl = parseInt(request.headers.get('content-length') || '', 10);
+      if (Number.isFinite(cl) && cl > MAX_UPLOAD_BYTES) {
+        return json(413, { error: 'File too large (max 16 MB)' });
+      }
       body = await request.arrayBuffer();
+      if (body.byteLength > MAX_UPLOAD_BYTES) return json(413, { error: 'File too large (max 16 MB)' });
       fileType = contentType.split(';')[0] || fileType;
     }
 
@@ -1480,7 +1528,12 @@ async function handleUpload(request, env) {
 async function handleFileServe(request, env, pathname) {
   const bucket = env.MEDIA;
   if (!bucket) return json(500, { error: 'Storage not configured' });
-  const key = decodeURIComponent(pathname.replace(/^\/api\/files\/?/, ''));
+  let key;
+  try {
+    key = decodeURIComponent(pathname.replace(/^\/api\/files\/?/, ''));
+  } catch (_) {
+    return json(400, { error: 'Invalid key' });
+  }
   if (!key) return json(400, { error: 'Missing key' });
   try {
     const object = await bucket.get(key);
@@ -1488,7 +1541,8 @@ async function handleFileServe(request, env, pathname) {
     const headers = new Headers(cors());
     object.writeHttpMetadata(headers);
     headers.set('etag', object.httpEtag);
-    headers.set('cache-control', 'public, max-age=31536000, immutable');
+    // Keys are mutable (re-uploads overwrite in place), so avoid long immutable caching.
+    headers.set('cache-control', 'public, max-age=3600');
     return new Response(object.body, { headers });
   } catch (e) {
     return json(500, { error: e.message });
