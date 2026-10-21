@@ -221970,8 +221970,7 @@ syncCoachDropdowns();
 
 
 
-              if (window.supabaseClient) {
-                      window.supabaseClient.from('students').select('*'),
+              window.supabaseClient.from('students').select('*'),
 
 
 
@@ -222003,8 +222002,7 @@ syncCoachDropdowns();
 
 
 
-              if (window.supabaseClient) {
-                      window.supabaseClient.from('batches').select('*'),
+              window.supabaseClient.from('batches').select('*'),
 
 
 
@@ -222036,8 +222034,7 @@ syncCoachDropdowns();
 
 
 
-              if (window.supabaseClient) {
-                      window.supabaseClient.from('attendance').select('*'),
+              window.supabaseClient.from('attendance').select('*'),
 
 
 
@@ -222069,8 +222066,7 @@ syncCoachDropdowns();
 
 
 
-              if (window.supabaseClient) {
-                      window.supabaseClient.from('homework_assignments').select('*'),
+              window.supabaseClient.from('homework_assignments').select('*'),
 
 
 
@@ -236744,8 +236740,7 @@ try {
 
 
 
-      if (!window.supabaseClient) {
-                supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 
 
@@ -236777,8 +236772,7 @@ try {
 
 
 
-      if (!window.supabaseClient) {
-                window.supabaseClient = supabaseClient;
+      window.supabaseClient = supabaseClient;
 
 
 
