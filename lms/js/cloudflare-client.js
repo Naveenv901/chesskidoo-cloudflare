@@ -296,6 +296,16 @@
         sessionStorage.removeItem(k); localStorage.removeItem(k);
       });
       return { error: null };
+    },
+    onAuthStateChange(cb) {
+      // Supabase-compatible: call cb with current session, then poll
+      const fire = async () => {
+        const s = await authClient.getSession();
+        if (typeof cb === 'function') cb('SIGNED_IN', s.data.session);
+      };
+      fire();
+      const timer = setInterval(fire, 10000);
+      return { data: { subscription: { unsubscribe: () => clearInterval(timer) } }, error: null };
     }
   };
 
