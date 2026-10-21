@@ -14,5 +14,5 @@ id = "e7f533fb80b74da48db62943985afb78"
 # R2 object storage - replaces Supabase Storage buckets (documents, homework_attachments)
 # Create the bucket once with: npx wrangler r2 bucket create chesskidoo-media
 [[r2_buckets]]
-binding = "MEDIA"
+binding = "chesskidoo_media"
 bucket_name = "chesskidoo-media"

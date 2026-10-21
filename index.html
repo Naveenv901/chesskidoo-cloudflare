@@ -91,6 +91,7 @@
   <link rel="stylesheet" href="assets/css/theme-contrast-fix.css?v=20260728k">
   <link rel="stylesheet" href="assets/css/mobile-optimize-2026.css?v=20260817b">
   <link rel="stylesheet" href="assets/css/world-map.css?v=20260728k">
+  <link rel="stylesheet" href="assets/css/blog.css?v=20261021b">
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
   <!-- Backend: Supabase JS SDK -->
@@ -479,6 +480,18 @@
             <h3>AI Assistance &amp; Guidance</h3>
             <p>TOM AI Chess Assistant powers move-by-move grandmaster guidance, real-time tactical threat detection, puzzle hints, and personalized study analysis.</p>
           </div>
+        </div>
+      </section>
+
+      <!-- Blog Section -->
+      <section id="blog" class="section-padding">
+        <div class="section-head" data-aos="fade-up">
+          <div class="eyebrow">📝 Blog</div>
+          <h2>Chess Insights & Updates</h2>
+          <p class="lead">Articles, tips, and news from the ChessKidoo academy</p>
+        </div>
+        <div class="blog-grid" data-aos="fade-up" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+          <!-- Blog cards rendered by JS -->
         </div>
       </section>
 
@@ -4196,6 +4209,7 @@
   <script defer type="module" src="assets/js/pgn-library.js?v=20260728k"></script>
   <script defer src="assets/js/pgn-vault.js?v=20260728k"></script>
   <script defer type="module" src="assets/js/chessboard.js?v=20260728k"></script>
+  <script defer type="module" src="assets/js/blog.js?v=20261021b"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       if (window.CK && CK.pgnLibrary) {

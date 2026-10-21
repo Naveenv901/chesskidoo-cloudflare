@@ -3,6 +3,9 @@ import { resolve } from 'path';
 
 const copy = (src, dest) => {
   if (!existsSync(src)) return;
+  // Skip stockfish neural network file - too large for Cloudflare Pages 25 MiB limit
+  // Stockfish is loaded dynamically via dynamic import() when chess features are needed
+  if (src.includes('stockfish') && src.endsWith('.nnue')) return;
   if (!existsSync(dest)) mkdirSync(dest, { recursive: true });
   cpSync(src, dest, { recursive: true });
 };

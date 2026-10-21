@@ -41,6 +41,8 @@ function getAuthToken() {
 // re-declare window.supabaseClient here or it will clobber the full client.
 if (window.supabaseClient) {
   // Adopt the Cloudflare client installed by cloudflare-client.js.
+} else {
+  console.error('[ChessKidoo LMS] cloudflare-client.js did not load; data features are unavailable.');
 }
 
 // Initialize with stored token

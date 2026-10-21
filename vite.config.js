@@ -82,6 +82,13 @@ export default defineConfig({
     sourcemap: true,
   },
 
+  // Stockfish chess engine is loaded dynamically to keep Pages deployment < 25 MiB
+  // The 38.3 MiB nnue file would otherwise block deployment.
+  // Import stockfish only when chess features are needed:
+  //   import('/assets/js/stockfish-[hash].js').then(engine => { /* use engine */ })
+  //   or use: const engine = await import('/assets/js/stockfish-[hash].js');
+  // See: https://vitejs.dev/guide/assets-and-static-files.html#dynamic-imports
+
   resolve: {
     alias: {
       '@lib':        resolve(__dirname, 'src/lib'),
