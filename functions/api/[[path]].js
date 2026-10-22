@@ -21,9 +21,9 @@ const ALLOWED_TABLES = [
   'users', 'expenses', 'document', 'documents', 'attendance', 'ratings', 'tourRatings',
   'resources', 'meetings', 'leads', 'coach_notes', 'credentials', 'batch_links',
   'classes', 'monthly_reports', 'puzzle_scores', 'coach_attendance',
-  'assignments', 'hw_submissions', 'feedback', 'broadcasts', 'sessions',
-  'students', 'payments', 'coaches', 'batches', 'messages', 'achievements',
-  'events', 'audit_log', 'rating_history'
+  'assignments', 'hw_submissions', 'homework_submissions', 'homework_assignments',
+  'feedback', 'broadcasts', 'sessions', 'students', 'payments', 'coaches', 'batches',
+  'messages', 'achievements', 'events', 'audit_log', 'rating_history'
 ];
 
 async function handleLogin(request, env) {
@@ -245,10 +245,13 @@ async function handleQuery(request, env) {
   const op = url.searchParams.get('op') || 'select';
   const cols = url.searchParams.get('cols') || '*';
 
-  if (!table || !ALLOWED_TABLES.includes(table)) {
+  if (!table) {
     return json(400, { error: 'Invalid table' });
   }
   const actualTable = resolveTable(table);
+  if (!ALLOWED_TABLES.includes(table) && !ALLOWED_TABLES.includes(actualTable)) {
+    return json(400, { error: 'Invalid table' });
+  }
 
   try {
     // Shared WHERE clause so count and select stay in sync.
@@ -417,6 +420,98 @@ function json(status, body) {
     status,
     headers: { 'Content-Type': 'application/json', ...cors() }
   });
+}
+
+const MAX_UPLOAD_BYTES = 16 * 1024 * 1024;
+
+function getR2Bucket(env) {
+  return env.MEDIA || env.chesskidoo_media || env.R2 || env.MEDIA_BUCKET || env.UPLOADS || null;
+}
+
+async function handleUpload(request, env) {
+  if (request.method === 'OPTIONS') return new Response(null, { status: 200, headers: cors() });
+
+  if (!await getSessionUser(request, env)) {
+    return json(401, { error: 'Unauthorized' });
+  }
+
+  if (request.method === 'DELETE') {
+    const bucket = getR2Bucket(env);
+    if (!bucket) return json(500, { error: 'Storage not configured (R2 binding missing)' });
+    const url = new URL(request.url);
+    const key = url.searchParams.get('key');
+    if (!key) return json(400, { error: 'Missing key' });
+    try {
+      await bucket.delete(String(key).replace(/\.\./g, ''));
+      return json(200, { success: true });
+    } catch (e) {
+      return json(500, { error: e.message });
+    }
+  }
+
+  if (request.method !== 'POST') return methodNotAllowed();
+  const bucket = getR2Bucket(env);
+  if (!bucket) return json(500, { error: 'Storage not configured (R2 binding missing)' });
+
+  try {
+    const url = new URL(request.url);
+    const contentType = request.headers.get('content-type') || '';
+    let objectKey = url.searchParams.get('key') || '';
+    let body = null;
+    let fileType = 'application/octet-stream';
+
+    if (contentType.includes('multipart/form-data')) {
+      const form = await request.formData();
+      const file = form.get('file');
+      if (!file || typeof file === 'string') return json(400, { error: 'No file provided' });
+      if (file.size > MAX_UPLOAD_BYTES) return json(413, { error: 'File too large (max 16 MB)' });
+      objectKey = objectKey || (form.get('key') || '');
+      body = file;
+      fileType = file.type || fileType;
+    } else {
+      const cl = parseInt(request.headers.get('content-length') || '', 10);
+      if (Number.isFinite(cl) && cl > MAX_UPLOAD_BYTES) {
+        return json(413, { error: 'File too large (max 16 MB)' });
+      }
+      body = await request.arrayBuffer();
+      if (body.byteLength > MAX_UPLOAD_BYTES) return json(413, { error: 'File too large (max 16 MB)' });
+      fileType = contentType.split(';')[0] || fileType;
+    }
+
+    if (!objectKey) {
+      objectKey = `upload_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.bin`;
+    }
+    const r2Key = String(objectKey).replace(/\.\./g, '').replace(/^\/+/, '');
+
+    await bucket.put(r2Key, body, { httpMetadata: { contentType: fileType } });
+    const publicUrl = `/api/files/${r2Key}`;
+    return json(201, { data: { key: r2Key, path: r2Key, url: publicUrl, publicUrl } });
+  } catch (e) {
+    return json(500, { error: e.message || 'Upload failed' });
+  }
+}
+
+async function handleFileServe(request, env, pathname) {
+  const bucket = getR2Bucket(env);
+  if (!bucket) return json(500, { error: 'Storage not configured (R2 binding missing)' });
+  let key;
+  try {
+    key = decodeURIComponent(pathname.replace(/^\/api\/files\/?/, ''));
+  } catch (_) {
+    return json(400, { error: 'Invalid key' });
+  }
+  if (!key) return json(400, { error: 'Missing key' });
+  try {
+    const object = await bucket.get(key);
+    if (!object) return json(404, { error: 'Not found' });
+    const headers = new Headers(cors());
+    object.writeHttpMetadata(headers);
+    headers.set('etag', object.httpEtag);
+    headers.set('cache-control', 'public, max-age=3600');
+    return new Response(object.body, { headers });
+  } catch (e) {
+    return json(500, { error: e.message });
+  }
 }
 
 async function handleUsers(request, env) {

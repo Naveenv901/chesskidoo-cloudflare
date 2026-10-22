@@ -368,7 +368,7 @@ let homeworkSubmissionCache = [];
     if (!fetched.length && window.supabaseClient) {
       try {
         const { data: sbSubs } = await window.supabaseClient
-          .from('homework_submissions')
+          .from('hw_submissions')
           .select('*')
           .order('submitted_at', { ascending: false });
         if (sbSubs && sbSubs.length) fetched = sbSubs;
@@ -377,7 +377,7 @@ let homeworkSubmissionCache = [];
 
     // 3. Merge with localStorage cache
     try {
-      const localSubs = JSON.parse(localStorage.getItem('ck_homework_submissions') || '[]');
+      const localSubs = JSON.parse(localStorage.getItem('ck_hw_submissions') || '[]');
       const map = new Map();
       fetched.forEach(s => { if (s && s.id) map.set(String(s.id), s); });
       localSubs.forEach(s => {
@@ -394,7 +394,7 @@ let homeworkSubmissionCache = [];
     window.homeworkSubmissionCache = homeworkSubmissionCache;
     if (homeworkSubmissionCache.length) {
       try {
-        localStorage.setItem('ck_homework_submissions', JSON.stringify(homeworkSubmissionCache));
+        localStorage.setItem('ck_hw_submissions', JSON.stringify(homeworkSubmissionCache));
       } catch (_) {}
     }
 
@@ -1390,7 +1390,7 @@ let homeworkSubmissionCache = [];
     if (!submitted && window.supabaseClient) {
       try {
         const { error: sbErr } = await window.supabaseClient
-          .from('homework_submissions')
+          .from('hw_submissions')
           .upsert(
             {
               assignment_id: subPayload.assignment_id,
@@ -1410,7 +1410,7 @@ let homeworkSubmissionCache = [];
 
     // Always persist submission locally
     try {
-      const storedSubs = JSON.parse(localStorage.getItem('ck_homework_submissions') || '[]');
+      const storedSubs = JSON.parse(localStorage.getItem('ck_hw_submissions') || '[]');
       const existingIdx = storedSubs.findIndex(s => String(s.assignment_id) === String(subPayload.assignment_id) && String(s.student_id) === String(subPayload.student_id));
       const subRecord = {
         id: subPayload.id || `sub_${Date.now()}`,
@@ -1426,7 +1426,7 @@ let homeworkSubmissionCache = [];
       };
       if (existingIdx !== -1) storedSubs[existingIdx] = { ...storedSubs[existingIdx], ...subRecord };
       else storedSubs.unshift(subRecord);
-      localStorage.setItem('ck_homework_submissions', JSON.stringify(storedSubs));
+      localStorage.setItem('ck_hw_submissions', JSON.stringify(storedSubs));
       submitted = true;
     } catch (e) {}
 
@@ -1478,7 +1478,7 @@ let homeworkSubmissionCache = [];
     if (!reviewed && window.supabaseClient) {
       try {
         const { error: sbErr } = await window.supabaseClient
-          .from('homework_submissions')
+          .from('hw_submissions')
           .update({
             status,
             feedback: feedback || null,
@@ -1493,14 +1493,14 @@ let homeworkSubmissionCache = [];
 
     // Always update local storage
     try {
-      const storedSubs = JSON.parse(localStorage.getItem('ck_homework_submissions') || '[]');
+      const storedSubs = JSON.parse(localStorage.getItem('ck_hw_submissions') || '[]');
       const subIdx = storedSubs.findIndex(s => String(s.id) === String(submissionId));
       if (subIdx !== -1) {
         storedSubs[subIdx].status = status;
         storedSubs[subIdx].feedback = feedback || storedSubs[subIdx].feedback;
         storedSubs[subIdx].score = score || storedSubs[subIdx].score;
         storedSubs[subIdx].reviewed_at = new Date().toISOString();
-        localStorage.setItem('ck_homework_submissions', JSON.stringify(storedSubs));
+        localStorage.setItem('ck_hw_submissions', JSON.stringify(storedSubs));
       }
       reviewed = true;
     } catch (e) {}
