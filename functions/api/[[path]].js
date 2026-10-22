@@ -863,22 +863,51 @@ async function handleHomework(request, env) {
 
   if (request.method === 'PATCH') {
     const id = url.searchParams.get('id');
+    const action = url.searchParams.get('action');
     const body = await request.json().catch(() => ({}));
-    if (!id) return json(400, { error: 'Missing submission id' });
-    const realCols = await tableColumns(env, 'hw_submissions');
+    if (!id) return json(400, { error: 'Missing ID' });
+
+    if (action === 'review') {
+      const realCols = await tableColumns(env, 'hw_submissions');
+      const now = new Date().toISOString();
+      const updates = [];
+      const vals = [];
+      if (body.status && realCols.has('status')) { updates.push('status = ?'); vals.push(body.status); }
+      if (body.feedback && realCols.has('feedback')) { updates.push('feedback = ?'); vals.push(body.feedback); }
+      else if (body.feedback && realCols.has('note')) { updates.push('note = ?'); vals.push(body.feedback); }
+      if (body.score !== undefined && realCols.has('score')) { updates.push('score = ?'); vals.push(body.score); }
+      else if (body.score !== undefined && realCols.has('accuracy')) { updates.push('accuracy = ?'); vals.push(body.score); }
+      if (realCols.has('updated_at')) { updates.push('updated_at = ?'); vals.push(now); }
+      if (realCols.has('reviewed_at')) { updates.push('reviewed_at = ?'); vals.push(now); }
+      if (updates.length) {
+        vals.push(id);
+        await env.DB.prepare(`UPDATE hw_submissions SET ${updates.join(', ')} WHERE id = ?`).bind(...vals).run();
+      }
+      return json(200, { success: true });
+    }
+
+    // Default: update homework assignment record (from saveHomeworkEdit)
+    const realCols = await tableColumns(env, 'assignments');
     const now = new Date().toISOString();
     const updates = [];
     const vals = [];
+    if (body.title && realCols.has('title')) { updates.push('title = ?'); vals.push(body.title); }
+    if (body.description !== undefined && realCols.has('description')) { updates.push('description = ?'); vals.push(body.description); }
+    if (body.due_date && realCols.has('due_date')) { updates.push('due_date = ?'); vals.push(body.due_date); }
+    if (body.due_date && realCols.has('dueDate')) { updates.push('dueDate = ?'); vals.push(body.due_date); }
     if (body.status && realCols.has('status')) { updates.push('status = ?'); vals.push(body.status); }
-    if (body.feedback && realCols.has('feedback')) { updates.push('feedback = ?'); vals.push(body.feedback); }
-    else if (body.feedback && realCols.has('note')) { updates.push('note = ?'); vals.push(body.feedback); }
-    if (body.score !== undefined && realCols.has('score')) { updates.push('score = ?'); vals.push(body.score); }
-    else if (body.score !== undefined && realCols.has('accuracy')) { updates.push('accuracy = ?'); vals.push(body.score); }
+    if (body.questions_files && realCols.has('questions_files')) {
+      updates.push('questions_files = ?');
+      vals.push(typeof body.questions_files === 'string' ? body.questions_files : JSON.stringify(body.questions_files));
+    }
+    if (body.attachment_urls && realCols.has('attachment_urls')) {
+      updates.push('attachment_urls = ?');
+      vals.push(typeof body.attachment_urls === 'string' ? body.attachment_urls : JSON.stringify(body.attachment_urls));
+    }
     if (realCols.has('updated_at')) { updates.push('updated_at = ?'); vals.push(now); }
-    if (realCols.has('reviewed_at')) { updates.push('reviewed_at = ?'); vals.push(now); }
     if (updates.length) {
       vals.push(id);
-      await env.DB.prepare(`UPDATE hw_submissions SET ${updates.join(', ')} WHERE id = ?`).bind(...vals).run();
+      await env.DB.prepare(`UPDATE assignments SET ${updates.join(', ')} WHERE id = ?`).bind(...vals).run();
     }
     return json(200, { success: true });
   }

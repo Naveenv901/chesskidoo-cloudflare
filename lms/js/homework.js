@@ -1,4 +1,4 @@
-(function () {
+﻿﻿(function () {
   const $ = (id) => document.getElementById(id);
   let homeworkSelectedIds = new Set();
   let homeworkCalendarMonth = new Date();
@@ -19,7 +19,7 @@
   }
 
   function getRole() {
-    // Auth lives in sessionStorage (see auth.js) — this used to read
+    // Auth lives in sessionStorage (see auth.js) â€” this used to read
     // localStorage, which nothing writes, so isAdminUser() was always false
     // and admins were blocked from their own bulk edit/delete actions.
     if (window.role) return String(window.role).toLowerCase();
@@ -247,7 +247,7 @@
   }
 
   function assigneeLabel(assignment) {
-    // Fall back to resolving the name from the loaded rosters — the API only
+    // Fall back to resolving the name from the loaded rosters â€” the API only
     // sends student_name/batch_name on some responses, and a bare "Student" /
     // "Batch" label tells a parent or coach nothing about who it is for.
     if (assignment.target_type === 'student') {
@@ -437,7 +437,7 @@ let homeworkSubmissionCache = [];
 
     if (targetSelect && !targetSelect.options.length) {
       targetSelect.innerHTML = `
-        <option value="batch">Batch (A–Z)</option>
+        <option value="batch">Batch (Aâ€“Z)</option>
         <option value="student">Individual Student</option>
         <option value="all">All Active Students</option>
       `;
@@ -592,7 +592,7 @@ let homeworkSubmissionCache = [];
   }
 
 
-  // ── Homework Attachment File Capacity & Validation Limits ──
+  // â”€â”€ Homework Attachment File Capacity & Validation Limits â”€â”€
   const MAX_HW_FILE_SIZE = 15 * 1024 * 1024; // 15 MB per file limit
   const MAX_HW_FILE_COUNT = 5;               // Max 5 files per upload batch
   const MAX_HW_BATCH_SIZE = 30 * 1024 * 1024;// Max 30 MB total per upload batch
@@ -610,21 +610,21 @@ let homeworkSubmissionCache = [];
 
     const files = Array.from(fileList);
     if (files.length > MAX_HW_FILE_COUNT) {
-      if (window.toast) window.toast(`⚠️ Maximum ${MAX_HW_FILE_COUNT} files allowed per upload. You selected ${files.length} files.`, 'error');
+      if (window.toast) window.toast(`âš ï¸ Maximum ${MAX_HW_FILE_COUNT} files allowed per upload. You selected ${files.length} files.`, 'error');
       return { valid: false, error: `Maximum ${MAX_HW_FILE_COUNT} files allowed.` };
     }
 
     let totalSize = 0;
     for (const f of files) {
       if (f.size > MAX_HW_FILE_SIZE) {
-        if (window.toast) window.toast(`⚠️ File "${f.name}" (${formatBytes(f.size)}) exceeds maximum 15 MB limit. Please compress or select a smaller file.`, 'error');
+        if (window.toast) window.toast(`âš ï¸ File "${f.name}" (${formatBytes(f.size)}) exceeds maximum 15 MB limit. Please compress or select a smaller file.`, 'error');
         return { valid: false, error: `File "${f.name}" exceeds 15 MB limit.` };
       }
       totalSize += f.size;
     }
 
     if (totalSize > MAX_HW_BATCH_SIZE) {
-      if (window.toast) window.toast(`⚠️ Total upload size (${formatBytes(totalSize)}) exceeds maximum 30 MB batch limit.`, 'error');
+      if (window.toast) window.toast(`âš ï¸ Total upload size (${formatBytes(totalSize)}) exceeds maximum 30 MB batch limit.`, 'error');
       return { valid: false, error: `Total upload size exceeds 30 MB.` };
     }
 
@@ -646,18 +646,18 @@ let homeworkSubmissionCache = [];
     files.forEach(f => {
       const isOversized = f.size > MAX_HW_FILE_SIZE;
       const isImg = isImageFile(f);
-      const icon = isImg ? '🖼️' : (f.name.endsWith('.pgn') ? '♟️' : (f.name.endsWith('.pdf') ? '📄' : '📎'));
+      const icon = isImg ? 'ðŸ–¼ï¸' : (f.name.endsWith('.pgn') ? 'â™Ÿï¸' : (f.name.endsWith('.pdf') ? 'ðŸ“„' : 'ðŸ“Ž'));
       html += `
         <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:3px 8px; border-radius:4px; background:${isOversized ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)'}; border:1px solid ${isOversized ? 'var(--danger)' : 'var(--border)'}; color:${isOversized ? '#f87171' : 'var(--ivory)'};">
           <span>${icon} ${escapeValue(f.name)} (${formatBytes(f.size)})</span>
-          ${isOversized ? '<strong>⚠️ TOO LARGE</strong>' : ''}
+          ${isOversized ? '<strong>âš ï¸ TOO LARGE</strong>' : ''}
         </span>
       `;
     });
     html += `</div>`;
 
     if (!val.valid) {
-      html += `<div style="font-size:11px; color:#f87171; font-weight:700; margin-top:4px;">❌ ${escapeValue(val.error)}</div>`;
+      html += `<div style="font-size:11px; color:#f87171; font-weight:700; margin-top:4px;">âŒ ${escapeValue(val.error)}</div>`;
     }
 
     previewEl.innerHTML = html;
@@ -946,7 +946,7 @@ let homeworkSubmissionCache = [];
       : targetType === 'batch'
         ? `Batch: ${(window.allBatches || []).find(b => String(b.id) === String(batchId))?.name || 'Batch #' + batchId}`
         : 'All Active Students';
-    if (!quiet && window.toast) window.toast(`✅ Homework "${title}" assigned successfully to ${targetLabel}!`, 'success');
+    if (!quiet && window.toast) window.toast(`âœ… Homework "${title}" assigned successfully to ${targetLabel}!`, 'success');
     if (!quiet) window.closeModals && window.closeModals();
 
     if (!quiet) {
@@ -1020,11 +1020,11 @@ let homeworkSubmissionCache = [];
       const hw = (window.allHomework || []).find(h => String(h.id) === String(id));
       const cId = window.currentCoachId || window.userId;
       if (hw && cId && window.ckSameCoach) {
-        const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, cId)).map(b => String(b.id));
-        const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id, cId)).map(s => String(s.id));
-        const isOwner = (hw.target_type === 'all' && (hw.created_by || hw.coach_id) && window.ckSameCoach(hw.created_by || hw.coach_id, cId))
-          || (hw.target_type === 'batch' && myBatchIds.includes(String(hw.batch_id)))
-          || (hw.target_type === 'student' && myStudentIds.includes(String(hw.student_id)));
+        const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || b.coach_id, cId)).map(b => String(b.id));
+        const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id || s.coach, cId)).map(s => String(s.id));
+        const isOwner = (hw.target_type === 'all' && ((hw.created_by || hw.coach_id) ? window.ckSameCoach(hw.created_by || hw.coach_id, cId) : true))
+          || (hw.target_type === 'batch' && (myBatchIds.includes(String(hw.batch_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))))
+          || (hw.target_type === 'student' && (myStudentIds.includes(String(hw.student_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))));
         if (!isOwner) return window.toast ? window.toast('You can only delete your own assignments.', 'error') : null;
       }
     }
@@ -1096,8 +1096,8 @@ let homeworkSubmissionCache = [];
     if (String(role).toLowerCase() === 'coach') {
       const cId = window.currentCoachId || window.userId;
       if (hw && cId && window.ckSameCoach) {
-        const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, cId)).map(b => String(b.id));
-        const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id, cId)).map(s => String(s.id));
+        const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || b.coach_id, cId)).map(b => String(b.id));
+        const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id || s.coach, cId)).map(s => String(s.id));
         const isOwner = (hw.target_type === 'all' && ((hw.created_by || hw.coach_id) ? window.ckSameCoach(hw.created_by || hw.coach_id, cId) : true))
           || (hw.target_type === 'batch' && (myBatchIds.includes(String(hw.batch_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))))
           || (hw.target_type === 'student' && (myStudentIds.includes(String(hw.student_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))));
@@ -1194,9 +1194,9 @@ let homeworkSubmissionCache = [];
       const name = typeof f === 'string' ? (f.split('/').pop() || `Attachment ${i + 1}`) : (f.name || `Attachment ${i + 1}`);
       const key = typeof f === 'string' ? f : (f.url || f.name || String(i));
       return `<div style="display:flex; align-items:center; gap:6px; background:var(--bg2); padding:4px 8px; border-radius:4px;">
-        <span>📎</span>
+        <span>ðŸ“Ž</span>
         <a href="${escapeValue(url)}" target="_blank" rel="noopener" style="color:var(--gold); text-decoration:none; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:480px;">${escapeValue(name)}</a>
-        <button type="button" onclick="removeEditHomeworkFile('${escapeValue(key).replace(/'/g, "\\'")}')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;">✕</button>
+        <button type="button" onclick="removeEditHomeworkFile('${escapeValue(key).replace(/'/g, "\\'")}')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;">âœ•</button>
       </div>`;
     }).join('');
   }
@@ -1531,7 +1531,7 @@ let homeworkSubmissionCache = [];
     const submission = assignment.student_submission || null;
     const status = submission?.status || 'not_submitted';
     const feedback = submission?.feedback || '';
-    const score = submission?.score !== null && submission?.score !== undefined ? ` · <strong>Score:</strong> ${escapeValue(submission.score)}` : '';
+    const score = submission?.score !== null && submission?.score !== undefined ? ` Â· <strong>Score:</strong> ${escapeValue(submission.score)}` : '';
     const canSubmit = !isAdminUser() && ['active', 'completed'].includes(assignment.status) && !['approved', 'closed'].includes(status);
     const currentText = submission?.submission_text || '';
     const currentUrl = submission?.submission_url || '';
@@ -1540,7 +1540,7 @@ let homeworkSubmissionCache = [];
     const filesHtml = Array.isArray(fileUrls) && fileUrls.length > 0 
       ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);">
           <strong>Attachments:</strong><br>
-          ${fileUrls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:block;margin-top:4px;">📎 File ${i + 1}</a>`).join('')}
+          ${fileUrls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:block;margin-top:4px;">ðŸ“Ž File ${i + 1}</a>`).join('')}
         </div>` 
       : '';
 
@@ -1558,7 +1558,7 @@ let homeworkSubmissionCache = [];
       ${canSubmit ? `<div style="display:grid;gap:8px;margin-top:12px;">
         <textarea id="homework-submission-text-${assignment.id}" class="input-field" placeholder="Type your completed homework response or practice notes..." style="min-height:90px;">${escapeValue(currentText)}</textarea>
         <input id="homework-submission-url-${assignment.id}" class="input-field" placeholder="Optional submission link (Google Drive, Dropbox, etc.)" value="${escapeValue(currentUrl)}">
-        <button type="button" class="btn btn-outline-grey btn-sm homework-attach-toggle" onclick="toggleHomeworkSubmissionUpload('${assignment.id}')">📎 Attach Solution Files</button>
+        <button type="button" class="btn btn-outline-grey btn-sm homework-attach-toggle" onclick="toggleHomeworkSubmissionUpload('${assignment.id}')">ðŸ“Ž Attach Solution Files</button>
         <div id="homework-submission-upload-${assignment.id}" style="display:none;">
           <div style="font-size:11px; font-weight:700; color:var(--gold); margin-top:4px;">Attach Solution Files <span style="font-size:10px; font-weight:normal; color:var(--ivory-dim);">(Max 5 files, up to 15 MB each: .pgn, .pdf, .png, .jpg)</span></div>
           <div class="upload-zone homework-submission-dropzone" id="homework-submission-drop-${assignment.id}">
@@ -1650,16 +1650,16 @@ let homeworkSubmissionCache = [];
               ${statusBadge(assignment.status)}
             </div>
             <div style="font-size:12px; color:${dueClass}; line-height:1.6;">
-              <strong>Due:</strong> ${formatDate(assignment.due_date)} · <strong>Coach:</strong> ${escapeValue(coachName)} · <strong>Assignee:</strong> ${escapeValue(assigneeLabel(assignment))} · <strong>Recipients:</strong> ${recipientCount(assignment)}
+              <strong>Due:</strong> ${formatDate(assignment.due_date)} Â· <strong>Coach:</strong> ${escapeValue(coachName)} Â· <strong>Assignee:</strong> ${escapeValue(assigneeLabel(assignment))} Â· <strong>Recipients:</strong> ${recipientCount(assignment)}
             </div>
             ${presentStudentsHtml}
           </div>
         </div>
         ${showActions ? `<div style="display:flex; gap:6px; flex-wrap:wrap;">
-          <button class="btn btn-outline-grey btn-sm" onclick="editHomeworkAssignment('${assignment.id}')">✏️ Edit</button>
+          <button class="btn btn-outline-grey btn-sm" onclick="editHomeworkAssignment('${assignment.id}')">âœï¸ Edit</button>
           ${assignment.status !== 'completed' ? `<button class="btn btn-outline-grey btn-sm" onclick="updateHomeworkStatus('${assignment.id}', 'completed')">Mark Done</button>` : ''}
           ${assignment.status !== 'archived' ? `<button class="btn btn-outline-grey btn-sm" onclick="updateHomeworkStatus('${assignment.id}', 'archived')">Archive</button>` : ''}
-          <button class="btn btn-outline-danger btn-sm" onclick="deleteHomeworkAssignment('${assignment.id}')">🗑️ Delete</button>
+          <button class="btn btn-outline-danger btn-sm" onclick="deleteHomeworkAssignment('${assignment.id}')">ðŸ—‘ï¸ Delete</button>
         </div>` : ''}
       </div>
       ${(() => {
@@ -1671,7 +1671,7 @@ let homeworkSubmissionCache = [];
           ${cleanDesc ? `<div style="margin-top:12px; color:var(--ivory-dim); font-size:13px; line-height:1.65; white-space:pre-wrap;">${linkifyText(cleanDesc)}</div>` : '<div style="margin-top:12px;color:var(--ivory-dim);font-size:13px;">No detailed instructions provided.</div>'}
           ${hasRefLinks ? `
             <div style="margin-top:14px; padding:10px 12px; background:rgba(59,130,246,0.04); border:1px solid rgba(59,130,246,0.2); border-radius:8px;">
-              <strong style="font-size:12px; color:#60a5fa; display:flex; align-items:center; gap:4px;">🔗 Reference Links (${refLinks.length}):</strong>
+              <strong style="font-size:12px; color:#60a5fa; display:flex; align-items:center; gap:4px;">ðŸ”— Reference Links (${refLinks.length}):</strong>
               <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
                 ${refLinks.map((url, i) => {
                   let name = `Reference ${i + 1}`;
@@ -1679,7 +1679,7 @@ let homeworkSubmissionCache = [];
                     const part = url.split('/').pop().split('?')[0];
                     if (part && part.length < 35) name = decodeURIComponent(part);
                   }
-                  return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="font-size:11px; padding:4px 10px; color:#60a5fa; border-color:rgba(59,130,246,0.3); text-decoration:none;">🔗 ${escapeValue(name)}</a>`;
+                  return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="font-size:11px; padding:4px 10px; color:#60a5fa; border-color:rgba(59,130,246,0.3); text-decoration:none;">ðŸ”— ${escapeValue(name)}</a>`;
                 }).join('')}
               </div>
             </div>
@@ -1706,7 +1706,7 @@ let homeworkSubmissionCache = [];
         if (!files.length) return '';
         return `
           <div style="margin-top:14px; padding:10px 12px; background:rgba(218,163,62,0.04); border:1px solid rgba(218,163,62,0.2); border-radius:8px;">
-            <strong style="font-size:12px; color:var(--gold); display:flex; align-items:center; gap:4px;">📂 Study Materials & Attachments (${files.length}):</strong>
+            <strong style="font-size:12px; color:var(--gold); display:flex; align-items:center; gap:4px;">ðŸ“‚ Study Materials & Attachments (${files.length}):</strong>
             <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
               ${files.map((url, i) => {
                 let name = `Material ${i + 1}`;
@@ -1716,7 +1716,7 @@ let homeworkSubmissionCache = [];
                 } else if (typeof url === 'string' && url.startsWith('data:image')) {
                   name = `Image Attachment ${i + 1}`;
                 }
-                return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="btn btn-outline-grey btn-sm" style="font-size:11px; padding:4px 10px; color:var(--gold); border-color:rgba(218,163,62,0.3); text-decoration:none;">📎 ${escapeValue(name)}</a>`;
+                return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="btn btn-outline-grey btn-sm" style="font-size:11px; padding:4px 10px; color:var(--gold); border-color:rgba(218,163,62,0.3); text-decoration:none;">ðŸ“Ž ${escapeValue(name)}</a>`;
               }).join('')}
             </div>
           </div>
@@ -1807,8 +1807,8 @@ let homeworkSubmissionCache = [];
             const assignedDate = item.created_at ? new Date(item.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
             return `<div title="${escapeValue(item.title)} | Coach: ${escapeValue(coachName)} | ${escapeValue(assignee)}" style="font-size:9px;color:var(--ivory-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:3px 4px;background:rgba(0,0,0,0.2);border-radius:4px;">
               <div style="color:var(--gold);font-weight:600;">${escapeValue(item.title)}</div>
-              <div style="color:var(--ivory3);font-size:8px;">👤 ${escapeValue(coachName)} · ${escapeValue(assignee)}</div>
-              ${assignedDate ? `<div style="color:var(--emerald);font-size:7px;font-weight:600;">📅 Assigned: ${assignedDate}</div>` : ''}
+              <div style="color:var(--ivory3);font-size:8px;">ðŸ‘¤ ${escapeValue(coachName)} Â· ${escapeValue(assignee)}</div>
+              ${assignedDate ? `<div style="color:var(--emerald);font-size:7px;font-weight:600;">ðŸ“… Assigned: ${assignedDate}</div>` : ''}
             </div>`;
           }).join('')}
           ${dayItems.length > 3 ? `<div style="font-size:9px;color:var(--gold);text-align:center;">+${dayItems.length - 3} more</div>` : ''}
@@ -1823,7 +1823,7 @@ let homeworkSubmissionCache = [];
     const list = $(listId);
     if (!list) return;
     if (!items.length) {
-      list.innerHTML = '<div class="empty-state"><span class="empty-icon">📝</span><p>No homework matches the selected filters.</p></div>';
+      list.innerHTML = '<div class="empty-state"><span class="empty-icon">ðŸ“</span><p>No homework matches the selected filters.</p></div>';
       return;
     }
 
@@ -1963,7 +1963,7 @@ let homeworkSubmissionCache = [];
     if (!container) return;
     const items = sortHomework(window.allHomework || []);
     if (!items.length) {
-      container.innerHTML = '<div class="empty-state"><span class="empty-icon">📝</span><p>No homework assigned yet.</p></div>';
+      container.innerHTML = '<div class="empty-state"><span class="empty-icon">ðŸ“</span><p>No homework assigned yet.</p></div>';
       return;
     }
     container.innerHTML = items.slice(0, 6).map((item) => renderHomeworkCard(item)).join('');
@@ -2035,7 +2035,7 @@ let homeworkSubmissionCache = [];
     populateHomeworkSubmissionFilters();
     const items = getFilteredHomeworkSubmissions();
     if (!items.length) {
-      list.innerHTML = '<div class="empty-state"><span class="empty-icon">📝</span><p>No submissions match the selected filters.</p></div>';
+      list.innerHTML = '<div class="empty-state"><span class="empty-icon">ðŸ“</span><p>No submissions match the selected filters.</p></div>';
       return;
     }
 
@@ -2055,13 +2055,13 @@ let homeworkSubmissionCache = [];
               ${submissionStatusBadge(submission.status)}
             </div>
             <div style="font-size:12px;color:var(--ivory-dim);line-height:1.6;">
-              <strong>Student:</strong> ${escapeValue(name)} · <strong>Submitted:</strong> ${submittedAt} ${score ? `· <strong>Score:</strong> ${score}` : ''}
+              <strong>Student:</strong> ${escapeValue(name)} Â· <strong>Submitted:</strong> ${submittedAt} ${score ? `Â· <strong>Score:</strong> ${score}` : ''}
             </div>
           </div>
         </div>
         ${submission.submission_text ? `<div style="margin-top:10px;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--ivory);line-height:1.55;white-space:pre-wrap;">${escapeValue(submission.submission_text)}</div>` : ''}
         ${submission.submission_url ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);"><a href="${safeUrl(submission.submission_url)}" target="_blank" rel="noopener">Open submission link</a></div>` : ''}
-        ${Array.isArray(submission.file_urls) && submission.file_urls.length > 0 ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);"><strong>Attachments:</strong> ${submission.file_urls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:block;margin-top:4px;">📎 File ${i + 1}</a>`).join('')}</div>` : ''}
+        ${Array.isArray(submission.file_urls) && submission.file_urls.length > 0 ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);"><strong>Attachments:</strong> ${submission.file_urls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:block;margin-top:4px;">ðŸ“Ž File ${i + 1}</a>`).join('')}</div>` : ''}
         ${feedback ? `<div style="margin-top:10px;padding:10px;background:rgba(218,163,62,0.06);border:1px solid rgba(218,163,62,0.25);border-radius:8px;font-size:12px;color:var(--ivory);white-space:pre-wrap;">${escapeValue(feedback)}</div>` : ''}
         <div style="display:grid;gap:8px;margin-top:12px;">
           <textarea id="homework-feedback-${submission.id}" class="input-field" placeholder="Teacher feedback or revision instructions..." style="min-height:70px;">${escapeValue(feedback)}</textarea>
@@ -2094,7 +2094,7 @@ let homeworkSubmissionCache = [];
     const items = sortHomework((window.allHomework || []).filter((assignment) => assignmentAppliesToBatch(assignment, batchId, window.allStudents || [], window.allBatches || [])));
     list.innerHTML = items.length
       ? items.map((item) => renderHomeworkCard(item)).join('')
-      : `<div class="empty-state"><span class="empty-icon">📝</span><p>No homework assigned to ${escapeValue(batchName(batch))}.</p></div>`;
+      : `<div class="empty-state"><span class="empty-icon">ðŸ“</span><p>No homework assigned to ${escapeValue(batchName(batch))}.</p></div>`;
   }
 
   function renderHomeworkPage() {
@@ -2162,7 +2162,7 @@ let homeworkSubmissionCache = [];
       return isStudentEligibleForHomework(assignment, student.id);
     }));
     if (!items.length) {
-      list.innerHTML = '<div class="empty-state"><span class="empty-icon">📝</span><p>No homework assigned right now.</p></div>';
+      list.innerHTML = '<div class="empty-state"><span class="empty-icon">ðŸ“</span><p>No homework assigned right now.</p></div>';
       return;
     }
 
@@ -2177,7 +2177,7 @@ let homeworkSubmissionCache = [];
     if (!list) return;
 
     if (!studentId) {
-      list.innerHTML = '<div class="empty-state"><span class="empty-icon">👤</span><p>Select a student to view progress.</p></div>';
+      list.innerHTML = '<div class="empty-state"><span class="empty-icon">ðŸ‘¤</span><p>Select a student to view progress.</p></div>';
       return;
     }
 
@@ -2187,7 +2187,7 @@ let homeworkSubmissionCache = [];
     }));
 
     if (!studentAssignments.length) {
-      list.innerHTML = '<div class="empty-state"><span class="empty-icon">📝</span><p>No homework assigned to this student.</p></div>';
+      list.innerHTML = '<div class="empty-state"><span class="empty-icon">ðŸ“</span><p>No homework assigned to this student.</p></div>';
       return;
     }
 
@@ -2201,7 +2201,7 @@ let homeworkSubmissionCache = [];
     });
 
     if (!filteredAssignments.length) {
-      list.innerHTML = '<div class="empty-state"><span class="empty-icon">🔍</span><p>No matching topics found.</p></div>';
+      list.innerHTML = '<div class="empty-state"><span class="empty-icon">ðŸ”</span><p>No matching topics found.</p></div>';
       return;
     }
 
@@ -2231,8 +2231,8 @@ let homeworkSubmissionCache = [];
       }
 
       const status = submission?.status || 'not_submitted';
-      const score = submission?.score !== null && submission?.score !== undefined ? escapeValue(submission.score) : '—';
-      const submittedAt = submission?.submitted_at ? escapeValue(formatDate(submission.submitted_at.slice(0, 10))) : '—';
+      const score = submission?.score !== null && submission?.score !== undefined ? escapeValue(submission.score) : 'â€”';
+      const submittedAt = submission?.submitted_at ? escapeValue(formatDate(submission.submitted_at.slice(0, 10))) : 'â€”';
 
       html += `
         <tr style="border-bottom:1px solid var(--border);">
