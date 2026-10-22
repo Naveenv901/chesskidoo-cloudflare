@@ -1098,9 +1098,9 @@ let homeworkSubmissionCache = [];
       if (hw && cId && window.ckSameCoach) {
         const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach_id, cId)).map(b => String(b.id));
         const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id, cId)).map(s => String(s.id));
-        const isOwner = (hw.target_type === 'all' && (hw.created_by || hw.coach_id) && window.ckSameCoach(hw.created_by || hw.coach_id, cId))
-          || (hw.target_type === 'batch' && myBatchIds.includes(String(hw.batch_id)))
-          || (hw.target_type === 'student' && myStudentIds.includes(String(hw.student_id)));
+        const isOwner = (hw.target_type === 'all' && ((hw.created_by || hw.coach_id) ? window.ckSameCoach(hw.created_by || hw.coach_id, cId) : true))
+          || (hw.target_type === 'batch' && (myBatchIds.includes(String(hw.batch_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))))
+          || (hw.target_type === 'student' && (myStudentIds.includes(String(hw.student_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))));
         if (!isOwner) return window.toast ? window.toast('You can only edit your own assignments.', 'error') : null;
       }
     }
