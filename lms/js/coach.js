@@ -1812,22 +1812,41 @@ function initStudentPageObserver() {
       return;
     }
 
+    if ((!window.homeworkSubmissionCache || window.homeworkSubmissionCache.length === 0) && window.loadHomeworkSubmissions && !window._loadingCoachSubs) {
+      window._loadingCoachSubs = true;
+      tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell"><span class="spinner"></span> Loading submissions...</td></tr>';
+      window.loadHomeworkSubmissions(true).then(() => {
+        window._loadingCoachSubs = false;
+        window.renderCoachSubmissions(query, page);
+      }).catch(() => {
+        window._loadingCoachSubs = false;
+        window.renderCoachSubmissions(query, page);
+      });
+      return;
+    }
+
     const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach((s.coach_id || s.coach), coachId));
     const myStudentIds = myStudents.map(s => String(s.id));
-    const submissions = Array.isArray(window.homeworkSubmissionCache) ? window.homeworkSubmissionCache : [];
-    let filtered = submissions
-      .filter(s => myStudentIds.includes(String(s.student_id)))
-      .sort((a, b) => new Date(b.submitted_at || b.created_at) - new Date(a.submitted_at || a.created_at));
+    const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || b.coach_id, coachId)).map(b => String(b.id));
+
+    const coachAssignmentIds = new Set((window.allHomework || []).filter(h => {
+      const hCoach = h.coach || h.coach_id || h.created_by;
+      return (hCoach && window.ckSameCoach(hCoach, coachId)) || (h.batch_id && myBatchIds.includes(String(h.batch_id)));
+    }).map(h => String(h.id)));
+
+    let submissions = (Array.isArray(window.homeworkSubmissionCache) ? window.homeworkSubmissionCache : [])
+      .filter(s => myStudentIds.includes(String(s.student_id)) || coachAssignmentIds.has(String(s.assignment_id)))
+      .sort((a, b) => new Date(b.submitted_at || b.submittedAt || b.created_at || 0) - new Date(a.submitted_at || a.submittedAt || a.created_at || 0));
 
     if (q) {
       submissions = submissions.filter(s => {
-        const student = myStudents.find(x => String(x.id) === String(s.student_id));
-        const studentName = student ? (window.getStudentName ? window.getStudentName(student) : student.name) : '';
+        const student = myStudents.find(x => String(x.id) === String(s.student_id)) || (window.allStudents || []).find(x => String(x.id) === String(s.student_id));
+        const studentName = student ? (window.getStudentName ? window.getStudentName(student) : (student.full_name || student.name)) : '';
         const assignment = (window.allHomework || []).find(h => String(h.id) === String(s.assignment_id));
         const title = assignment ? assignment.title : '';
         const textMatch = (s.submission_text || '').toLowerCase().includes(q);
         const urlMatch = (s.submission_url || '').toLowerCase().includes(q);
-        const fileMatch = (Array.isArray(s.file_urls) ? s.file_urls.join(' ') : '').toLowerCase().includes(q);
+        const fileMatch = (Array.isArray(s.file_urls) ? s.file_urls.join(' ') : String(s.file_urls || '')).toLowerCase().includes(q);
         const studentMatch = studentName.toLowerCase().includes(q);
         const titleMatch = title.toLowerCase().includes(q);
         const statusMatch = (s.status || '').toLowerCase().includes(q);
@@ -1840,32 +1859,52 @@ function initStudentPageObserver() {
       submissions = submissions.filter(s => (s.status || '').toLowerCase() === statusFilter.toLowerCase());
     }
 
-    const totalPages = Math.max(1, Math.ceil(submissions.length / window.coachSubPageSize));
-    const start = (page - 1) * window.coachSubPageSize;
-    const pageItems = submissions.slice(start, start + window.coachSubPageSize);
+    const totalPages = Math.max(1, Math.ceil(submissions.length / (window.coachSubPageSize || 8)));
+    const start = (page - 1) * (window.coachSubPageSize || 8);
+    const pageItems = submissions.slice(start, start + (window.coachSubPageSize || 8));
 
     if (submissions.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell">No matching submissions found.</td></tr>';
+      if (pagination) pagination.innerHTML = '';
+      if (countEl) countEl.textContent = '';
     } else if (pageItems.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell">No submissions on this page.</td></tr>';
+      if (pagination) pagination.innerHTML = '';
+      if (countEl) countEl.textContent = '';
     } else {
       tbody.innerHTML = pageItems.map(s => {
         const assignment = (window.allHomework || []).find(h => String(h.id) === String(s.assignment_id));
-        const student = myStudents.find(x => String(x.id) === String(s.student_id));
-        const studentName = student ? (window.getStudentName ? window.getStudentName(student) : student.name) : "Unknown";
-        const title = assignment ? assignment.title : "Untitled Assignment";
-        const submittedDate = s.submitted_at ? new Date(s.submitted_at).toLocaleDateString() : "Today";
+        const student = myStudents.find(x => String(x.id) === String(s.student_id)) || (window.allStudents || []).find(x => String(x.id) === String(s.student_id));
+        const studentName = student ? (window.getStudentName ? window.getStudentName(student) : (student.full_name || student.name)) : (s.student_name || 'Student');
+        const title = assignment ? assignment.title : 'Assignment';
+        const submittedDate = (s.submitted_at || s.submittedAt) ? new Date(s.submitted_at || s.submittedAt).toLocaleDateString() : 'Today';
         const status = s.status || 'submitted';
         const statusClass = status === 'approved' ? 'badge badge-success' : status === 'needs_revision' ? 'badge badge-danger' : status === 'closed' ? 'badge badge-grey' : 'badge badge-warning';
+
+        let fileUrls = s.file_urls;
+        if (typeof fileUrls === 'string') {
+          try { fileUrls = JSON.parse(fileUrls); } catch (_) { fileUrls = [fileUrls]; }
+        }
+        const fileLinks = Array.isArray(fileUrls) && fileUrls.length > 0 
+          ? fileUrls.map((u, i) => `<a href="${window.escapeHtml ? window.escapeHtml(u) : u}" target="_blank" rel="noopener" style="color:var(--gold);font-size:11px;margin-right:6px;text-decoration:underline;">📎 Solution ${i+1}</a>`).join('')
+          : '';
+        const submissionSnippet = s.submission_text ? `<div style="font-size:11px;color:var(--ivory-dim);margin-top:2px;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${window.escapeHtml ? window.escapeHtml(s.submission_text) : s.submission_text}">📝 ${window.escapeHtml ? window.escapeHtml(s.submission_text) : s.submission_text}</div>` : '';
+        const urlLink = s.submission_url ? `<div style="font-size:11px;margin-top:2px;"><a href="${window.escapeHtml ? window.escapeHtml(s.submission_url) : s.submission_url}" target="_blank" rel="noopener" style="color:var(--gold);text-decoration:underline;">🔗 Open Link</a></div>` : '';
+
         return `<tr>
-          <td style="color:var(--ivory); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${window.escapeHtml ? window.escapeHtml(studentName) : studentName}">${window.escapeHtml ? window.escapeHtml(studentName) : studentName}</td>
-          <td style="font-size:12px; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${window.escapeHtml ? window.escapeHtml(title) : title}">${window.escapeHtml ? window.escapeHtml(title) : title}</td>
+          <td style="color:var(--ivory); font-weight:500; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${window.escapeHtml ? window.escapeHtml(studentName) : studentName}">${window.escapeHtml ? window.escapeHtml(studentName) : studentName}</td>
+          <td style="font-size:12px; max-width:240px;">
+            <div style="font-weight:500; color:var(--ivory); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${window.escapeHtml ? window.escapeHtml(title) : title}">${window.escapeHtml ? window.escapeHtml(title) : title}</div>
+            ${submissionSnippet}
+            ${urlLink}
+            ${fileLinks ? `<div style="margin-top:2px;">${fileLinks}</div>` : ''}
+          </td>
           <td style="font-size:11px; color:var(--ivory-dim); white-space:nowrap;">${submittedDate}</td>
           <td><span class="${statusClass}">${status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}</span></td>
           <td style="display:flex; gap:6px; flex-wrap:wrap;">
-            <button class="btn btn-outline-grey btn-sm" onclick="window.reviewHomeworkSubmission('${s.id}', 'approved')">✔ Approve</button>
-            <button class="btn btn-outline-grey btn-sm" onclick="window.reviewHomeworkSubmission('${s.id}', 'needs_revision')">✎ Revision</button>
-            <button class="btn btn-outline-grey btn-sm" onclick="window.reviewHomeworkSubmission('${s.id}', 'closed')">✕ Close</button>
+            <button class="btn btn-outline-grey btn-sm" onclick="window.reviewHomeworkSubmission('${s.id}', 'approved')" title="Approve and give score">✔ Approve</button>
+            <button class="btn btn-outline-grey btn-sm" onclick="window.reviewHomeworkSubmission('${s.id}', 'needs_revision')" title="Request revision with notes">✎ Revision</button>
+            <button class="btn btn-outline-grey btn-sm" onclick="window.reviewHomeworkSubmission('${s.id}', 'closed')" title="Close submission">✕ Close</button>
           </td>
         </tr>`;
       }).join('');
@@ -1873,10 +1912,14 @@ function initStudentPageObserver() {
 
     if (countEl) countEl.textContent = submissions.length ? `Showing ${submissions.length} submission(s)` : '';
     if (pagination) {
-      let html = `<span style="font-size:12px; color:var(--ivory-dim);">Page ${page} / ${totalPages}</span>`;
-      html += `<button class="btn btn-outline-grey btn-sm" ${page <= 1 ? 'disabled' : ''} onclick="renderCoachSubmissions(document.getElementById('coach-hw-search')?.value || '', ${page - 1}); document.getElementById('coach-hw-sub-status')?.value && (document.getElementById('coach-hw-sub-status').value = '${statusFilter}');">Prev</button>`;
-      html += `<button class="btn btn-outline-grey btn-sm" ${page >= totalPages ? 'disabled' : ''} onclick="renderCoachSubmissions(document.getElementById('coach-hw-search')?.value || '', ${page + 1}); document.getElementById('coach-hw-sub-status')?.value && (document.getElementById('coach-hw-sub-status').value = '${statusFilter}');">Next</button>`;
-      pagination.innerHTML = html;
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+      } else {
+        let html = `<span style="font-size:12px; color:var(--ivory-dim);">Page ${page} / ${totalPages}</span>`;
+        html += `<button class="btn btn-outline-grey btn-sm" ${page <= 1 ? 'disabled' : ''} onclick="renderCoachSubmissions(document.getElementById('coach-hw-search')?.value || '', ${page - 1}); document.getElementById('coach-hw-sub-status')?.value && (document.getElementById('coach-hw-sub-status').value = '${statusFilter}');">Prev</button>`;
+        html += `<button class="btn btn-outline-grey btn-sm" ${page >= totalPages ? 'disabled' : ''} onclick="renderCoachSubmissions(document.getElementById('coach-hw-search')?.value || '', ${page + 1}); document.getElementById('coach-hw-sub-status')?.value && (document.getElementById('coach-hw-sub-status').value = '${statusFilter}');">Next</button>`;
+        pagination.innerHTML = html;
+      }
     }
   };
 

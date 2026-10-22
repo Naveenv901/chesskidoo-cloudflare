@@ -191,20 +191,64 @@ function studentName(student) {
   function isStudentEligibleForHomework(assignment, studentId) {
     if (!assignment || !studentId) return false;
     const sid = String(studentId);
-    const dueDate = assignment.due_date;
-    if (!dueDate) return true;
 
+    // 1. If assignment has explicit present_student_ids, strictly enforce it
+    let presentIds = assignment.present_student_ids;
+    if (typeof presentIds === 'string') {
+      try { presentIds = JSON.parse(presentIds); } catch (_) {}
+    }
+    if (Array.isArray(presentIds) && presentIds.length > 0) {
+      return presentIds.some(id => String(id) === sid);
+    }
+
+    // 2. Check student attendance records in window.allAttendance
     const attList = window.allAttendance || [];
-    const dayRecord = attList.find(a => {
-      const recordStudentId = String(a.student_id || a.studentId || '');
-      return recordStudentId === sid && a.date === dueDate;
-    });
+    const classDate = (assignment.assigned_date || assignment.created_at || '').substring(0, 10);
+    const dueDate = (assignment.due_date || '').substring(0, 10);
 
-    if (!dayRecord) return true;
+    const matchesStudent = (a) => {
+      const aSid = String(a.student_id || a.studentId || a.userid || '');
+      if (aSid === sid) return true;
+      const studentObj = (window.allStudents || []).find(s => String(s.id) === sid);
+      if (studentObj) {
+        if (studentObj.email && String(studentObj.email).toLowerCase() === aSid.toLowerCase()) return true;
+        if (studentObj.userid && String(studentObj.userid) === aSid) return true;
+      }
+      return false;
+    };
 
-    const status = (dayRecord.status || '').toLowerCase();
-    if (status === 'no class') return false;
-    return status === 'present' || status === 'late';
+    // Look for attendance record on the date homework was assigned / class held
+    if (classDate) {
+      const classRecord = attList.find(a => matchesStudent(a) && (a.date || '').substring(0, 10) === classDate);
+      if (classRecord) {
+        const st = (classRecord.status || '').toLowerCase();
+        // If student was marked absent or no class, they should NOT receive this homework!
+        if (st === 'absent' || st === 'no class') return false;
+        if (st === 'present' || st === 'late') return true;
+      }
+    }
+
+    // Look for attendance on due date (if class session held on due date)
+    if (dueDate && dueDate !== classDate) {
+      const dueRecord = attList.find(a => matchesStudent(a) && (a.date || '').substring(0, 10) === dueDate);
+      if (dueRecord) {
+        const st = (dueRecord.status || '').toLowerCase();
+        if (st === 'absent' || st === 'no class') return false;
+      }
+    }
+
+    // If batch assignment: check if student was marked absent in their batch on that class session
+    if (assignment.target_type === 'batch' && assignment.batch_id) {
+      const batchAbsent = attList.find(a => {
+        if (!matchesStudent(a)) return false;
+        const aBatch = String(a.batch_id || a.classId || '');
+        const aDate = (a.date || '').substring(0, 10);
+        return (aBatch === String(assignment.batch_id) || (classDate && aDate === classDate)) && (a.status || '').toLowerCase() === 'absent';
+      });
+      if (batchAbsent) return false;
+    }
+
+    return true;
   }
 
   function assignmentAppliesToBatch(assignment, batchId, students = [], batches = []) {
@@ -871,7 +915,32 @@ let homeworkSubmissionCache = [];
     const dueDate = options.dueDate || ($('hw-due-date') ? $('hw-due-date').value : '');
     const studentId = options.studentId || ($('hw-student-select') ? $('hw-student-select').value : '');
     const batchId = options.batchId || ($('hw-batch-select') ? $('hw-batch-select').value : '');
-    const presentStudentIds = options.presentStudentIds || [];
+    let presentStudentIds = options.presentStudentIds || [];
+    if (!presentStudentIds.length && targetType === 'batch' && batchId) {
+      const today = new Date().toISOString().slice(0, 10);
+      const attList = window.allAttendance || [];
+      const batchStudents = (window.allStudents || []).filter(s => {
+        if (s.batch_id && String(s.batch_id) === String(batchId)) return true;
+        const b = (window.allBatches || []).find(item => String(item.id) === String(batchId));
+        if (b && s.batch && (String(s.batch) === String(b.name) || String(s.batch) === String(b.id))) return true;
+        return false;
+      });
+      const batchStudentIds = new Set(batchStudents.map(s => String(s.id)));
+      const todayAtt = attList.filter(a => {
+        const sid = String(a.student_id || a.studentId || a.userid || '');
+        const aDate = (a.date || '').slice(0, 10);
+        return batchStudentIds.has(sid) && aDate === today;
+      });
+      if (todayAtt.length > 0) {
+        const presentSet = new Set();
+        todayAtt.forEach(a => {
+          const sid = String(a.student_id || a.studentId || a.userid || '');
+          const status = (a.status || '').toLowerCase();
+          if (status === 'present' || status === 'late') presentSet.add(sid);
+        });
+        if (presentSet.size > 0) presentStudentIds = Array.from(presentSet);
+      }
+    }
     const fileInput = $('hw-file-input');
 
     if (!title) {
@@ -1489,7 +1558,17 @@ let homeworkSubmissionCache = [];
       } catch (e) {}
     }
 
-    let studentObj = curStudent || (window.allStudents || []).find(s => String(s.id) === String(studentId));
+    let studentObj = curStudent;
+    if (!studentObj && studentId) {
+      studentObj = (window.allStudents || []).find(s => 
+        String(s.id) === String(studentId) || 
+        String(s.email).toLowerCase() === String(studentId).toLowerCase() ||
+        String(s.userid) === String(studentId)
+      );
+    }
+    if (studentObj && studentObj.id) {
+      studentId = studentObj.id;
+    }
     let sName = studentObj ? (window.getStudentName ? window.getStudentName(studentObj) : (studentObj.name || studentObj.full_name)) : null;
 
     const subPayload = {
@@ -1555,6 +1634,11 @@ let homeworkSubmissionCache = [];
       if (existingIdx !== -1) storedSubs[existingIdx] = { ...storedSubs[existingIdx], ...subRecord };
       else storedSubs.unshift(subRecord);
       localStorage.setItem('ck_hw_submissions', JSON.stringify(storedSubs));
+      if (!window.homeworkSubmissionCache) window.homeworkSubmissionCache = [];
+      const cacheIdx = window.homeworkSubmissionCache.findIndex(s => String(s.assignment_id) === String(assignment.id) && String(s.student_id) === String(studentId));
+      if (cacheIdx !== -1) window.homeworkSubmissionCache[cacheIdx] = { ...window.homeworkSubmissionCache[cacheIdx], ...subRecord };
+      else window.homeworkSubmissionCache.unshift(subRecord);
+      assignment.student_submission = subRecord;
       submitted = true;
     } catch (e) {}
 
@@ -1656,19 +1740,40 @@ let homeworkSubmissionCache = [];
   }
 
   function renderChildSubmissionPanel(assignment) {
-    const submission = assignment.student_submission || null;
+    let submission = assignment.student_submission || null;
+    if (!submission) {
+      const curStudent = (typeof resolveCurrentStudent === 'function') ? resolveCurrentStudent() : (window.currentStudent || null);
+      let sid = curStudent?.id || window.currentStudentId || window.studentId;
+      if (!sid) {
+        try {
+          const authObj = JSON.parse(sessionStorage.getItem('chesskidoo_auth') || sessionStorage.getItem('twoknights_auth') || localStorage.getItem('chesskidoo_auth') || localStorage.getItem('twoknights_auth') || '{}');
+          sid = authObj.studentId || authObj.user;
+        } catch (_) {}
+      }
+      const cache = window.homeworkSubmissionCache || homeworkSubmissionCache || [];
+      submission = cache.find(s => 
+        String(s.assignment_id) === String(assignment.id) && 
+        (!sid || String(s.student_id || s.studentId || '') === String(sid) || (curStudent && curStudent.email && String(s.student_id || '').toLowerCase() === String(curStudent.email).toLowerCase()))
+      ) || null;
+    }
+
     const status = submission?.status || 'not_submitted';
     const feedback = submission?.feedback || '';
     const score = submission?.score !== null && submission?.score !== undefined ? `  &middot;  <strong>Score:</strong> ${escapeValue(submission.score)}` : '';
     const canSubmit = !isAdminUser() && ['active', 'completed'].includes(assignment.status) && !['approved', 'closed'].includes(status);
     const currentText = submission?.submission_text || '';
     const currentUrl = submission?.submission_url || '';
-    const fileUrls = submission?.file_urls || [];
 
-    const filesHtml = Array.isArray(fileUrls) && fileUrls.length > 0 
+    let fileUrls = submission?.file_urls || [];
+    if (typeof fileUrls === 'string') {
+      try { fileUrls = JSON.parse(fileUrls); } catch (_) { fileUrls = [fileUrls]; }
+    }
+    if (!Array.isArray(fileUrls)) fileUrls = [];
+
+    const filesHtml = fileUrls.length > 0 
       ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);">
-          <strong>Attachments:</strong><br>
-          ${fileUrls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:block;margin-top:4px;">📎 File ${i + 1}</a>`).join('')}
+          <strong>Submitted Attachments:</strong><br>
+          ${fileUrls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:inline-block;margin:4px 6px 0 0;padding:3px 8px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;color:var(--gold);text-decoration:none;">📎 Solution File ${i + 1}</a>`).join('')}
         </div>` 
       : '';
 
@@ -1679,16 +1784,16 @@ let homeworkSubmissionCache = [];
         ${submission?.submitted_at ? `<span style="font-size:12px;color:var(--ivory-dim);">Submitted ${escapeValue(formatDate(submission.submitted_at.slice(0, 10)))}</span>` : ''}
         ${score}
       </div>
-      ${feedback ? `<div style="margin:8px 0;padding:10px;background:rgba(218,163,62,0.06);border:1px solid rgba(218,163,62,0.25);border-radius:8px;font-size:12px;color:var(--ivory);white-space:pre-wrap;">${escapeValue(feedback)}</div>` : ''}
-      ${currentText ? `<div style="font-size:12px;color:var(--ivory-dim);line-height:1.55;white-space:pre-wrap;">${escapeValue(currentText)}</div>` : ''}
-      ${currentUrl ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);"><a href="${safeUrl(currentUrl)}" target="_blank" rel="noopener">Open submission link</a></div>` : ''}
+      ${feedback ? `<div style="margin:8px 0;padding:10px;background:rgba(218,163,62,0.06);border:1px solid rgba(218,163,62,0.25);border-radius:8px;font-size:12px;color:var(--ivory);white-space:pre-wrap;"><strong>Coach Feedback:</strong> ${escapeValue(feedback)}</div>` : ''}
+      ${currentText ? `<div style="font-size:12px;color:var(--ivory-dim);line-height:1.55;white-space:pre-wrap;background:var(--bg3);padding:8px 10px;border-radius:6px;margin-top:6px;"><strong>Your Response:</strong> ${escapeValue(currentText)}</div>` : ''}
+      ${currentUrl ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);"><a href="${safeUrl(currentUrl)}" target="_blank" rel="noopener">🔗 Open submission link</a></div>` : ''}
       ${filesHtml}
       ${canSubmit ? `<div style="display:grid;gap:8px;margin-top:12px;">
         <textarea id="homework-submission-text-${assignment.id}" class="input-field" placeholder="Type your completed homework response or practice notes..." style="min-height:90px;">${escapeValue(currentText)}</textarea>
         <input id="homework-submission-url-${assignment.id}" class="input-field" placeholder="Optional submission link (Google Drive, Dropbox, etc.)" value="${escapeValue(currentUrl)}">
         <button type="button" class="btn btn-outline-grey btn-sm homework-attach-toggle" onclick="toggleHomeworkSubmissionUpload('${assignment.id}')">📎 Attach Solution Files</button>
         <div id="homework-submission-upload-${assignment.id}" style="display:none;">
-          <div style="font-size:11px; font-weight:700; color:var(--gold); margin-top:4px;">Attach Solution Files <span style="font-size:10px; font-weight:normal; color:var(--ivory-dim);">(Max 5 files, up to 15 MB each: .pgn, .pdf, .png, .jpg)</span></div>
+          <div style="font-size:11px; font-weight:700; color:var(--gold); margin-top:4px;">Attach Solution Files <span style="font-size:10px; font-weight:normal; color:var(--ivory-dim);">(Max 5 files: .pgn, .pdf, .png, .jpg)</span></div>
           <div class="upload-zone homework-submission-dropzone" id="homework-submission-drop-${assignment.id}">
             <span>Drop solution files here</span>
             <label class="btn btn-outline-grey btn-sm homework-submission-picker" for="homework-submission-files-${assignment.id}">Choose Files</label>
@@ -2272,6 +2377,26 @@ let homeworkSubmissionCache = [];
     if (!student) {
       list.innerHTML = '<div class="loading-state"><span class="spinner"></span> Loading student context...</div>';
       return;
+    }
+
+    if ((!window.allAttendance || window.allAttendance.length === 0) && typeof window.apiCall === 'function' && !window._attLoading) {
+      window._attLoading = true;
+      window.apiCall('/api/attendance?limit=1000', { silent: true })
+        .then(res => res && res.ok ? res.json() : [])
+        .then(data => {
+          window.allAttendance = data.data || data || [];
+          window._attLoading = false;
+          renderChildHomework();
+        })
+        .catch(() => { window._attLoading = false; });
+    }
+
+    if ((!window.homeworkSubmissionCache || window.homeworkSubmissionCache.length === 0) && typeof loadHomeworkSubmissions === 'function' && !window._subsLoading) {
+      window._subsLoading = true;
+      loadHomeworkSubmissions(true).then(() => {
+        window._subsLoading = false;
+        renderChildHomework();
+      }).catch(() => { window._subsLoading = false; });
     }
 
     const homeworkList = window.allHomework || [];
