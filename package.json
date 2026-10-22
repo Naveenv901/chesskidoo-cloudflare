@@ -11,7 +11,7 @@
     "preview": "vite preview",
     "lint": "eslint src --ext .js --max-warnings 0",
     "format": "prettier --write \"src/**/*.{js,css,html}\"",
-    "cf:dev": "wrangler pages project dev --compatibility-flags=nodejs_compat --port 8788",
+    "cf:dev": "wrangler pages dev --compatibility-flags=nodejs_compat --port 8788",
     "cf:deploy": "wrangler pages project deploy",
     "db:generate": "wrangler d1 migrations create chesskidoo-db",
     "db:apply": "wrangler d1 migrations apply chesskidoo-db --local",

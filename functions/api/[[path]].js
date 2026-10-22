@@ -753,9 +753,33 @@ async function handleResources(request, env) {
   if (request.method === 'POST') {
     const body = await request.json();
     const id = body.id || `res-${Date.now()}`;
-    await env.DB.prepare(`INSERT INTO resources (id, title, type, url, batch, level, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`).bind(id, body.title || null, body.type || null, body.url || null, body.batch || null, body.level || null, new Date().toISOString()).run();
+    // Map the LMS/portal friendly fields (title/description/url) onto the real
+    // D1 columns (name/notes/link). The API also returns title/desc/url so the
+    // resource card always renders, regardless of which columns were written.
+    await env.DB.prepare(
+      `INSERT INTO resources (id, name, type, level, batch, coach, notes, link, title, description, url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+      id,
+      body.name ?? body.title ?? null,
+      body.type ?? null,
+      body.level ?? null,
+      body.batch ?? null,
+      body.coach ?? null,
+      body.notes ?? body.description ?? null,
+      body.link ?? body.url ?? null,
+      body.title ?? null,
+      body.description ?? null,
+      body.url ?? null,
+      new Date().toISOString()
+    ).run();
     const row = await env.DB.prepare('SELECT * FROM resources WHERE id = ?').bind(id).first();
-    return json(201, row);
+    // Normalise the row into the front-end contract for the current request.
+    if (row) {
+      row.title = row.title ?? row.name ?? null;
+      row.description = row.description ?? row.notes ?? null;
+      row.url = row.url ?? row.link ?? null;
+    }
+    return json(201, { data: row });
   }
 
   return methodNotAllowed();
@@ -815,24 +839,51 @@ async function handleBatches(request, env) {
 
 async function handleRatingHistory(request, env) {
   const url = new URL(request.url);
-  const userid = url.searchParams.get('userid');
+  const studentId = url.searchParams.get('student_id') || url.searchParams.get('userid');
 
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
   }
 
   if (request.method === 'GET') {
-    if (!userid) return json(200, { data: [] });
-    const { results } = await env.DB.prepare('SELECT * FROM ratings WHERE userid = ? ORDER BY date DESC').bind(userid).all();
+    // Front-end contract: GET /api/rating_history returns every rating the LMS
+    // tracks (the admin rating list and the child "Growth" chart both read
+    // this). The legacy "rating_history?userid=" query is still honoured.
+    if (studentId) {
+      const { results } = await env.DB.prepare(
+        'SELECT * FROM ratings WHERE student_id = ? ORDER BY recorded_at DESC, date DESC'
+      ).bind(studentId).all();
+      return json(200, { data: results });
+    }
+    const { results } = await env.DB.prepare('SELECT * FROM ratings ORDER BY recorded_at DESC, date DESC').all();
     return json(200, { data: results });
   }
 
   if (request.method === 'POST') {
     const body = await request.json();
     const id = body.id || `rating-${Date.now()}`;
-    await env.DB.prepare(`INSERT INTO ratings (id, userid, rating, date, event, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.rating || null, body.date || null, body.event || null, new Date().toISOString()).run();
+    // The LMS sends snake_case: student_id, rating, change_type, notes.
+    // Persist everything the schema offers so nothing is silently dropped.
+    await env.DB.prepare(
+      `INSERT INTO ratings (id, student_id, user_id, rating, event, change_type, notes, date, recorded_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(
+      id,
+      body.student_id ?? body.userid ?? null,
+      body.student_id ?? body.userid ?? null,
+      body.rating ?? body.elo ?? null,
+      body.event ?? null,
+      body.change_type ?? null,
+      body.notes ?? null,
+      body.date ?? null,
+      body.recorded_at ?? body.date ?? null,
+      new Date().toISOString()
+    ).run();
     const row = await env.DB.prepare('SELECT * FROM ratings WHERE id = ?').bind(id).first();
-    return json(201, row);
+    if (row) {
+      row.student_id = row.student_id ?? row.user_id ?? null;
+      row.recorded_at = row.recorded_at ?? row.date ?? null;
+    }
+    return json(201, { data: row });
   }
 
   return methodNotAllowed();
@@ -1130,6 +1181,7 @@ async function handleExpenditures(request, env) {
   return methodNotAllowed();
 }
 
+
 async function handleCoaches(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
@@ -1138,28 +1190,10 @@ async function handleCoaches(request, env) {
   if (request.method === 'GET') {
     try {
       const now = new Date();
-      const monthStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, '0')}`;
-      const { results } = await env.DB.prepare(`
-        SELECT 
-          u.id,
-          u.full_name as name,
-          u.email,
-          u.phone_number as phone,
-          u.level,
-          u.rating,
-          u.status,
-          u.created_at,
-          COALESCE(e.amount, 0) as salary
-        FROM users u
-        LEFT JOIN (
-          SELECT description, amount
-          FROM expenses
-          WHERE category = 'Coach Salary'
-            AND strftime('%Y-%m', date) = ?
-        ) e ON e.description = u.id || ' monthly salary'
-        WHERE LOWER(u.role)='coach'
-        ORDER BY u.created_at DESC
-      `).bind(monthStr).all();
+      const monthStr = now.getUTCFullYear() + '-' + String(now.getUTCMonth() + 1).padStart(2, '0');
+      const { results } = await env.DB.prepare(
+        'SELECT u.id, u.full_name as name, u.email, u.phone_number as phone, u.level, u.rating, u.status, u.created_at, COALESCE(e.amount, 0) as salary FROM users u LEFT JOIN (SELECT description, amount FROM expenses WHERE category = \'Coach Salary\' AND strftime(\'%Y-%m\', date) = ?) e ON e.description = u.id || \' monthly salary\' WHERE LOWER(u.role)=\'coach\' ORDER BY u.created_at DESC'
+      ).bind(monthStr).all();
       return json(200, { data: results });
     } catch (e) {
       return json(200, { data: [] });
@@ -1168,18 +1202,67 @@ async function handleCoaches(request, env) {
 
   if (request.method === 'POST') {
     const body = await request.json();
-    const id = body.id || `coach-${Date.now()}`;
-    await env.DB.prepare(`INSERT INTO coaches (id, name, email, phone, specialization, experience, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.email || null, body.phone || null, body.specialization || null, body.experience || null, body.active !== false ? 1 : 0, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM coaches WHERE id = ?').bind(id).first();
-    return json(201, row);
+    const id = body.id || ('coach-' + Date.now());
+    await env.DB.prepare('INSERT INTO users (id, full_name, email, phone_number, level, rating, address, availability, bio, additional_details, photo_url, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, body.name, body.email, body.phone, body.specialization ?? body.level ?? null, body.experience ?? body.rating ?? null, body.address ?? null, body.availability ?? null, body.bio ?? null, body.additional_details ?? null, body.photo_url ?? null, body.status ?? null, 'coach', new Date().toISOString()).run();
+    const row = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    if (row) {
+      row.name = row.full_name;
+      row.salary = 0;
+      row.photo_url = row.photo_url ?? row.photo ?? null;
+    }
+    return json(201, { data: row });
+  }
+
+  if (request.method === 'PUT') {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) return json(400, { error: 'Missing coach id' });
+    const body = await request.json();
+    const existing = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    if (!existing) return json(404, { error: 'Coach not found' });
+    const fields = [];
+    const values = [];
+    const set = function (k, v) {
+      const val = Array.isArray(v) || (typeof v === 'object' && v !== null) ? JSON.stringify(v) : v;
+      fields.push(k + ' = ?');
+      values.push(val);
+    };
+    set('full_name', body.name ?? existing.full_name);
+    set('email', body.email ?? existing.email);
+    set('phone_number', body.phone ?? existing.phone_number);
+    set('level', body.specialization ?? body.level ?? existing.level);
+    set('rating', body.experience ?? body.rating ?? existing.rating);
+    set('address', body.address ?? existing.address);
+    set('availability', body.availability ?? existing.availability);
+    set('bio', body.bio ?? existing.bio);
+    set('additional_details', body.additional_details ?? existing.additional_details);
+    set('photo_url', body.photo_url ?? existing.photo_url);
+    set('status', body.status ?? existing.status);
+    if (!fields.length) return json(200, { data: existing });
+    values.push(id);
+    await env.DB.prepare('UPDATE users SET ' + fields.join(', ') + ' WHERE id = ?').bind(...values).run();
+    const row = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    if (row) {
+      row.name = row.full_name;
+      row.salary = 0;
+      row.photo_url = row.photo_url ?? row.photo ?? null;
+    }
+    return json(200, { data: row });
+  }
+
+  if (request.method === 'DELETE') {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) return json(400, { error: 'Missing coach id' });
+    const existing = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    if (!existing) return json(404, { error: 'Coach not found' });
+    if (existing.role === 'admin') return json(400, { error: 'Cannot delete the admin account' });
+    await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(id).run();
+    return json(200, { success: true });
   }
 
   return methodNotAllowed();
 }
-
-// ═══════════════════════════════════════════════════════════════════
-// NEW: Complaint & Feedback Handler
-// ═══════════════════════════════════════════════════════════════════
 async function handleComplaintFeedback(request, env) {
   if (request.method === 'OPTIONS') return new Response(null, { status: 200, headers: cors() });
 

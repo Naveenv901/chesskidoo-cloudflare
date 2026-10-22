@@ -924,7 +924,11 @@ async function handleCoaches(request, env) {
 
   if (request.method === 'GET') {
     try {
-      const { results } = await env.DB.prepare("SELECT id, full_name as name, email, phone_number as phone, level, rating, status, created_at FROM users WHERE LOWER(role)='coach' ORDER BY created_at DESC").all();
+      const now = new Date();
+      const monthStr = now.getUTCFullYear() + '-' + String(now.getUTCMonth() + 1).padStart(2, '0');
+      const { results } = await env.DB.prepare(
+        'SELECT u.id, u.full_name as name, u.email, u.phone_number as phone, u.level, u.rating, u.status, u.created_at, COALESCE(e.amount, 0) as salary FROM users u LEFT JOIN (SELECT description, amount FROM expenses WHERE category = \'Coach Salary\' AND strftime(\'%Y-%m\', date) = ?) e ON e.description = u.id || \' monthly salary\' WHERE LOWER(u.role)=\'coach\' ORDER BY u.created_at DESC'
+      ).bind(monthStr).all();
       return json(200, { data: results });
     } catch (e) {
       return json(200, { data: [] });
@@ -933,10 +937,63 @@ async function handleCoaches(request, env) {
 
   if (request.method === 'POST') {
     const body = await request.json();
-    const id = body.id || `coach-${Date.now()}`;
-    await env.DB.prepare(`INSERT INTO users (id, full_name, email, phone_number, level, rating, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.name || null, body.email || null, body.phone || null, body.specialization || body.level || null, body.experience || body.rating || null, body.status || null, 'coach', new Date().toISOString()).run();
+    const id = body.id || ('coach-' + Date.now());
+    await env.DB.prepare('INSERT INTO users (id, full_name, email, phone_number, level, rating, address, availability, bio, additional_details, photo_url, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').bind(id, body.name, body.email, body.phone, body.specialization ?? body.level ?? null, body.experience ?? body.rating ?? null, body.address ?? null, body.availability ?? null, body.bio ?? null, body.additional_details ?? null, body.photo_url ?? null, body.status ?? null, 'coach', new Date().toISOString()).run();
     const row = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
-    return json(201, row);
+    if (row) {
+      row.name = row.full_name;
+      row.salary = 0;
+      row.photo_url = row.photo_url ?? row.photo ?? null;
+    }
+    return json(201, { data: row });
+  }
+
+  if (request.method === 'PUT') {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) return json(400, { error: 'Missing coach id' });
+    const body = await request.json();
+    const existing = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    if (!existing) return json(404, { error: 'Coach not found' });
+    const fields = [];
+    const values = [];
+    const set = function (k, v) {
+      const val = Array.isArray(v) || (typeof v === 'object' && v !== null) ? JSON.stringify(v) : v;
+      fields.push(k + ' = ?');
+      values.push(val);
+    };
+    set('full_name', body.name ?? existing.full_name);
+    set('email', body.email ?? existing.email);
+    set('phone_number', body.phone ?? existing.phone_number);
+    set('level', body.specialization ?? body.level ?? existing.level);
+    set('rating', body.experience ?? body.rating ?? existing.rating);
+    set('address', body.address ?? existing.address);
+    set('availability', body.availability ?? existing.availability);
+    set('bio', body.bio ?? existing.bio);
+    set('additional_details', body.additional_details ?? existing.additional_details);
+    set('photo_url', body.photo_url ?? existing.photo_url);
+    set('status', body.status ?? existing.status);
+    if (!fields.length) return json(200, { data: existing });
+    values.push(id);
+    await env.DB.prepare('UPDATE users SET ' + fields.join(', ') + ' WHERE id = ?').bind(...values).run();
+    const row = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    if (row) {
+      row.name = row.full_name;
+      row.salary = 0;
+      row.photo_url = row.photo_url ?? row.photo ?? null;
+    }
+    return json(200, { data: row });
+  }
+
+  if (request.method === 'DELETE') {
+    const url = new URL(request.url);
+    const id = url.searchParams.get('id');
+    if (!id) return json(400, { error: 'Missing coach id' });
+    const existing = await env.DB.prepare('SELECT * FROM users WHERE id = ?').bind(id).first();
+    if (!existing) return json(404, { error: 'Coach not found' });
+    if (existing.role === 'admin') return json(400, { error: 'Cannot delete the admin account' });
+    await env.DB.prepare('DELETE FROM users WHERE id = ?').bind(id).run();
+    return json(200, { success: true });
   }
 
   return methodNotAllowed();
