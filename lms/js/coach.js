@@ -100,6 +100,8 @@ window.renderCoachDashboard = function() {
   if (statHw) statHw.textContent = pendingHw.length;
 
   if (window.renderCoachStudents) window.renderCoachStudents();
+  if (typeof window.renderCoachAssignments === 'function') window.renderCoachAssignments(window.coachAssignPage || 1);
+  if (typeof window.renderCoachAttendanceHomeworkCalendar === 'function') window.renderCoachAttendanceHomeworkCalendar();
 };
 
 function getCurrentCoachIdFromStorage() {
@@ -1668,8 +1670,8 @@ function initStudentPageObserver() {
   };
 
   window.renderCoachAssignments = function (page) {
-    const tbody = document.getElementById('coach-assignments-table-body');
-    const pagination = document.getElementById('coach-assignments-pagination');
+    const tbody = document.getElementById('coach-assignments-tbody') || document.getElementById('coach-assignments-table-body');
+    const pagination = document.getElementById('coach-assign-pagination') || document.getElementById('coach-assignments-pagination');
     if (!tbody) return;
 
     page = Number(page) || 1;
@@ -1677,14 +1679,28 @@ function initStudentPageObserver() {
 
     const coachId = window.currentCoachId || window.userId || getCurrentCoachIdFromStorage();
     if (!coachId) {
-      tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell">Coach ID not found.</td></tr>';
-      if (pagination) pagination.innerHTML = '';
+      setTimeout(() => {
+        if (window.renderCoachAssignments) window.renderCoachAssignments(page);
+      }, 500);
       return;
     }
 
-    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach((s.coach_id || s.coach) || s.coach, coachId));
+    if ((!window.allHomework || window.allHomework.length === 0) && window.loadHomeworkData && !window._loadingCoachHw) {
+      window._loadingCoachHw = true;
+      tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell"><span class="spinner"></span> Loading assignments...</td></tr>';
+      window.loadHomeworkData(true).then(() => {
+        window._loadingCoachHw = false;
+        window.renderCoachAssignments(page);
+      }).catch(() => {
+        window._loadingCoachHw = false;
+        window.renderCoachAssignments(page);
+      });
+      return;
+    }
+
+    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id || s.coach, coachId));
     const myStudentIds = myStudents.map(s => String(s.id));
-    const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || (b.coach || b.coach_id), coachId)).map(b => String(b.id));
+    const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || b.coach_id, coachId)).map(b => String(b.id));
 
     const assignments = (window.allHomework || [])
       .filter(h => {
@@ -1705,7 +1721,7 @@ function initStudentPageObserver() {
         h.description || '',
         h.due_date || '',
         h.target_type || '',
-        h.coach_id || '',
+        h.coach || h.coach_id || '',
         h.status || 'active'
       ].join('|');
       if (!grouped.has(key)) grouped.set(key, []);
@@ -1717,8 +1733,8 @@ function initStudentPageObserver() {
       const targetNames = new Set();
       items.forEach(h => {
         if (h.target_type === 'student') {
-          const s = myStudents.find(st => String(st.id) === String(h.student_id));
-          if (s) targetNames.add(window.getStudentName ? window.getStudentName(s) : s.name);
+          const s = myStudents.find(st => String(st.id) === String(h.student_id)) || (window.allStudents || []).find(st => String(st.id) === String(h.student_id));
+          if (s) targetNames.add(window.getStudentName ? window.getStudentName(s) : (s.full_name || s.name));
         } else if (h.target_type === 'batch') {
           const b = (window.allBatches || []).find(batch => String(batch.id) === String(h.batch_id));
           if (b) targetNames.add(b.name || 'Batch');
@@ -1733,12 +1749,13 @@ function initStudentPageObserver() {
       };
     }).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
-    const totalPages = Math.max(1, Math.ceil(deduped.length / window.coachAssignPageSize));
-    const start = (page - 1) * window.coachAssignPageSize;
-    const pageItems = deduped.slice(start, start + window.coachAssignPageSize);
+    const totalPages = Math.max(1, Math.ceil(deduped.length / (window.coachAssignPageSize || 8)));
+    const start = (page - 1) * (window.coachAssignPageSize || 8);
+    const pageItems = deduped.slice(start, start + (window.coachAssignPageSize || 8));
 
     if (deduped.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell">No assignments found.</td></tr>';
+      if (pagination) pagination.innerHTML = '';
     } else if (pageItems.length === 0) {
       tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell">No assignments on this page.</td></tr>';
     } else {
@@ -1766,10 +1783,14 @@ function initStudentPageObserver() {
     }
 
     if (pagination) {
-      let html = `<span style="font-size:12px; color:var(--ivory-dim);">Page ${page} / ${totalPages}</span>`;
-      html += `<button class="btn btn-outline-grey btn-sm" ${page <= 1 ? 'disabled' : ''} onclick="renderCoachAssignments(${page - 1})">Prev</button>`;
-      html += `<button class="btn btn-outline-grey btn-sm" ${page >= totalPages ? 'disabled' : ''} onclick="renderCoachAssignments(${page + 1})">Next</button>`;
-      pagination.innerHTML = html;
+      if (totalPages <= 1) {
+        pagination.innerHTML = '';
+      } else {
+        let html = `<span style="font-size:12px; color:var(--ivory-dim);">Page ${page} / ${totalPages}</span>`;
+        html += `<button class="btn btn-outline-grey btn-sm" ${page <= 1 ? 'disabled' : ''} onclick="renderCoachAssignments(${page - 1})">Prev</button>`;
+        html += `<button class="btn btn-outline-grey btn-sm" ${page >= totalPages ? 'disabled' : ''} onclick="renderCoachAssignments(${page + 1})">Next</button>`;
+        pagination.innerHTML = html;
+      }
     }
   };
 
