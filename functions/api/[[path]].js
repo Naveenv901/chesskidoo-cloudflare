@@ -176,14 +176,15 @@ async function handleMe(request, env) {
 
 // Verifies the Bearer token against the D1 `sessions` table (same check as /api/auth/me).
 async function getSessionUser(request, env) {
-  const auth = request.headers.get('Authorization') || '';
-  const token = auth.replace('Bearer ', '').trim();
+  const auth = request.headers.get('Authorization') || request.headers.get('authorization') || '';
+  const token = auth.replace(/^Bearer\s+/i, '').trim();
   if (!token) return null;
   try {
     const session = await env.DB.prepare(
       'SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?'
     ).bind(token).first();
-    if (!session || new Date(session.expires_at) < new Date()) return null;
+    if (!session) return null;
+    if (session.expires_at && new Date(session.expires_at) < new Date()) return null;
     return session;
   } catch (_) {
     return null;
@@ -303,10 +304,23 @@ async function handleQuery(request, env) {
       }
       let query = `SELECT ${colList} FROM ${actualTable}${where}`;
 
-      const sortField = safeIdent(url.searchParams.get('sort') || '');
-      if (sortField) {
-        const sortOrder = url.searchParams.get('order') === 'desc' ? 'DESC' : 'ASC';
-        query += ` ORDER BY ${sortField} ${sortOrder}`;
+      const rawSort = safeIdent(url.searchParams.get('sort') || '');
+      if (rawSort) {
+        const realCols = await tableColumns(env, actualTable);
+        let sortField = rawSort;
+        if (!realCols.has(sortField)) {
+          if (sortField === 'submitted_at' && realCols.has('submittedAt')) sortField = 'submittedAt';
+          else if (sortField === 'submittedAt' && realCols.has('submitted_at')) sortField = 'submitted_at';
+          else if (sortField === 'created_at' && realCols.has('created')) sortField = 'created';
+          else if (sortField === 'created' && realCols.has('created_at')) sortField = 'created_at';
+          else if (sortField === 'due_date' && realCols.has('dueDate')) sortField = 'dueDate';
+          else if (sortField === 'dueDate' && realCols.has('due_date')) sortField = 'due_date';
+          else if (!realCols.has(sortField)) sortField = null;
+        }
+        if (sortField) {
+          const sortOrder = url.searchParams.get('order') === 'desc' ? 'DESC' : 'ASC';
+          query += ` ORDER BY ${sortField} ${sortOrder}`;
+        }
       }
       const limit = url.searchParams.get('limit');
       if (limit) {
@@ -329,10 +343,13 @@ async function handleMutate(request, env) {
     const body = await request.json();
     const { table, op, data } = body;
 
-    if (!table || !ALLOWED_TABLES.includes(table)) {
+    if (!table) {
       return json(400, { error: 'Invalid table' });
     }
     const actualTable = resolveTable(table);
+    if (!ALLOWED_TABLES.includes(table) && !ALLOWED_TABLES.includes(actualTable)) {
+      return json(400, { error: 'Invalid table' });
+    }
     if (!data || typeof data !== 'object') {
       return json(400, { error: 'Missing data' });
     }
@@ -468,6 +485,18 @@ async function handleUpload(request, env) {
       objectKey = objectKey || (form.get('key') || '');
       body = file;
       fileType = file.type || fileType;
+    } else if (contentType.includes('application/json')) {
+      const jsonBody = await request.json().catch(() => ({}));
+      const b64 = jsonBody.image || jsonBody.base64 || jsonBody.file || jsonBody.data;
+      if (!b64) return json(400, { error: 'No file/image data in JSON payload' });
+      const raw = atob(String(b64).replace(/^data:[^;]+;base64,/, ''));
+      const bytes = new Uint8Array(raw.length);
+      for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+      body = bytes.buffer;
+      if (body.byteLength > MAX_UPLOAD_BYTES) return json(413, { error: 'File too large (max 16 MB)' });
+      objectKey = objectKey || jsonBody.filename || jsonBody.name || '';
+      const fn = String(jsonBody.filename || '').toLowerCase();
+      fileType = jsonBody.type || (fn.endsWith('.png') ? 'image/png' : fn.endsWith('.jpg') || fn.endsWith('.jpeg') ? 'image/jpeg' : fn.endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream');
     } else {
       const cl = parseInt(request.headers.get('content-length') || '', 10);
       if (Number.isFinite(cl) && cl > MAX_UPLOAD_BYTES) {
@@ -594,23 +623,92 @@ async function handleAttendance(request, env) {
   }
 
   if (request.method === 'GET') {
-    const userid = url.searchParams.get('userid');
+    const userid = url.searchParams.get('userid') || url.searchParams.get('student_id') || url.searchParams.get('studentId');
     const date = url.searchParams.get('date');
+    const limit = parseInt(url.searchParams.get('limit') || '5000', 10);
     let query = 'SELECT * FROM attendance WHERE 1=1';
     const params = [];
-    if (userid) { query += ' AND userid = ?'; params.push(userid); }
-    if (date) { query += ' AND date = ?'; params.push(date); }
-    query += ' ORDER BY date DESC';
+    if (userid) {
+      query += ' AND (userid = ? OR studentId = ?)';
+      params.push(userid, userid);
+    }
+    if (date) {
+      query += ' AND date = ?';
+      params.push(date);
+    }
+    query += ' ORDER BY date DESC LIMIT ?';
+    params.push(limit);
     const { results } = await env.DB.prepare(query).bind(...params).all();
     return json(200, { data: results });
   }
 
   if (request.method === 'POST') {
-    const body = await request.json();
-    const id = body.id || `att-${Date.now()}`;
-    await env.DB.prepare(`INSERT OR REPLACE INTO attendance (id, userid, studentId, studentName, classId, className, coachId, coachName, markedAt, date, status, class_title, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.studentId || null, body.studentName || null, body.classId || null, body.className || null, body.coachId || null, body.coachName || null, body.markedAt || new Date().toISOString(), body.date || null, body.status || null, body.class_title || null, new Date().toISOString()).run();
-    const row = await env.DB.prepare('SELECT * FROM attendance WHERE id = ?').bind(id).first();
-    return json(201, row);
+    const rawBody = await request.json();
+    const items = Array.isArray(rawBody) ? rawBody : [rawBody];
+    const realCols = await tableColumns(env, 'attendance');
+    const results = [];
+
+    for (const item of items) {
+      if (!item || typeof item !== 'object') continue;
+      const studentId = item.studentId || item.student_id || item.userid || null;
+      const date = item.date || new Date().toISOString().split('T')[0];
+      const now = new Date().toISOString();
+
+      let existingId = item.id;
+      if (!existingId && studentId && date) {
+        const existing = await env.DB.prepare('SELECT id FROM attendance WHERE (studentId = ? OR userid = ?) AND date = ? LIMIT 1')
+          .bind(studentId, studentId, date).first();
+        if (existing?.id) existingId = existing.id;
+      }
+      const id = existingId || `att-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+      const dataObj = {
+        id,
+        userid: item.userid || studentId,
+        studentId: studentId,
+        studentName: item.studentName || item.student_name || null,
+        classId: item.classId || item.class_id || null,
+        className: item.className || item.class_name || null,
+        coachId: item.coachId || item.coach_id || null,
+        coachName: item.coachName || item.coach_name || null,
+        markedAt: item.markedAt || now,
+        date: date,
+        status: item.status || 'present',
+        class_title: item.class_title || item.notes || null,
+        created_at: now
+      };
+
+      if (realCols.has('student_id')) dataObj.student_id = studentId;
+      if (realCols.has('notes')) dataObj.notes = item.notes || null;
+      if (realCols.has('coach_id')) dataObj.coach_id = item.coachId || item.coach_id || null;
+
+      const keys = Object.keys(dataObj).filter(k => realCols.has(k) && dataObj[k] !== undefined);
+      const vals = keys.map(k => dataObj[k]);
+
+      await env.DB.prepare(
+        `INSERT OR REPLACE INTO attendance (${keys.join(', ')}) VALUES (${keys.map(() => '?').join(', ')})`
+      ).bind(...vals).run();
+
+      results.push({ id, studentId, date, status: item.status });
+    }
+
+    return json(201, { success: true, count: results.length, data: Array.isArray(rawBody) ? results : results[0] });
+  }
+
+  if (request.method === 'DELETE') {
+    const studentId = url.searchParams.get('student_id') || url.searchParams.get('studentId') || url.searchParams.get('userid');
+    const date = url.searchParams.get('date');
+    const id = url.searchParams.get('id');
+
+    if (id) {
+      await env.DB.prepare('DELETE FROM attendance WHERE id = ?').bind(id).run();
+      return json(200, { success: true });
+    }
+    if (studentId && date) {
+      await env.DB.prepare('DELETE FROM attendance WHERE (studentId = ? OR userid = ?) AND date = ?').bind(studentId, studentId, date).run();
+      return json(200, { success: true });
+    }
+    return json(400, { error: 'Missing student_id or date for attendance deletion' });
   }
 
   return methodNotAllowed();
@@ -674,6 +772,27 @@ async function handleHomework(request, env) {
       await env.DB.prepare(`INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at, submittedAt, completed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)`).bind(id, assignmentId, studentId, body.submission_text || '', body.submission_url || '', JSON.stringify(body.file_urls || []), 'submitted', now, now, now, now).run();
       const row = await env.DB.prepare('SELECT * FROM hw_submissions WHERE id = ?').bind(id).first();
       return json(201, { data: row, success: true });
+    }
+
+    if (action === 'review') {
+      const id = url.searchParams.get('id') || body.id;
+      if (!id) return json(400, { error: 'Missing submission id' });
+      const realCols = await tableColumns(env, 'hw_submissions');
+      const now = new Date().toISOString();
+      const updates = [];
+      const vals = [];
+      if (body.status && realCols.has('status')) { updates.push('status = ?'); vals.push(body.status); }
+      if (body.feedback && realCols.has('feedback')) { updates.push('feedback = ?'); vals.push(body.feedback); }
+      else if (body.feedback && realCols.has('note')) { updates.push('note = ?'); vals.push(body.feedback); }
+      if (body.score !== undefined && realCols.has('score')) { updates.push('score = ?'); vals.push(body.score); }
+      else if (body.score !== undefined && realCols.has('accuracy')) { updates.push('accuracy = ?'); vals.push(body.score); }
+      if (realCols.has('updated_at')) { updates.push('updated_at = ?'); vals.push(now); }
+      if (realCols.has('reviewed_at')) { updates.push('reviewed_at = ?'); vals.push(now); }
+      if (updates.length) {
+        vals.push(id);
+        await env.DB.prepare(`UPDATE hw_submissions SET ${updates.join(', ')} WHERE id = ?`).bind(...vals).run();
+      }
+      return json(200, { success: true });
     }
 
     // ── Create a homework ASSIGNMENT ────────────────────────────────────────
@@ -741,6 +860,37 @@ async function handleHomework(request, env) {
     const row = await env.DB.prepare('SELECT * FROM assignments WHERE id = ?').bind(hwId).first();
     return json(201, { data: row, success: true });
   }
+
+  if (request.method === 'PATCH') {
+    const id = url.searchParams.get('id');
+    const body = await request.json().catch(() => ({}));
+    if (!id) return json(400, { error: 'Missing submission id' });
+    const realCols = await tableColumns(env, 'hw_submissions');
+    const now = new Date().toISOString();
+    const updates = [];
+    const vals = [];
+    if (body.status && realCols.has('status')) { updates.push('status = ?'); vals.push(body.status); }
+    if (body.feedback && realCols.has('feedback')) { updates.push('feedback = ?'); vals.push(body.feedback); }
+    else if (body.feedback && realCols.has('note')) { updates.push('note = ?'); vals.push(body.feedback); }
+    if (body.score !== undefined && realCols.has('score')) { updates.push('score = ?'); vals.push(body.score); }
+    else if (body.score !== undefined && realCols.has('accuracy')) { updates.push('accuracy = ?'); vals.push(body.score); }
+    if (realCols.has('updated_at')) { updates.push('updated_at = ?'); vals.push(now); }
+    if (realCols.has('reviewed_at')) { updates.push('reviewed_at = ?'); vals.push(now); }
+    if (updates.length) {
+      vals.push(id);
+      await env.DB.prepare(`UPDATE hw_submissions SET ${updates.join(', ')} WHERE id = ?`).bind(...vals).run();
+    }
+    return json(200, { success: true });
+  }
+
+  if (request.method === 'DELETE') {
+    const id = url.searchParams.get('id');
+    if (!id) return json(400, { error: 'Missing homework ID' });
+    await env.DB.prepare('DELETE FROM assignments WHERE id = ?').bind(id).run();
+    await env.DB.prepare('DELETE FROM hw_submissions WHERE assignment_id = ?').bind(id).run();
+    return json(200, { success: true });
+  }
+
   return methodNotAllowed();
 }
 
@@ -1631,100 +1781,6 @@ async function handleMessages(request, env) {
     return json(200, { success: true });
   }
   return methodNotAllowed();
-}
-
-// ── Cloudflare R2 storage (replaces Supabase Storage) ───────────────────────
-// Objects are keyed as "<bucket>/<path>" inside one R2 bucket.
-const MAX_UPLOAD_BYTES = 16 * 1024 * 1024;
-
-async function handleUpload(request, env) {
-  if (request.method === 'OPTIONS') return new Response(null, { status: 200, headers: cors() });
-
-  // Writes and deletes require a valid session, otherwise anyone could overwrite
-  // or remove any object (keys are client-chosen).
-  if (!await getSessionUser(request, env)) {
-    return json(401, { error: 'Unauthorized' });
-  }
-
-  // DELETE ?key=<bucket>/<path>
-  if (request.method === 'DELETE') {
-    const bucket = env.MEDIA;
-    if (!bucket) return json(500, { error: 'Storage not configured (R2 binding MEDIA missing)' });
-    const url = new URL(request.url);
-    const key = url.searchParams.get('key');
-    if (!key) return json(400, { error: 'Missing key' });
-    try {
-      await bucket.delete(String(key).replace(/\.\./g, ''));
-      return json(200, { success: true });
-    } catch (e) {
-      return json(500, { error: e.message });
-    }
-  }
-
-  if (request.method !== 'POST') return methodNotAllowed();
-  const bucket = env.MEDIA;
-  if (!bucket) return json(500, { error: 'Storage not configured (R2 binding MEDIA missing)' });
-
-  try {
-    const url = new URL(request.url);
-    const contentType = request.headers.get('content-type') || '';
-    let objectKey = url.searchParams.get('key') || '';
-    let body = null;
-    let fileType = 'application/octet-stream';
-
-    if (contentType.includes('multipart/form-data')) {
-      const form = await request.formData();
-      const file = form.get('file');
-      if (!file || typeof file === 'string') return json(400, { error: 'No file provided' });
-      if (file.size > MAX_UPLOAD_BYTES) return json(413, { error: 'File too large (max 16 MB)' });
-      objectKey = objectKey || (form.get('key') || '');
-      body = file;
-      fileType = file.type || fileType;
-    } else {
-      const cl = parseInt(request.headers.get('content-length') || '', 10);
-      if (Number.isFinite(cl) && cl > MAX_UPLOAD_BYTES) {
-        return json(413, { error: 'File too large (max 16 MB)' });
-      }
-      body = await request.arrayBuffer();
-      if (body.byteLength > MAX_UPLOAD_BYTES) return json(413, { error: 'File too large (max 16 MB)' });
-      fileType = contentType.split(';')[0] || fileType;
-    }
-
-    if (!objectKey) {
-      objectKey = `upload_${Date.now()}_${Math.random().toString(36).slice(2, 8)}.bin`;
-    }
-    const r2Key = String(objectKey).replace(/\.\./g, '').replace(/^\/+/, '');
-
-    await bucket.put(r2Key, body, { httpMetadata: { contentType: fileType } });
-    const publicUrl = `/api/files/${r2Key}`;
-    return json(201, { data: { key: r2Key, path: r2Key, url: publicUrl, publicUrl } });
-  } catch (e) {
-    return json(500, { error: e.message || 'Upload failed' });
-  }
-}
-
-async function handleFileServe(request, env, pathname) {
-  const bucket = env.MEDIA;
-  if (!bucket) return json(500, { error: 'Storage not configured' });
-  let key;
-  try {
-    key = decodeURIComponent(pathname.replace(/^\/api\/files\/?/, ''));
-  } catch (_) {
-    return json(400, { error: 'Invalid key' });
-  }
-  if (!key) return json(400, { error: 'Missing key' });
-  try {
-    const object = await bucket.get(key);
-    if (!object) return json(404, { error: 'Not found' });
-    const headers = new Headers(cors());
-    object.writeHttpMetadata(headers);
-    headers.set('etag', object.httpEtag);
-    // Keys are mutable (re-uploads overwrite in place), so avoid long immutable caching.
-    headers.set('cache-control', 'public, max-age=3600');
-    return new Response(object.body, { headers });
-  } catch (e) {
-    return json(500, { error: e.message });
-  }
 }
 
 export async function onRequest(context) {
