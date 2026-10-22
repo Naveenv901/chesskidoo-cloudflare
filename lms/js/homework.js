@@ -1,4 +1,4 @@
-﻿﻿(function () {
+(function () {
   const $ = (id) => document.getElementById(id);
   let homeworkSelectedIds = new Set();
   let homeworkCalendarMonth = new Date();
@@ -1679,6 +1679,16 @@ let homeworkSubmissionCache = [];
 
     if (window.toast) window.toast('Homework updated successfully', 'success');
     if (typeof window.closeModal === 'function') window.closeModal('homework-edit-modal');
+
+    // Force fresh load so the updated present_student_ids reaches student browsers
+    // Clear stale localStorage entry before re-fetch
+    try {
+      const _stored = JSON.parse(localStorage.getItem('ck_homework_assignments') || '[]');
+      const _kept = _stored.filter(h => String(h.id) !== String(id));
+      _kept.push(updatedPayload);
+      localStorage.setItem('ck_homework_assignments', JSON.stringify(_kept));
+    } catch (_) {}
+
     if (window.loadHomeworkData) await window.loadHomeworkData(true).catch(() => {});
     else if (window.loadAllData) await window.loadAllData(true).catch(() => {});
     refreshHomeworkViews();
@@ -2541,12 +2551,14 @@ let homeworkSubmissionCache = [];
       return;
     }
 
-    if ((!window.allAttendance || window.allAttendance.length === 0) && typeof window.apiCall === 'function' && !window._attLoading) {
+    // Always reload attendance fresh – guards are time-limited to avoid sticking
+    if (!window._attLoading) {
       window._attLoading = true;
       window.apiCall('/api/attendance?limit=1000', { silent: true })
-        .then(res => res && res.ok ? res.json() : [])
+        .then(res => res && res.ok ? res.json() : {})
         .then(data => {
-          window.allAttendance = data.data || data || [];
+          const rows = data.data || data || [];
+          if (Array.isArray(rows) && rows.length > 0) window.allAttendance = rows;
           window._attLoading = false;
           renderChildHomework();
         })
@@ -2686,7 +2698,64 @@ let homeworkSubmissionCache = [];
   window.renderHomeworkCalendar = renderHomeworkCalendar;
   window.renderHomeworkPage = renderHomeworkPage;
   window.renderAdminHomeworkBatchPreview = renderAdminHomeworkBatchPreview;
-  window.renderChildHomework = renderChildHomework;
+    let homeworkLoadPromise = null;
+  async function loadHomeworkData(forceRefresh = false) {
+    if (!forceRefresh && homeworkLoadPromise) return homeworkLoadPromise;
+    homeworkLoadPromise = (async () => {
+      let fetched = [];
+      try {
+        const res = await (window.apiCall ? window.apiCall("/api/homework", { silent: true }) : fetch("/api/homework"));
+        if (res && res.ok) {
+          const d = await res.json().catch(() => ({}));
+          fetched = d.data || d || [];
+        } else if (window.supabaseClient) {
+          const { data: dbHw } = await window.supabaseClient.from("homework_assignments").select("*").order("created_at", { ascending: false });
+          if (dbHw && dbHw.length) fetched = dbHw;
+        }
+      } catch (err) {
+        if (window.supabaseClient) {
+          try {
+            const { data: dbHw } = await window.supabaseClient.from("homework_assignments").select("*").order("created_at", { ascending: false });
+            if (dbHw && dbHw.length) fetched = dbHw;
+          } catch (_) {}
+        }
+      }
+      try {
+        const localHw = JSON.parse(localStorage.getItem("ck_homework_assignments") || "[]");
+        const map = new Map();
+        const serverIds = new Set();
+        (fetched || []).forEach(h => {
+          if (h && h.id) {
+            if (typeof h.present_student_ids === "string") {
+              try { h.present_student_ids = JSON.parse(h.present_student_ids); } catch (_) {}
+            }
+            map.set(String(h.id), h);
+            serverIds.add(String(h.id));
+          }
+        });
+        (localHw || []).forEach(h => {
+          if (h && h.id) {
+            const hid = String(h.id);
+            if (!serverIds.has(hid)) return;
+            if (!map.has(hid)) map.set(hid, h);
+            else map.set(hid, { ...h, ...map.get(hid) });
+          }
+        });
+        window.allHomework = Array.from(map.values()).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        if (window.allHomework.length) {
+          try { localStorage.setItem("ck_homework_assignments", JSON.stringify(window.allHomework)); } catch (_) {}
+        }
+      } catch (_) {
+        window.allHomework = fetched || [];
+      } finally {
+        homeworkLoadPromise = null;
+      }
+      return window.allHomework;
+    })();
+    return homeworkLoadPromise;
+  }
+  window.loadHomeworkData = loadHomeworkData;
+window.renderChildHomework = renderChildHomework;
   window.renderStudentHomeworkProgress = renderStudentHomeworkProgress;
   window.saveHomeworkEdit = saveHomeworkEdit;
   window.setHomeworkView = setHomeworkView;
