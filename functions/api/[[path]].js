@@ -905,6 +905,10 @@ async function handleHomework(request, env) {
       updates.push('attachment_urls = ?');
       vals.push(typeof body.attachment_urls === 'string' ? body.attachment_urls : JSON.stringify(body.attachment_urls));
     }
+    if (body.present_student_ids !== undefined && realCols.has('present_student_ids')) {
+      updates.push('present_student_ids = ?');
+      vals.push(Array.isArray(body.present_student_ids) ? JSON.stringify(body.present_student_ids) : (body.present_student_ids || null));
+    }
     if ((body.coach || body.coach_id) && realCols.has('coach')) {
       updates.push('coach = ?');
       vals.push(body.coach || body.coach_id);

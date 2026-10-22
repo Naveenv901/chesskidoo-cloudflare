@@ -3534,6 +3534,19 @@
         <span id="homework-edit-target-info" style="color:var(--gold); font-weight:600;">Target: All Students</span>
         <span id="homework-edit-status-badge" class="badge badge-warning">Active</span>
       </div>
+      <div id="homework-edit-attendance-wrap" style="display:none; font-size:12px; margin-top:2px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:6px;">
+          <div>
+            <label style="display:block; font-weight:600; color:var(--ivory);" id="homework-edit-att-heading">Student Attendance & Assignment</label>
+            <span style="font-size:11px; color:var(--ivory-dim);" id="homework-edit-att-sub">Present students receive this homework; absent students do not.</span>
+          </div>
+          <div style="display:flex; gap:6px;">
+            <button type="button" class="btn btn-outline-grey btn-sm" style="font-size:11px; padding:2px 8px;" onclick="window.setAllEditAttendance(true)">All Present</button>
+            <button type="button" class="btn btn-outline-grey btn-sm" style="font-size:11px; padding:2px 8px;" onclick="window.setAllEditAttendance(false)">All Absent</button>
+          </div>
+        </div>
+        <div id="homework-edit-attendance-list" style="max-height:190px; overflow-y:auto; background:var(--bg3); border:1px solid var(--border); border-radius:6px; padding:2px 0;"></div>
+      </div>
       <div id="homework-edit-files-wrap" style="display:none; font-size:12px; color:var(--ivory-dim);">
         <label style="display:block; margin-bottom:4px; font-weight:600; color:var(--ivory);">Attached Materials / Files</label>
         <div id="homework-edit-files-list" style="display:flex; flex-direction:column; gap:4px;"></div>

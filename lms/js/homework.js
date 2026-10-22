@@ -1232,6 +1232,152 @@ let homeworkSubmissionCache = [];
     if (window.renderCoachAssignments) window.renderCoachAssignments(window.coachAssignPage || 1);
   }
 
+  window.getTargetStudentsForHomework = function(hw) {
+    const allStudents = window.allStudents || [];
+    const targetType = (hw.target_type || 'all').toLowerCase();
+
+    if (targetType === 'student') {
+      const sid = String(hw.student_id || hw.target_value || hw.target_id || '');
+      return allStudents.filter(s => String(s.id) === sid || (s.email && String(s.email).toLowerCase() === sid.toLowerCase()));
+    }
+
+    if (targetType === 'batch') {
+      const assignedBatchId = String(hw.batch_id || hw.target_value || hw.target_id || '');
+      const assignedBatchName = String(hw.batch_name || hw.target_value || '');
+      return allStudents.filter(s => {
+        if (s.batch_id && (String(s.batch_id) === assignedBatchId || String(s.batch_id) === assignedBatchName)) return true;
+        if (s.batch && (String(s.batch) === assignedBatchId || String(s.batch) === assignedBatchName)) return true;
+        const b = (window.allBatches || []).find(item => String(item.id) === assignedBatchId || String(item.name) === assignedBatchId || String(item.name) === assignedBatchName);
+        if (b && s.batch && (String(s.batch) === String(b.name) || String(s.batch) === String(b.id))) return true;
+        return false;
+      });
+    }
+
+    // targetType === 'all'
+    const coachId = hw.coach || hw.coach_id || hw.created_by || window.currentCoachId || window.userId;
+    const role = (window.role || window.userRole || '').toLowerCase();
+    if (role === 'coach' && coachId && window.ckSameCoach) {
+      const coachStudents = allStudents.filter(s => window.ckSameCoach(s.coach_id || s.coach, coachId));
+      if (coachStudents.length) return coachStudents;
+    }
+    return allStudents.filter(s => (s.status || 'active').toLowerCase() === 'active');
+  };
+
+  window.getInitialPresentStudentIds = function(hw, targetStudents) {
+    let explicitIds = hw.present_student_ids;
+    if (typeof explicitIds === 'string') {
+      try { explicitIds = JSON.parse(explicitIds); } catch (_) {}
+    }
+    if (Array.isArray(explicitIds) && explicitIds.length > 0) {
+      return new Set(explicitIds.map(String));
+    }
+
+    const attList = window.allAttendance || [];
+    const classDate = (hw.assigned_date || hw.created_at || '').substring(0, 10);
+    const presentSet = new Set();
+
+    targetStudents.forEach(s => {
+      const sid = String(s.id);
+      let isPresent = true; // default to present if no attendance record
+
+      if (classDate && attList.length > 0) {
+        const match = attList.find(a => {
+          const aSid = String(a.student_id || a.studentId || a.userid || '');
+          const aDate = (a.date || '').substring(0, 10);
+          const matchesSid = (aSid === sid || (s.email && String(s.email).toLowerCase() === aSid.toLowerCase()));
+          return matchesSid && aDate === classDate;
+        });
+        if (match) {
+          const st = (match.status || '').toLowerCase();
+          if (st === 'absent' || st === 'no class') {
+            isPresent = false;
+          } else if (st === 'present' || st === 'late') {
+            isPresent = true;
+          }
+        }
+      }
+
+      if (isPresent) {
+        presentSet.add(sid);
+      }
+    });
+
+    return presentSet;
+  };
+
+  window.renderEditAttendanceList = function() {
+    const listEl = document.getElementById('homework-edit-attendance-list');
+    const headingEl = document.getElementById('homework-edit-att-heading');
+    if (!listEl) return;
+
+    const students = window.editingHomeworkTargetStudents || [];
+    const presentSet = window.editingHomeworkPresentIds || new Set();
+
+    if (!students.length) {
+      listEl.innerHTML = '<div style="padding:10px; color:var(--ivory-dim); font-size:12px; text-align:center;">No enrolled students found for this target.</div>';
+      if (headingEl) headingEl.textContent = 'Student Attendance & Assignment';
+      return;
+    }
+
+    const presentCount = students.filter(s => presentSet.has(String(s.id))).length;
+    const absentCount = students.length - presentCount;
+    if (headingEl) {
+      headingEl.textContent = `Student Attendance & Assignment (${presentCount} Present · ${absentCount} Absent)`;
+    }
+
+    listEl.innerHTML = students.map(s => {
+      const sid = String(s.id);
+      const isPresent = presentSet.has(sid);
+      const name = window.getStudentName ? window.getStudentName(s) : (s.full_name || s.name || s.student_name || 'Student');
+      const batchName = s.batch_name || s.batch || '';
+
+      const presentStyle = isPresent
+        ? 'background:#1b4d2e; color:#5cdb95; font-weight:700; border:1px solid #2e7d32;'
+        : 'background:var(--bg2); color:var(--ivory-dim); border:1px solid var(--border); opacity:0.65;';
+
+      const absentStyle = !isPresent
+        ? 'background:#5a1e1e; color:#ff8080; font-weight:700; border:1px solid #c62828;'
+        : 'background:var(--bg2); color:var(--ivory-dim); border:1px solid var(--border); opacity:0.65;';
+
+      return `<div style="display:flex; align-items:center; justify-content:space-between; padding:7px 10px; border-bottom:1px solid rgba(255,255,255,0.06); gap:10px;">
+        <div style="display:flex; align-items:center; gap:8px; min-width:0; overflow:hidden;">
+          <span style="font-weight:500; font-size:12px; color:var(--ivory); overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${escapeValue(name)}">${escapeValue(name)}</span>
+          ${batchName ? `<span style="font-size:10px; color:var(--ivory-dim); background:var(--bg2); padding:1px 6px; border-radius:4px; border:1px solid var(--border); white-space:nowrap;">${escapeValue(batchName)}</span>` : ''}
+        </div>
+        <div style="display:inline-flex; gap:4px; shrink:0;">
+          <button type="button" class="btn btn-sm" style="font-size:11px; padding:3px 8px; border-radius:4px; cursor:pointer; ${presentStyle}" onclick="window.toggleEditStudentAttendance('${sid}', true)">
+            ✓ Present
+          </button>
+          <button type="button" class="btn btn-sm" style="font-size:11px; padding:3px 8px; border-radius:4px; cursor:pointer; ${absentStyle}" onclick="window.toggleEditStudentAttendance('${sid}', false)">
+            ✕ Absent
+          </button>
+        </div>
+      </div>`;
+    }).join('');
+  };
+
+  window.toggleEditStudentAttendance = function(studentId, isPresent) {
+    if (!window.editingHomeworkPresentIds) window.editingHomeworkPresentIds = new Set();
+    const sid = String(studentId);
+    if (isPresent) {
+      window.editingHomeworkPresentIds.add(sid);
+    } else {
+      window.editingHomeworkPresentIds.delete(sid);
+    }
+    window.renderEditAttendanceList();
+  };
+
+  window.setAllEditAttendance = function(allPresent) {
+    if (!window.editingHomeworkPresentIds) window.editingHomeworkPresentIds = new Set();
+    const students = window.editingHomeworkTargetStudents || [];
+    if (allPresent) {
+      students.forEach(s => window.editingHomeworkPresentIds.add(String(s.id)));
+    } else {
+      window.editingHomeworkPresentIds.clear();
+    }
+    window.renderEditAttendanceList();
+  };
+
   window.editHomeworkAssignment = function (id) {
     if (!canEditOrDeleteHomework()) return window.toast ? window.toast('Only coaches and administrators can edit homework.', 'error') : null;
     const hw = (window.allHomework || []).find(h => String(h.id) === String(id));
@@ -1314,6 +1460,18 @@ let homeworkSubmissionCache = [];
       filesWrapEl.style.display = 'block';
     }
     renderEditFileList();
+
+    // Populate editable student attendance (present / absent)
+    const attWrapEl = document.getElementById('homework-edit-attendance-wrap');
+    if (attWrapEl) {
+      attWrapEl.style.display = 'block';
+      const targetStudents = window.getTargetStudentsForHomework ? window.getTargetStudentsForHomework(hw) : [];
+      window.editingHomeworkTargetStudents = targetStudents;
+      window.editingHomeworkPresentIds = window.getInitialPresentStudentIds ? window.getInitialPresentStudentIds(hw, targetStudents) : new Set();
+      if (typeof window.renderEditAttendanceList === 'function') {
+        window.renderEditAttendanceList();
+      }
+    }
 
     const fileInput = document.getElementById('homework-edit-file-input');
     if (fileInput) {
@@ -1435,6 +1593,7 @@ let homeworkSubmissionCache = [];
       }
     }
     const finalFiles = [...kept, ...uploadedUrls];
+    const presentStudentIds = Array.from(window.editingHomeworkPresentIds || []);
 
     const updatedPayload = {
       ...hw,
@@ -1443,7 +1602,8 @@ let homeworkSubmissionCache = [];
       due_date: newDueDate || hw.due_date,
       updated_at: new Date().toISOString(),
       attachment_urls: finalFiles,
-      questions_files: finalFiles
+      questions_files: finalFiles,
+      present_student_ids: presentStudentIds
     };
 
     let updated = false;
@@ -1458,7 +1618,8 @@ let homeworkSubmissionCache = [];
           due_date: updatedPayload.due_date,
           updated_at: updatedPayload.updated_at,
           attachment_urls: updatedPayload.attachment_urls,
-          questions_files: updatedPayload.questions_files
+          questions_files: updatedPayload.questions_files,
+          present_student_ids: updatedPayload.present_student_ids
         }),
         silent: true
       });
@@ -1483,7 +1644,8 @@ let homeworkSubmissionCache = [];
             due_date: updatedPayload.due_date,
             updated_at: updatedPayload.updated_at,
             attachment_urls: updatedPayload.attachment_urls,
-            questions_files: updatedPayload.questions_files
+            questions_files: updatedPayload.questions_files,
+            present_student_ids: updatedPayload.present_student_ids
           })
           .eq('id', id);
         if (!error) {
