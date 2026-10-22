@@ -896,13 +896,18 @@ async function handleHomework(request, env) {
     if (body.due_date && realCols.has('due_date')) { updates.push('due_date = ?'); vals.push(body.due_date); }
     if (body.due_date && realCols.has('dueDate')) { updates.push('dueDate = ?'); vals.push(body.due_date); }
     if (body.status && realCols.has('status')) { updates.push('status = ?'); vals.push(body.status); }
-    if (body.questions_files && realCols.has('questions_files')) {
+    const finalFiles = body.questions_files !== undefined ? body.questions_files : body.attachment_urls;
+    if (finalFiles !== undefined && realCols.has('questions_files')) {
       updates.push('questions_files = ?');
-      vals.push(typeof body.questions_files === 'string' ? body.questions_files : JSON.stringify(body.questions_files));
+      vals.push(typeof finalFiles === 'string' ? finalFiles : JSON.stringify(finalFiles));
     }
-    if (body.attachment_urls && realCols.has('attachment_urls')) {
+    if (body.attachment_urls !== undefined && realCols.has('attachment_urls')) {
       updates.push('attachment_urls = ?');
       vals.push(typeof body.attachment_urls === 'string' ? body.attachment_urls : JSON.stringify(body.attachment_urls));
+    }
+    if ((body.coach || body.coach_id) && realCols.has('coach')) {
+      updates.push('coach = ?');
+      vals.push(body.coach || body.coach_id);
     }
     if (realCols.has('updated_at')) { updates.push('updated_at = ?'); vals.push(now); }
     if (updates.length) {

@@ -6,7 +6,30 @@
   let editingHomeworkRemovedIds = new Set();
   let editingHomeworkNewFiles = [];
 
-  function studentName(student) {
+    if (!window.ckSameCoach) {
+    window.ckSameCoach = function (a, b) {
+      if (a == null || b == null) return false;
+      const norm = (v) => String(v).trim().toLowerCase().replace(/[-_]/g, '');
+      const na = norm(a), nb = norm(b);
+      if (!na || !nb) return false;
+      if (na === nb) return true;
+      const strip = (v) => v.replace(/^(?:c|coach)/, '');
+      if (strip(na) && strip(na) === strip(nb)) return true;
+      const coaches = window.allCoaches || [];
+      const ca = coaches.find(c => norm(c.id) === na || norm(c.email) === na || norm(c.name || c.full_name) === na || strip(norm(c.id || '')) === strip(na));
+      const cb = coaches.find(c => norm(c.id) === nb || norm(c.email) === nb || norm(c.name || c.full_name) === nb || strip(norm(c.id || '')) === strip(nb));
+      if (ca && cb) {
+        if (norm(ca.id) === norm(cb.id)) return true;
+        if (ca.email && cb.email && norm(ca.email) === norm(cb.email)) return true;
+        if ((ca.name || ca.full_name) && (cb.name || cb.full_name) && norm(ca.name || ca.full_name) === norm(cb.name || cb.full_name)) return true;
+      }
+      if (ca && (norm(ca.id) === nb || norm(ca.email) === nb || norm(ca.name || ca.full_name) === nb || strip(norm(ca.name || ca.full_name || '')) === strip(nb) || strip(norm(ca.id || '')) === strip(nb))) return true;
+      if (cb && (norm(cb.id) === na || norm(cb.email) === na || norm(cb.name || cb.full_name) === na || strip(norm(cb.name || cb.full_name || '')) === strip(na) || strip(norm(cb.id || '')) === strip(na))) return true;
+      return false;
+    };
+  }
+
+function studentName(student) {
     return window.getStudentName ? window.getStudentName(student) : (student && (student.name || student.full_name || student.id)) || 'Student';
   }
 
@@ -1016,15 +1039,21 @@ let homeworkSubmissionCache = [];
   async function deleteHomeworkAssignment(id) {
     if (!canEditOrDeleteHomework()) return window.toast ? window.toast('Only coaches and administrators can delete homework.', 'error') : null;
     const role = (window.role || window.userRole || 'student').toLowerCase();
-    if (String(role).toLowerCase() === 'coach') {
+    const isAdmin = role === 'admin' || role === 'master' || (typeof isAdminUser === 'function' && isAdminUser());
+    if (String(role).toLowerCase() === 'coach' && !isAdmin) {
       const hw = (window.allHomework || []).find(h => String(h.id) === String(id));
       const cId = window.currentCoachId || window.userId;
       if (hw && cId && window.ckSameCoach) {
         const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || b.coach_id, cId)).map(b => String(b.id));
         const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id || s.coach, cId)).map(s => String(s.id));
-        const isOwner = (hw.target_type === 'all' && ((hw.created_by || hw.coach_id) ? window.ckSameCoach(hw.created_by || hw.coach_id, cId) : true))
-          || (hw.target_type === 'batch' && (myBatchIds.includes(String(hw.batch_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))))
-          || (hw.target_type === 'student' && (myStudentIds.includes(String(hw.student_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))));
+        const assignCoach = hw.coach || hw.coach_id || hw.created_by;
+        const isOwner = (hw.target_type === 'all' && (assignCoach ? window.ckSameCoach(assignCoach, cId) : true))
+          || (assignCoach && window.ckSameCoach(assignCoach, cId))
+          || (hw.batch_id && myBatchIds.includes(String(hw.batch_id)))
+          || (hw.target_type === 'batch' && myBatchIds.includes(String(hw.batch_id)))
+          || (hw.student_id && myStudentIds.includes(String(hw.student_id)))
+          || (hw.target_type === 'student' && myStudentIds.includes(String(hw.student_id)))
+          || (!hw.coach && !hw.coach_id && hw.batch_id && myBatchIds.includes(String(hw.batch_id)));
         if (!isOwner) return window.toast ? window.toast('You can only delete your own assignments.', 'error') : null;
       }
     }
@@ -1093,14 +1122,20 @@ let homeworkSubmissionCache = [];
 
     // Check if coach is the owner of the homework
     const role = (window.role || window.userRole || 'student').toLowerCase();
-    if (String(role).toLowerCase() === 'coach') {
+    const isAdmin = role === 'admin' || role === 'master' || (typeof isAdminUser === 'function' && isAdminUser());
+    if (String(role).toLowerCase() === 'coach' && !isAdmin) {
       const cId = window.currentCoachId || window.userId;
       if (hw && cId && window.ckSameCoach) {
         const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || b.coach_id, cId)).map(b => String(b.id));
         const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id || s.coach, cId)).map(s => String(s.id));
-        const isOwner = (hw.target_type === 'all' && ((hw.created_by || hw.coach_id) ? window.ckSameCoach(hw.created_by || hw.coach_id, cId) : true))
-          || (hw.target_type === 'batch' && (myBatchIds.includes(String(hw.batch_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))))
-          || (hw.target_type === 'student' && (myStudentIds.includes(String(hw.student_id)) || (hw.coach_id && window.ckSameCoach(hw.coach_id, cId))));
+        const assignCoach = hw.coach || hw.coach_id || hw.created_by;
+        const isOwner = (hw.target_type === 'all' && (assignCoach ? window.ckSameCoach(assignCoach, cId) : true))
+          || (assignCoach && window.ckSameCoach(assignCoach, cId))
+          || (hw.batch_id && myBatchIds.includes(String(hw.batch_id)))
+          || (hw.target_type === 'batch' && myBatchIds.includes(String(hw.batch_id)))
+          || (hw.student_id && myStudentIds.includes(String(hw.student_id)))
+          || (hw.target_type === 'student' && myStudentIds.includes(String(hw.student_id)))
+          || (!hw.coach && !hw.coach_id && hw.batch_id && myBatchIds.includes(String(hw.batch_id)));
         if (!isOwner) return window.toast ? window.toast('You can only edit your own assignments.', 'error') : null;
       }
     }
@@ -1120,7 +1155,7 @@ let homeworkSubmissionCache = [];
 
     if (titleEl) titleEl.value = hw.title || '';
     if (descEl) descEl.value = hw.description || '';
-    if (dueDateEl) dueDateEl.value = hw.due_date || '';
+    if (dueDateEl) dueDateEl.value = hw.due_date ? hw.due_date.substring(0, 10) : '';
     if (modalTitle) modalTitle.textContent = 'Edit Homework';
 
     if (targetInfoEl) {
@@ -1133,19 +1168,35 @@ let homeworkSubmissionCache = [];
       statusBadgeEl.className = st === 'completed' ? 'badge badge-success' : st === 'archived' ? 'badge badge-grey' : 'badge badge-warning';
     }
 
-    const files = (Array.isArray(hw.questions_files) && hw.questions_files.length ? hw.questions_files : (Array.isArray(hw.attachment_urls) ? hw.attachment_urls : []));
+    function parseFilesArray(raw) {
+      if (!raw) return [];
+      if (Array.isArray(raw)) return raw.filter(Boolean);
+      if (typeof raw === 'string') {
+        const str = raw.trim();
+        if (str.startsWith('[') && str.endsWith(']')) {
+          try {
+            const parsed = JSON.parse(str);
+            if (Array.isArray(parsed)) return parsed.filter(Boolean);
+          } catch (_) {}
+        }
+        if (str.length > 0) return [str];
+      }
+      return [];
+    }
+
+    let files = parseFilesArray(hw.questions_files);
+    if (!files.length) files = parseFilesArray(hw.attachment_urls);
+    if (!files.length && hw.file_url) files = parseFilesArray(hw.file_url);
+
     editingHomeworkFiles = Array.isArray(files) ? [...files] : [];
     editingHomeworkRemovedIds = new Set();
     editingHomeworkNewFiles = [];
-    if (filesWrapEl && filesListEl) {
-      if (editingHomeworkFiles.length > 0) {
-        filesWrapEl.style.display = 'block';
-        renderEditFileList();
-      } else {
-        filesWrapEl.style.display = 'none';
-        filesListEl.innerHTML = '';
-      }
+
+    // Always show the files section in edit modal so existing files are visible and new files can be added
+    if (filesWrapEl) {
+      filesWrapEl.style.display = 'block';
     }
+    renderEditFileList();
 
     const fileInput = document.getElementById('homework-edit-file-input');
     if (fileInput) {
@@ -1161,7 +1212,6 @@ let homeworkSubmissionCache = [];
     // Set up save button handler
     const saveBtn = document.getElementById('homework-edit-save-btn');
     if (saveBtn) {
-      // Remove old event listeners by cloning
       const newSaveBtn = saveBtn.cloneNode(true);
       saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
       newSaveBtn.addEventListener('click', () => {
@@ -1186,24 +1236,54 @@ let homeworkSubmissionCache = [];
       return !editingHomeworkRemovedIds.has(key);
     });
     if (!kept.length && !editingHomeworkNewFiles.length) {
-      filesListEl.innerHTML = '';
+      filesListEl.innerHTML = '<div style="font-size:11px;color:var(--ivory-dim);font-style:italic;padding:4px 0;">No file attachments currently. Choose files below to add.</div>';
       return;
     }
-    filesListEl.innerHTML = kept.map((f, i) => {
-      const url = typeof f === 'string' ? f : (f.url || '');
-      const name = typeof f === 'string' ? (f.split('/').pop() || `Attachment ${i + 1}`) : (f.name || `Attachment ${i + 1}`);
-      const key = typeof f === 'string' ? f : (f.url || f.name || String(i));
-      return `<div style="display:flex; align-items:center; gap:6px; background:var(--bg2); padding:4px 8px; border-radius:4px;">
-        <span>ðŸ“Ž</span>
-        <a href="${escapeValue(url)}" target="_blank" rel="noopener" style="color:var(--gold); text-decoration:none; font-size:11px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:480px;">${escapeValue(name)}</a>
-        <button type="button" onclick="removeEditHomeworkFile('${escapeValue(key).replace(/'/g, "\\'")}')" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;">âœ•</button>
-      </div>`;
-    }).join('');
+    let html = '';
+    if (kept.length) {
+      html += kept.map((f, i) => {
+        const url = typeof f === 'string' ? f : (f.url || '');
+        let name = typeof f === 'string' ? (f.split('/').pop() || `Attachment ${i + 1}`) : (f.name || `Attachment ${i + 1}`);
+        if (name.startsWith('data:')) name = `Attached Image ${i + 1}`;
+        if (name.length > 45) name = name.substring(0, 42) + '...';
+        const key = typeof f === 'string' ? f : (f.url || f.name || String(i));
+        return `<div style="display:flex; align-items:center; justify-content:space-between; background:var(--bg2, #1c2331); padding:6px 10px; border-radius:6px; border:1px solid var(--border, #333); margin-bottom:4px;">
+          <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+            <span>📎</span>
+            <a href="${escapeValue(url)}" target="_blank" rel="noopener" style="color:var(--gold, #d4af37); text-decoration:underline; font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:320px;" title="View / download existing attachment">${escapeValue(name)}</a>
+            <span style="font-size:10px; color:var(--ivory-dim);">(Existing)</span>
+          </div>
+          <button type="button" onclick="removeEditHomeworkFile('${escapeValue(key).replace(/'/g, "\\'")}')" style="background:#dc354522;border:1px solid #dc354566;color:#ff6b6b;cursor:pointer;font-size:11px;padding:2px 8px;border-radius:4px;" title="Remove this attachment">✕ Remove</button>
+        </div>`;
+      }).join('');
+    }
+    if (editingHomeworkNewFiles.length) {
+      html += editingHomeworkNewFiles.map((f, i) => {
+        const name = f.name || `New File ${i + 1}`;
+        const sizeStr = f.size ? ` (${Math.round(f.size / 1024)} KB)` : '';
+        return `<div style="display:flex; align-items:center; justify-content:space-between; background:rgba(40,167,69,0.1); padding:6px 10px; border-radius:6px; border:1px solid rgba(40,167,69,0.3); margin-bottom:4px;">
+          <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+            <span>➕</span>
+            <span style="color:#a8e6cf; font-size:12px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:320px;">${escapeValue(name)}${sizeStr}</span>
+            <span style="font-size:10px; color:#a8e6cf;">(New upload)</span>
+          </div>
+          <button type="button" onclick="cancelEditNewFile(${i})" style="background:#dc354522;border:1px solid #dc354566;color:#ff6b6b;cursor:pointer;font-size:11px;padding:2px 8px;border-radius:4px;" title="Cancel upload">✕ Cancel</button>
+        </div>`;
+      }).join('');
+    }
+    filesListEl.innerHTML = html;
   }
 
   window.removeEditHomeworkFile = function (key) {
     editingHomeworkRemovedIds.add(key);
     renderEditFileList();
+  };
+
+  window.cancelEditNewFile = function (idx) {
+    if (editingHomeworkNewFiles && editingHomeworkNewFiles.length > idx) {
+      editingHomeworkNewFiles.splice(idx, 1);
+      renderEditFileList();
+    }
   };
 
   async function saveHomeworkEdit(id) {

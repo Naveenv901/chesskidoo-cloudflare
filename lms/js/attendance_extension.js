@@ -1064,13 +1064,14 @@ window.renderSessionSheet = function(studentId, containerEl, filterMonth) {
 };
 
 window.renderChildAttendanceAndHomework = function() {
-  let s = window.currentStudent;
+  let s = window.currentStudent || window.student;
   if (!s) {
     try {
       const auth = JSON.parse(sessionStorage.getItem("chesskidoo_auth") || sessionStorage.getItem("twoknights_auth") || "{}");
       const students = window.allStudents || [];
-      if (auth.studentId && students.length) {
-        s = students.find((st) => String(st.id) === String(auth.studentId));
+      const targetId = auth.studentId || auth.userId || auth.id || window.currentStudentId || window.userId;
+      if (targetId && students.length) {
+        s = students.find((st) => String(st.id) === String(targetId) || String(st.userid) === String(targetId) || String(st.childId) === String(targetId));
         if (s) window.currentStudent = s;
       }
     } catch (_) {}
@@ -1086,7 +1087,11 @@ window.renderChildAttendanceAndHomework = function() {
   } catch (_) {}
   const finalAttList = window.allAttendance || [];
   const myAtt = finalAttList
-    .filter((a) => String(a.student_id || a.studentId) === String(s.id))
+    .filter((a) => {
+      const aSid = String(a.student_id || a.studentId || a.userid || '');
+      const sId = String(s.id || s.userid || '');
+      return aSid && sId && (aSid === sId || (s.userid && aSid === String(s.userid)));
+    })
     .sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
   const present = myAtt.filter((a) => ["present", "late"].includes((a.status || "").toLowerCase())).length;

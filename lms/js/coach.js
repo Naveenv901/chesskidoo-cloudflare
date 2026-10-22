@@ -9,18 +9,26 @@
    of the student silently vanishing from the attendance sheet. */
 window.ckSameCoach = function (a, b) {
   if (a == null || b == null) return false;
-  const norm = (v) => String(v).trim().toLowerCase().replace(/-/g, '');
+  const norm = (v) => String(v).trim().toLowerCase().replace(/[-_]/g, '');
   const na = norm(a), nb = norm(b);
   if (!na || !nb) return false;
   if (na === nb) return true;
 
-  const coaches = window.allCoaches || [];
-  const ca = coaches.find(c => norm(c.id) === na || norm(c.email) === na || norm(c.name) === na);
-  const cb = coaches.find(c => norm(c.id) === nb || norm(c.email) === nb || norm(c.name) === nb);
+  // Also strip c or coach prefix e.g. cvishnu -> vishnu, coachvishnu -> vishnu
+  const strip = (v) => v.replace(/^(?:c|coach)/, '');
+  if (strip(na) && strip(na) === strip(nb)) return true;
 
-  if (ca && cb) return norm(ca.id) === norm(cb.id);
-  if (ca && (norm(ca.id) === nb || norm(ca.email) === nb || norm(ca.name) === nb)) return true;
-  if (cb && (norm(cb.id) === na || norm(cb.email) === na || norm(cb.name) === na)) return true;
+  const coaches = window.allCoaches || [];
+  const ca = coaches.find(c => norm(c.id) === na || norm(c.email) === na || norm(c.name || c.full_name) === na || strip(norm(c.id || '')) === strip(na));
+  const cb = coaches.find(c => norm(c.id) === nb || norm(c.email) === nb || norm(c.name || c.full_name) === nb || strip(norm(c.id || '')) === strip(nb));
+
+  if (ca && cb) {
+    if (norm(ca.id) === norm(cb.id)) return true;
+    if (ca.email && cb.email && norm(ca.email) === norm(cb.email)) return true;
+    if ((ca.name || ca.full_name) && (cb.name || cb.full_name) && norm(ca.name || ca.full_name) === norm(cb.name || cb.full_name)) return true;
+  }
+  if (ca && (norm(ca.id) === nb || norm(ca.email) === nb || norm(ca.name || ca.full_name) === nb || strip(norm(ca.name || ca.full_name || '')) === strip(nb) || strip(norm(ca.id || '')) === strip(nb))) return true;
+  if (cb && (norm(cb.id) === na || norm(cb.email) === na || norm(cb.name || cb.full_name) === na || strip(norm(cb.name || cb.full_name || '')) === strip(na) || strip(norm(cb.id || '')) === strip(na))) return true;
 
   return false;
 };
@@ -66,7 +74,7 @@ window.renderCoachDashboard = function() {
     if (nameEl) nameEl.textContent = coach.name.split(' ')[0];
   }
 
-  const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id, coachId));
+  const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach((s.coach_id || s.coach), coachId));
   const myBatches = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach, coachId));
 
   const statStudents = document.getElementById('coach-stat-students');
@@ -151,7 +159,7 @@ function initStudentPageObserver() {
     if (!tbody) return;
 
     const myStudents = (window.allStudents || [])
-      .filter(s => window.ckSameCoach(s.coach_id, coachId))
+      .filter(s => window.ckSameCoach((s.coach_id || s.coach), coachId))
       .sort((a, b) => (window.getStudentName ? window.getStudentName(a) : a.name).localeCompare(window.getStudentName ? window.getStudentName(b) : b.name));
 
     if (myStudents.length === 0) {
@@ -345,7 +353,7 @@ function initStudentPageObserver() {
       return;
     }
 
-    const myBatches = (window.allBatches || []).filter(b => (window.ckSameCoach ? window.ckSameCoach(b.coach_id, coachId) : String(b.coach_id) === String(coachId)) && b.status !== 'archived');
+    const myBatches = (window.allBatches || []).filter(b => (window.ckSameCoach ? window.ckSameCoach((b.coach || b.coach_id), coachId) : String((b.coach || b.coach_id)) === String(coachId)) && b.status !== 'archived');
 
     let successCount = 0;
     let failCount = 0;
@@ -488,7 +496,7 @@ function initStudentPageObserver() {
       return;
     }
 
-    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach ? window.ckSameCoach(s.coach_id, coachId) : String(s.coach_id) === String(coachId));
+    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach ? window.ckSameCoach((s.coach_id || s.coach), coachId) : String((s.coach_id || s.coach)) === String(coachId));
     const myBatches = (window.allBatches || []).filter(b => (window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId)) && b.status !== 'archived');
 
     const view = (filterDayOrView === 'weekly' || filterDayOrView === 'monthly') ? filterDayOrView : (window.coachScheduleView || 'weekly');
@@ -985,7 +993,7 @@ function initStudentPageObserver() {
       return;
     }
 
-    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id, coachId));
+    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach((s.coach_id || s.coach), coachId));
     const myStudentIds = myStudents.map(s => String(s.id));
 
     const today = new Date();
@@ -1079,7 +1087,7 @@ function initStudentPageObserver() {
     }
 
     let myStudents = (window.allStudents || []).filter(s => {
-      if (window.ckSameCoach(s.coach_id, coachId)) return true;
+      if (window.ckSameCoach((s.coach_id || s.coach), coachId)) return true;
       if (myBatchStudentIds.has(String(s.id))) return true;
       if (s.batch_id && myBatches.some(b => String(b.id) === String(s.batch_id))) return true;
       if (s.batch && myBatches.some(b => String(b.name) === String(s.batch) || String(b.batch_name) === String(s.batch))) return true;
@@ -1224,7 +1232,7 @@ function initStudentPageObserver() {
 
     const isMyStudent = (student) => {
       if (!student) return false;
-      if (window.ckSameCoach(student.coach_id, coachId)) return true;
+      if (window.ckSameCoach((student.coach_id || student.coach), coachId)) return true;
       if (myBatchStudentIds.has(String(student.id))) return true;
       if (student.batch_id && myBatches.some(b => String(b.id) === String(student.batch_id))) return true;
       if (student.batch && myBatches.some(b => String(b.name) === String(student.batch) || String(b.batch_name) === String(student.batch))) return true;
@@ -1660,8 +1668,8 @@ function initStudentPageObserver() {
   };
 
   window.renderCoachAssignments = function (page) {
-    const tbody = document.getElementById('coach-assignments-tbody');
-    const pagination = document.getElementById('coach-assign-pagination');
+    const tbody = document.getElementById('coach-assignments-table-body');
+    const pagination = document.getElementById('coach-assignments-pagination');
     if (!tbody) return;
 
     page = Number(page) || 1;
@@ -1674,15 +1682,19 @@ function initStudentPageObserver() {
       return;
     }
 
-    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id, coachId));
+    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach((s.coach_id || s.coach) || s.coach, coachId));
     const myStudentIds = myStudents.map(s => String(s.id));
-    const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach, coachId)).map(b => String(b.id));
+    const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || (b.coach || b.coach_id), coachId)).map(b => String(b.id));
 
     const assignments = (window.allHomework || [])
       .filter(h => {
+        const hCoach = h.coach || h.coach_id || h.created_by;
+        if (hCoach && window.ckSameCoach(hCoach, coachId)) return true;
         if (h.target_type === 'student') return myStudentIds.includes(String(h.student_id));
         if (h.target_type === 'batch') return myBatchIds.includes(String(h.batch_id));
-        return true;
+        if (h.batch_id && myBatchIds.includes(String(h.batch_id))) return true;
+        if (h.student_id && myStudentIds.includes(String(h.student_id))) return true;
+        return !h.target_type || h.target_type === 'all';
       })
       .sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
 
@@ -1779,7 +1791,7 @@ function initStudentPageObserver() {
       return;
     }
 
-    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id, coachId));
+    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach((s.coach_id || s.coach), coachId));
     const myStudentIds = myStudents.map(s => String(s.id));
     const submissions = Array.isArray(window.homeworkSubmissionCache) ? window.homeworkSubmissionCache : [];
     let filtered = submissions
@@ -1859,13 +1871,29 @@ function initStudentPageObserver() {
       toast('Assignment not found', 'error');
       return;
     }
-    const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach ? window.ckSameCoach(b.coach_id, coachId) : String(b.coach_id) === String(coachId)).map(b => String(b.id));
-    const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach ? window.ckSameCoach(s.coach_id, coachId) : String(s.coach_id) === String(coachId)).map(s => String(s.id));
-    const isOwner = assignment.target_type === 'all'
-      || (assignment.created_by && window.ckSameCoach ? window.ckSameCoach(assignment.created_by, coachId) : String(assignment.created_by) === String(coachId))
-      || (assignment.coach_id && window.ckSameCoach ? window.ckSameCoach(assignment.coach_id, coachId) : String(assignment.coach_id) === String(coachId))
+    const role = (window.role || window.userRole || '').toLowerCase();
+    const isAdmin = role === 'admin' || role === 'master' || (typeof isAdminUser === 'function' && isAdminUser());
+
+    const myBatchIds = (window.allBatches || []).filter(b => {
+      const bCoach = b.coach || (b.coach || b.coach_id);
+      return window.ckSameCoach ? window.ckSameCoach(bCoach, coachId) : String(bCoach) === String(coachId);
+    }).map(b => String(b.id));
+
+    const myStudentIds = (window.allStudents || []).filter(s => {
+      const sCoach = (s.coach_id || s.coach) || s.coach;
+      return window.ckSameCoach ? window.ckSameCoach(sCoach, coachId) : String(sCoach) === String(coachId);
+    }).map(s => String(s.id));
+
+    const assignCoach = assignment.coach || assignment.coach_id || assignment.created_by;
+    const isOwner = isAdmin
+      || assignment.target_type === 'all'
+      || (assignCoach && window.ckSameCoach ? window.ckSameCoach(assignCoach, coachId) : (assignCoach && String(assignCoach) === String(coachId)))
+      || (assignment.batch_id && myBatchIds.includes(String(assignment.batch_id)))
       || (assignment.target_type === 'batch' && myBatchIds.includes(String(assignment.batch_id)))
-      || (assignment.target_type === 'student' && myStudentIds.includes(String(assignment.student_id)));
+      || (assignment.student_id && myStudentIds.includes(String(assignment.student_id)))
+      || (assignment.target_type === 'student' && myStudentIds.includes(String(assignment.student_id)))
+      || (!assignment.coach && !assignment.coach_id && assignment.batch_id && myBatchIds.includes(String(assignment.batch_id)));
+
     if (!isOwner) {
       toast('You can only delete your own assignments.', 'error');
       return;
@@ -1945,7 +1973,7 @@ if (typeof window.setPage === 'function') {
 
     const editingBatch = id ? (window.allBatches || []).find((x) => String(x.id) === String(id)) : null;
     const myStudentIds = new Set((window.allStudents || [])
-      .filter(s => window.ckSameCoach(s.coach_id, coachId))
+      .filter(s => window.ckSameCoach((s.coach_id || s.coach), coachId))
       .map(s => String(s.id)));
 
     const otherAssignedIds = new Set(
@@ -2078,7 +2106,7 @@ if (typeof window.setPage === 'function') {
       return;
     }
     const batch = (window.allBatches || []).find((b) => String(b.id) === String(id));
-    if (!batch || !(window.ckSameCoach || ((a, b) => String(a).trim().toLowerCase().replace(/-/g, "") === String(b).trim().toLowerCase().replace(/-/g, "")))(batch.coach_id, coachId)) {
+    if (!batch || !(window.ckSameCoach || ((a, b) => String(a).trim().toLowerCase().replace(/-/g, "") === String(b).trim().toLowerCase().replace(/-/g, "")))((batch.coach || batch.coach_id), coachId)) {
       toast('Access denied: You can only delete your own batches.', 'error');
       return;
     }
@@ -2120,7 +2148,7 @@ if (typeof window.setPage === 'function') {
     }
 
     const myBatches = (window.allBatches || []).filter(b => (window.ckSameCoach ? window.ckSameCoach(b.coach, coachId) : String(b.coach) === String(coachId)) && b.status !== 'archived');
-    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach ? window.ckSameCoach(s.coach_id, coachId) : String(s.coach_id) === String(coachId));
+    const myStudents = (window.allStudents || []).filter(s => window.ckSameCoach ? window.ckSameCoach((s.coach_id || s.coach), coachId) : String((s.coach_id || s.coach)) === String(coachId));
     const coachObj = (window.allCoaches || []).find((c) => String(c.id) === String(coachId));
     const coachName = coachObj ? (window.getCoachName ? window.getCoachName(coachObj) : (coachObj.name || 'Coach')) : 'Coach';
 
@@ -2305,8 +2333,8 @@ window.openCoachDataSheetModal = function(coachId, batchId, studentId) {
   if (old) old.remove();
 
   const coaches = window.allCoaches || [];
-  const batches = (window.allBatches || []).filter(b => !cId || window.ckSameCoach(b.coach_id, cId));
-  const students = (window.allStudents || []).filter(s => !cId || window.ckSameCoach(s.coach_id, cId));
+  const batches = (window.allBatches || []).filter(b => !cId || window.ckSameCoach((b.coach || b.coach_id), cId));
+  const students = (window.allStudents || []).filter(s => !cId || window.ckSameCoach((s.coach_id || s.coach), cId));
 
   const modalHtml = `
     <div class="modal active" id="coach-datasheet-modal" style="z-index:9999;display:flex;align-items:center;justify-content:center;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);padding:16px;">
@@ -2372,7 +2400,7 @@ window.filterCoachDataSheet = function() {
     window.renderSessionSheet(studentId, container);
   } else {
     // Show all students for this coach
-    const students = (window.allStudents || []).filter(s => !coachId || window.ckSameCoach(s.coach_id, coachId));
+    const students = (window.allStudents || []).filter(s => !coachId || window.ckSameCoach((s.coach_id || s.coach), coachId));
     if (students.length === 0) {
       container.innerHTML = '<div style="padding:40px;text-align:center;color:var(--ivory-dim);">No students assigned to this coach.</div>';
       return;
@@ -2461,7 +2489,7 @@ window.exportDataSheetCSV = function(targetStudentId) {
       rawIds.forEach(id => myStudentIds.add(String(id)));
     });
     (window.allStudents || []).forEach(s => {
-      if (window.ckSameCoach(s.coach_id, coachId)) myStudentIds.add(String(s.id));
+      if (window.ckSameCoach((s.coach_id || s.coach), coachId)) myStudentIds.add(String(s.id));
     });
 
     const batchIds = new Set(myBatches.map(b => String(b.id)));
