@@ -287,17 +287,65 @@ function studentName(student) {
   }
 
   function coachNameForHomework(assignment) {
-    if (!assignment.created_by) return 'Unknown';
+    if (!assignment) return 'Coach';
+    const coachIdentifier = assignment.coach || assignment.coach_id || assignment.created_by;
     const coaches = window.allCoaches || [];
-    const coach = coaches.find(c => 
-      String(c.id) === String(assignment.created_by) || 
-      String(c.name).toLowerCase() === String(assignment.created_by).toLowerCase()
-    );
-    return coach ? (coach.name || coach.full_name || 'Unknown') : (assignment.created_by || 'Unknown');
+
+    // 1. Try finding by direct coach field on assignment
+    if (coachIdentifier) {
+      const found = coaches.find(c => 
+        (window.ckSameCoach && window.ckSameCoach(c.id, coachIdentifier)) ||
+        (window.ckSameCoach && window.ckSameCoach(c.name || c.full_name, coachIdentifier)) ||
+        String(c.id) === String(coachIdentifier) ||
+        String(c.name || c.full_name || '').toLowerCase() === String(coachIdentifier).toLowerCase()
+      );
+      if (found) return found.full_name || found.name || coachIdentifier;
+      if (typeof coachIdentifier === 'string') {
+        const clean = coachIdentifier.replace(/^(?:c_|coach_)/i, '').trim();
+        if (clean && !clean.includes('-')) return clean.toUpperCase();
+      }
+    }
+
+    // 2. Fallback: lookup via assigned batch
+    if (assignment.batch_id) {
+      const b = (window.allBatches || []).find(item => String(item.id) === String(assignment.batch_id) || String(item.name) === String(assignment.batch_id));
+      if (b && (b.coach || b.coach_id)) {
+        const bCoach = b.coach || b.coach_id;
+        const found = coaches.find(c => 
+          (window.ckSameCoach && window.ckSameCoach(c.id, bCoach)) ||
+          (window.ckSameCoach && window.ckSameCoach(c.name || c.full_name, bCoach)) ||
+          String(c.id) === String(bCoach) ||
+          String(c.name || c.full_name || '').toLowerCase() === String(bCoach).toLowerCase()
+        );
+        if (found) return found.full_name || found.name || bCoach;
+        return String(bCoach).replace(/^(?:c_|coach_)/i, '').toUpperCase();
+      }
+      if (b && b.name) {
+        const found = coaches.find(c => b.name.toLowerCase().includes((c.full_name || c.name || '').toLowerCase()));
+        if (found) return found.full_name || found.name;
+        const parts = b.name.split(' ');
+        if (parts.length > 1) return parts[0].toUpperCase();
+      }
+    }
+
+    // 3. Fallback: lookup via assigned student
+    if (assignment.student_id) {
+      const s = (window.allStudents || []).find(item => String(item.id) === String(assignment.student_id));
+      if (s && (s.coach || s.coach_id)) {
+        const sCoach = s.coach || s.coach_id;
+        const found = coaches.find(c => 
+          (window.ckSameCoach && window.ckSameCoach(c.id, sCoach)) ||
+          String(c.id) === String(sCoach) ||
+          String(c.name || c.full_name || '').toLowerCase() === String(sCoach).toLowerCase()
+        );
+        if (found) return found.full_name || found.name || sCoach;
+        return String(sCoach).replace(/^(?:c_|coach_)/i, '').toUpperCase();
+      }
+    }
+
+    return coachIdentifier ? String(coachIdentifier).replace(/^(?:c_|coach_)/i, '').toUpperCase() : 'Coach';
   }
 
-  // recipient_count is computed server-side; when it is absent (cached rows,
-  // older responses) derive it locally instead of rendering a misleading 0.
   function recipientCount(assignment) {
     if (typeof assignment.recipient_count === 'number') return assignment.recipient_count;
     let presentIds = assignment.present_student_ids;
@@ -669,7 +717,7 @@ let homeworkSubmissionCache = [];
     files.forEach(f => {
       const isOversized = f.size > MAX_HW_FILE_SIZE;
       const isImg = isImageFile(f);
-      const icon = isImg ? 'ðŸ–¼ï¸' : (f.name.endsWith('.pgn') ? 'â™Ÿï¸' : (f.name.endsWith('.pdf') ? 'ðŸ“„' : 'ðŸ“Ž'));
+      const icon = isImg ? 'ðŸ–¼ï¸' : (f.name.endsWith('.pgn') ? 'â™Ÿï¸' : (f.name.endsWith('.pdf') ? 'ðŸ“„' : '📎'));
       html += `
         <span style="display:inline-flex; align-items:center; gap:4px; font-size:11px; padding:3px 8px; border-radius:4px; background:${isOversized ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)'}; border:1px solid ${isOversized ? 'var(--danger)' : 'var(--border)'}; color:${isOversized ? '#f87171' : 'var(--ivory)'};">
           <span>${icon} ${escapeValue(f.name)} (${formatBytes(f.size)})</span>
@@ -1611,7 +1659,7 @@ let homeworkSubmissionCache = [];
     const submission = assignment.student_submission || null;
     const status = submission?.status || 'not_submitted';
     const feedback = submission?.feedback || '';
-    const score = submission?.score !== null && submission?.score !== undefined ? ` Â· <strong>Score:</strong> ${escapeValue(submission.score)}` : '';
+    const score = submission?.score !== null && submission?.score !== undefined ? `  &middot;  <strong>Score:</strong> ${escapeValue(submission.score)}` : '';
     const canSubmit = !isAdminUser() && ['active', 'completed'].includes(assignment.status) && !['approved', 'closed'].includes(status);
     const currentText = submission?.submission_text || '';
     const currentUrl = submission?.submission_url || '';
@@ -1620,7 +1668,7 @@ let homeworkSubmissionCache = [];
     const filesHtml = Array.isArray(fileUrls) && fileUrls.length > 0 
       ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);">
           <strong>Attachments:</strong><br>
-          ${fileUrls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:block;margin-top:4px;">ðŸ“Ž File ${i + 1}</a>`).join('')}
+          ${fileUrls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:block;margin-top:4px;">📎 File ${i + 1}</a>`).join('')}
         </div>` 
       : '';
 
@@ -1638,7 +1686,7 @@ let homeworkSubmissionCache = [];
       ${canSubmit ? `<div style="display:grid;gap:8px;margin-top:12px;">
         <textarea id="homework-submission-text-${assignment.id}" class="input-field" placeholder="Type your completed homework response or practice notes..." style="min-height:90px;">${escapeValue(currentText)}</textarea>
         <input id="homework-submission-url-${assignment.id}" class="input-field" placeholder="Optional submission link (Google Drive, Dropbox, etc.)" value="${escapeValue(currentUrl)}">
-        <button type="button" class="btn btn-outline-grey btn-sm homework-attach-toggle" onclick="toggleHomeworkSubmissionUpload('${assignment.id}')">ðŸ“Ž Attach Solution Files</button>
+        <button type="button" class="btn btn-outline-grey btn-sm homework-attach-toggle" onclick="toggleHomeworkSubmissionUpload('${assignment.id}')">📎 Attach Solution Files</button>
         <div id="homework-submission-upload-${assignment.id}" style="display:none;">
           <div style="font-size:11px; font-weight:700; color:var(--gold); margin-top:4px;">Attach Solution Files <span style="font-size:10px; font-weight:normal; color:var(--ivory-dim);">(Max 5 files, up to 15 MB each: .pgn, .pdf, .png, .jpg)</span></div>
           <div class="upload-zone homework-submission-dropzone" id="homework-submission-drop-${assignment.id}">
@@ -1730,7 +1778,7 @@ let homeworkSubmissionCache = [];
               ${statusBadge(assignment.status)}
             </div>
             <div style="font-size:12px; color:${dueClass}; line-height:1.6;">
-              <strong>Due:</strong> ${formatDate(assignment.due_date)} Â· <strong>Coach:</strong> ${escapeValue(coachName)} Â· <strong>Assignee:</strong> ${escapeValue(assigneeLabel(assignment))} Â· <strong>Recipients:</strong> ${recipientCount(assignment)}
+              <strong>Due:</strong> ${formatDate(assignment.due_date)}  &middot;  <strong>Coach:</strong> ${escapeValue(coachName)}  &middot;  <strong>Assignee:</strong> ${escapeValue(assigneeLabel(assignment))}  &middot;  <strong>Recipients:</strong> ${recipientCount(assignment)}
             </div>
             ${presentStudentsHtml}
           </div>
@@ -1751,7 +1799,7 @@ let homeworkSubmissionCache = [];
           ${cleanDesc ? `<div style="margin-top:12px; color:var(--ivory-dim); font-size:13px; line-height:1.65; white-space:pre-wrap;">${linkifyText(cleanDesc)}</div>` : '<div style="margin-top:12px;color:var(--ivory-dim);font-size:13px;">No detailed instructions provided.</div>'}
           ${hasRefLinks ? `
             <div style="margin-top:14px; padding:10px 12px; background:rgba(59,130,246,0.04); border:1px solid rgba(59,130,246,0.2); border-radius:8px;">
-              <strong style="font-size:12px; color:#60a5fa; display:flex; align-items:center; gap:4px;">ðŸ”— Reference Links (${refLinks.length}):</strong>
+              <strong style="font-size:12px; color:#60a5fa; display:flex; align-items:center; gap:4px;">🔗 Reference Links (${refLinks.length}):</strong>
               <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
                 ${refLinks.map((url, i) => {
                   let name = `Reference ${i + 1}`;
@@ -1759,7 +1807,7 @@ let homeworkSubmissionCache = [];
                     const part = url.split('/').pop().split('?')[0];
                     if (part && part.length < 35) name = decodeURIComponent(part);
                   }
-                  return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="font-size:11px; padding:4px 10px; color:#60a5fa; border-color:rgba(59,130,246,0.3); text-decoration:none;">ðŸ”— ${escapeValue(name)}</a>`;
+                  return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="font-size:11px; padding:4px 10px; color:#60a5fa; border-color:rgba(59,130,246,0.3); text-decoration:none;">🔗 ${escapeValue(name)}</a>`;
                 }).join('')}
               </div>
             </div>
@@ -1786,7 +1834,7 @@ let homeworkSubmissionCache = [];
         if (!files.length) return '';
         return `
           <div style="margin-top:14px; padding:10px 12px; background:rgba(218,163,62,0.04); border:1px solid rgba(218,163,62,0.2); border-radius:8px;">
-            <strong style="font-size:12px; color:var(--gold); display:flex; align-items:center; gap:4px;">ðŸ“‚ Study Materials & Attachments (${files.length}):</strong>
+            <strong style="font-size:12px; color:var(--gold); display:flex; align-items:center; gap:4px;">📁 Study Materials & Attachments (${files.length}):</strong>
             <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
               ${files.map((url, i) => {
                 let name = `Material ${i + 1}`;
@@ -1796,7 +1844,7 @@ let homeworkSubmissionCache = [];
                 } else if (typeof url === 'string' && url.startsWith('data:image')) {
                   name = `Image Attachment ${i + 1}`;
                 }
-                return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="btn btn-outline-grey btn-sm" style="font-size:11px; padding:4px 10px; color:var(--gold); border-color:rgba(218,163,62,0.3); text-decoration:none;">ðŸ“Ž ${escapeValue(name)}</a>`;
+                return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="btn btn-outline-grey btn-sm" style="font-size:11px; padding:4px 10px; color:var(--gold); border-color:rgba(218,163,62,0.3); text-decoration:none;">📎 ${escapeValue(name)}</a>`;
               }).join('')}
             </div>
           </div>
@@ -1887,8 +1935,8 @@ let homeworkSubmissionCache = [];
             const assignedDate = item.created_at ? new Date(item.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : '';
             return `<div title="${escapeValue(item.title)} | Coach: ${escapeValue(coachName)} | ${escapeValue(assignee)}" style="font-size:9px;color:var(--ivory-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:3px 4px;background:rgba(0,0,0,0.2);border-radius:4px;">
               <div style="color:var(--gold);font-weight:600;">${escapeValue(item.title)}</div>
-              <div style="color:var(--ivory3);font-size:8px;">ðŸ‘¤ ${escapeValue(coachName)} Â· ${escapeValue(assignee)}</div>
-              ${assignedDate ? `<div style="color:var(--emerald);font-size:7px;font-weight:600;">ðŸ“… Assigned: ${assignedDate}</div>` : ''}
+              <div style="color:var(--ivory3);font-size:8px;">👤 ${escapeValue(coachName)}  &middot;  ${escapeValue(assignee)}</div>
+              ${assignedDate ? `<div style="color:var(--emerald);font-size:7px;font-weight:600;">📅 Assigned: ${assignedDate}</div>` : ''}
             </div>`;
           }).join('')}
           ${dayItems.length > 3 ? `<div style="font-size:9px;color:var(--gold);text-align:center;">+${dayItems.length - 3} more</div>` : ''}
@@ -2135,13 +2183,13 @@ let homeworkSubmissionCache = [];
               ${submissionStatusBadge(submission.status)}
             </div>
             <div style="font-size:12px;color:var(--ivory-dim);line-height:1.6;">
-              <strong>Student:</strong> ${escapeValue(name)} Â· <strong>Submitted:</strong> ${submittedAt} ${score ? `Â· <strong>Score:</strong> ${score}` : ''}
+              <strong>Student:</strong> ${escapeValue(name)}  &middot;  <strong>Submitted:</strong> ${submittedAt} ${score ? ` &middot;  <strong>Score:</strong> ${score}` : ''}
             </div>
           </div>
         </div>
         ${submission.submission_text ? `<div style="margin-top:10px;padding:10px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--ivory);line-height:1.55;white-space:pre-wrap;">${escapeValue(submission.submission_text)}</div>` : ''}
         ${submission.submission_url ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);"><a href="${safeUrl(submission.submission_url)}" target="_blank" rel="noopener">Open submission link</a></div>` : ''}
-        ${Array.isArray(submission.file_urls) && submission.file_urls.length > 0 ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);"><strong>Attachments:</strong> ${submission.file_urls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:block;margin-top:4px;">ðŸ“Ž File ${i + 1}</a>`).join('')}</div>` : ''}
+        ${Array.isArray(submission.file_urls) && submission.file_urls.length > 0 ? `<div style="margin-top:6px;font-size:12px;color:var(--gold);"><strong>Attachments:</strong> ${submission.file_urls.map((url, i) => `<a href="${safeUrl(url)}" target="_blank" rel="noopener" style="display:block;margin-top:4px;">📎 File ${i + 1}</a>`).join('')}</div>` : ''}
         ${feedback ? `<div style="margin-top:10px;padding:10px;background:rgba(218,163,62,0.06);border:1px solid rgba(218,163,62,0.25);border-radius:8px;font-size:12px;color:var(--ivory);white-space:pre-wrap;">${escapeValue(feedback)}</div>` : ''}
         <div style="display:grid;gap:8px;margin-top:12px;">
           <textarea id="homework-feedback-${submission.id}" class="input-field" placeholder="Teacher feedback or revision instructions..." style="min-height:70px;">${escapeValue(feedback)}</textarea>
@@ -2257,7 +2305,7 @@ let homeworkSubmissionCache = [];
     if (!list) return;
 
     if (!studentId) {
-      list.innerHTML = '<div class="empty-state"><span class="empty-icon">ðŸ‘¤</span><p>Select a student to view progress.</p></div>';
+      list.innerHTML = '<div class="empty-state"><span class="empty-icon">👤</span><p>Select a student to view progress.</p></div>';
       return;
     }
 
