@@ -43,7 +43,12 @@ window.renderMonthlyMatrix = function() {
              
     for (let i = 1; i <= daysInMonth; i++) {
       const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-      const record = allAttendance.find(a => String(a.student_id || a.studentId) === String(s.id) && a.date === dateStr);
+      const record = allAttendance.find(a => {
+    const sid = String(a.student_id || a.studentId);
+    if (sid !== String(s.id)) return false;
+    const recDate = a.date ? new Date(a.date).toISOString().slice(0,10) : '';
+    return recDate === dateStr;
+});
       const status = record ? record.status : '';
       
       let cellContent = '';
