@@ -466,7 +466,13 @@ function studentName(student) {
 let homeworkSubmissionCache = [];
   window.homeworkSubmissionCache = homeworkSubmissionCache;  // Expose globally for coach dashboard
 
-  async function loadHomeworkSubmissions(forceRefresh = false) {
+  // Load homework submissions.
+// `forceRefresh` is only used when the user explicitly requests a reload (e.g., clicks a Refresh button).
+// The initial page load calls the function with the default `false` value, which caches the result.
+async function loadHomeworkSubmissions(forceRefresh = false) {
+  // If we already have data and this isn’t an explicit refresh, return the cache.
+  if (!forceRefresh && homeworkSubmissionCache.length) return homeworkSubmissionCache;
+
     if (!forceRefresh && homeworkSubmissionCache.length) return homeworkSubmissionCache;
     let fetched = [];
 

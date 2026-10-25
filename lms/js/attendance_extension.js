@@ -80,7 +80,11 @@ window.toggleCellAttendance = async function(studentId, date, currentStatus) {
    }
   
   // Optimistic UI update in local state
-  const existingIndex = allAttendance.findIndex(a => String(a.student_id) === String(studentId) && a.date === date);
+  const existingIndex = allAttendance.findIndex(a => {
+    if (String(a.student_id) !== String(studentId)) return false;
+    const recDate = a.date ? new Date(a.date).toISOString().slice(0,10) : '';
+    return recDate === date;
+});
   if (newStatus === '') {
     if (existingIndex > -1) {
       allAttendance.splice(existingIndex, 1); // remove
