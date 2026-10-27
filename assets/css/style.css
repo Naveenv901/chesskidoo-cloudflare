@@ -731,8 +731,13 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
 .trust-bar { background: var(--text-primary); padding: 24px 0; overflow: hidden; }
 .trust-track,
 .trust-inner {
-  display: flex; align-items: center; justify-content: center;
-  gap: 32px; flex-wrap: wrap; max-width: 1400px; margin: 0 auto; padding: 0 32px;
+  display: flex; align-items: center; justify-content: flex-start;
+  gap: 32px; flex-wrap: nowrap; width: max-content; margin: 0; padding: 0 32px;
+  animation: trustScroll 28s linear infinite;
+}
+@keyframes trustScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
 }
 .trust-item {
   display: flex; align-items: center; gap: 10px; color: var(--bg-primary);
