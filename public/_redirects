@@ -1,3 +1,9 @@
+# Stale-browser fallback: older builds of lms/index.html referenced
+# /lms/js/scripts.js (a path that never existed on disk). Those cached
+# HTML files 404'd to an HTML fallback, breaking MIME type for the script
+# tag and blocking all later scripts (auth.js -> window.doLogin undefined).
+# Redirect the stale path to the real file so old caches still work.
+/lms/js/scripts.js /lms/scripts.js 200
 /lms/* /lms/:splat 200
 /lms /lms/index.html 200
 /admin /index.html 200
