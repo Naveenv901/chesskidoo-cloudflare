@@ -212,3 +212,24 @@
   --bg3:         var(--bg-surface);
   --gold-light:  var(--brand-400);
 }
+
+/* High contrast utility for text */
+.high-contrast {
+  color: var(--gold) !important;
+}
+
+/* Badge marquee styling */
+.badge-marquee {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.badge-marquee-inner {
+  display: inline-block;
+  animation: marquee-left 20s linear infinite;
+}
+
+@keyframes marquee-left {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}

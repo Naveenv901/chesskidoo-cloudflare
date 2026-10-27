@@ -125,6 +125,7 @@
   --border-strong: var(--accent-primary);
   --muted:       var(--text-muted);
   --gold2:       var(--accent-hover);
+  --gold:        var(--accent-primary);
   --navy:        var(--bg-primary);
 }
 
@@ -185,6 +186,7 @@
   --border-strong: var(--accent-primary);
   --muted:       var(--text-muted);
   --gold2:       var(--accent-hover);
+  --gold:        var(--accent-primary);
   --navy:        var(--bg-primary);
 }
 
@@ -226,7 +228,7 @@ body {
 
 /* ─── Layout ─── */
 .container { max-width: 1400px; margin: 0 auto; padding: 0 32px; }
-.section-padding { padding: 100px 0; }
+.section-padding { padding: 120px 0; }
 
 /* ─── Scroll Progress ─── */
 #scrollProgress {
@@ -743,7 +745,7 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
 [data-theme="light"] .trust-item { color: var(--bg-primary); }
 
 /* ─── Sections ─── */
-.section-head { text-align: center; max-width: 700px; margin: 0 auto 64px; padding: 0 16px; }
+.section-head { text-align: center; max-width: 700px; margin: 0 auto 80px; padding: 0 16px; }
 .eyebrow { display: inline-block; font-family: var(--font-display); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--accent-primary); margin-bottom: 16px; }
 .section-head h2 { font-family: var(--font-display); font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; line-height: 1.2; margin-bottom: 16px; color: var(--text-primary); }
 .lead { font-family: var(--font-body); font-size: 1.1rem; color: var(--text-secondary); }
@@ -1026,11 +1028,11 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
   background: var(--bg-surface) !important;
   border: 1px solid var(--border-subtle) !important;
   border-radius: 20px !important;
-  padding: 48px 40px !important;
+  padding: 64px 48px !important;
   text-align: center !important;
   box-shadow: var(--shadow-lg) !important;
 }
-.register-card { padding: 40px 32px !important; }
+.register-card { padding: 56px 40px !important; }
 
 /* ─── Portal / Dashboard ─── */
 .page { display: revert; }
@@ -3629,9 +3631,9 @@ button, input, textarea, select, a {
 }
 
 /* Premium Reviews */
-.reviews-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap: 24px; max-width:1400px; margin:0 auto; padding:0 32px; }
+.reviews-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap: 64px; max-width:1400px; margin:0 auto; padding:0 32px; }
 .review-card {
-  background: #fff; border-radius: 20px; padding: 32px;
+  background: #fff; border-radius: 20px; padding: 56px;
   border: 1px solid rgba(232,160,32,.1);
   box-shadow: 0 4px 20px rgba(0,0,0,.05);
   transition: all .35s ease; position: relative;
@@ -3642,8 +3644,8 @@ button, input, textarea, select, a {
   color: var(--amber); opacity:.12; line-height:1; font-weight:900;
 }
 .review-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,.1); border-color: rgba(232,160,32,.25); }
-.review-stars { display: flex; gap:3px; color: var(--amber); font-size:1.25rem; margin-bottom:14px; }
-.review-text { font-size:1.15rem; line-height:1.75; color:rgba(26,18,9,.75); margin-bottom:22px; font-style:italic; }
+.review-stars { display: flex; gap:3px; color: var(--amber); font-size:1.25rem; margin-bottom:32px; }
+.review-text { font-size:1.15rem; line-height:2.1; color:rgba(26,18,9,.75); margin-bottom:40px; font-style:italic; }
 .review-author { display: flex; align-items: center; gap:12px; }
 .review-avatar {
   width:50px; height:50px; border-radius:50%;
@@ -3775,15 +3777,15 @@ button, input, textarea, select, a {
 .why-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-  margin-top: 56px;
+  gap: 44px;
+  margin-top: 88px;
   perspective: 1500px;
 }
 .why-item {
   display: flex;
   align-items: flex-start;
-  gap: 20px;
-  padding: 32px 28px;
+  gap: 28px;
+  padding: 48px 36px;
   background: var(--bg-elevated);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -5455,4 +5457,9 @@ body:has(.page.active:not(#landing-page)) #scrollTopBtn {
 
 .lj-badge {
   transition: transform 0.35s ease, box-shadow 0.35s ease, background 0.5s ease;
+}
+
+/* High contrast utility for text */
+.high-contrast {
+  color: var(--gold) !important;
 }
