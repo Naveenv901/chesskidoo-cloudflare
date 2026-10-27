@@ -2557,48 +2557,56 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
       return;
     }
 
-    // Always reload attendance fresh – guards are time-limited to avoid sticking
-    if (!window._attLoading) {
-      window._attLoading = true;
-      window.apiCall('/api/attendance?limit=1000', { silent: true })
-        .then(res => res && res.ok ? res.json() : {})
-        .then(data => {
-          const rows = data.data || data || [];
-          if (Array.isArray(rows) && rows.length > 0) window.allAttendance = rows;
-          window._attLoading = false;
-          renderChildHomework();
-        })
-        .catch(() => { window._attLoading = false; });
-    }
+    // One load cycle at a time. The async loads below each reset their own
+    // flag, so without this guard the final .then() re-enters this function,
+    // re-fires the first fetch, and loops forever.
+    if (window._childHwLoading) return;
+    window._childHwLoading = true;
 
-    if ((!window.homeworkSubmissionCache || window.homeworkSubmissionCache.length === 0) && typeof loadHomeworkSubmissions === 'function' && !window._subsLoading) {
+    const needAttendance = !window.allAttendance || window.allAttendance.length === 0;
+    const needSubs = (!window.homeworkSubmissionCache || window.homeworkSubmissionCache.length === 0)
+      && typeof loadHomeworkSubmissions === 'function' && !window._subsLoading;
+    const needHw = (!(window.allHomework || []).length && window.loadHomeworkData && !window._hwLoading);
+
+    const pAtt = needAttendance
+      ? window.apiCall('/api/attendance?limit=1000', { silent: true })
+          .then(res => res && res.ok ? res.json() : {})
+          .then(data => { const rows = data.data || data || []; if (Array.isArray(rows) && rows.length > 0) window.allAttendance = rows; })
+          .catch(() => {})
+      : Promise.resolve();
+
+    let pSubs = Promise.resolve();
+    if (needSubs) {
       window._subsLoading = true;
-      loadHomeworkSubmissions(true).then(() => {
-        window._subsLoading = false;
-        renderChildHomework();
-      }).catch(() => { window._subsLoading = false; });
+      pSubs = loadHomeworkSubmissions(true)
+        .then(() => { window._subsLoading = false; })
+        .catch(() => { window._subsLoading = false; });
     }
 
-    const homeworkList = window.allHomework || [];
-    if (homeworkList.length === 0 && window.loadHomeworkData && !window._hwLoading) {
+    let pHw = Promise.resolve();
+    if (needHw) {
       window._hwLoading = true;
-      window.loadHomeworkData(true).then(() => {
-        window._hwLoading = false;
-        renderChildHomework();
-      }).catch(() => {
-        window._hwLoading = false;
-      });
+      pHw = window.loadHomeworkData(true)
+        .then(() => { window._hwLoading = false; })
+        .catch(() => { window._hwLoading = false; });
     }
 
+    Promise.all([pAtt, pSubs, pHw]).then(() => {
+      window._childHwLoading = false;
+      renderChildHomeworkList(list, student);
+    });
+  }
+
+  function renderChildHomeworkList(list, student) {
+    const homeworkList = window.allHomework || [];
     const items = sortHomework(homeworkList.filter((assignment) => {
       if (!assignmentAppliesToStudent(assignment, student.id, window.allStudents || [])) return false;
       return isStudentEligibleForHomework(assignment, student.id);
     }));
     if (!items.length) {
-      list.innerHTML = '<div class="empty-state"><span class="empty-icon">ðŸ“</span><p>No homework assigned right now.</p></div>';
+      list.innerHTML = '<div class="empty-state"><span class="empty-icon"></span><p>No homework assigned right now.</p></div>';
       return;
     }
-
     list.innerHTML = items.map((item) => renderHomeworkCard(item, { showActions: false })).join('');
   }
 
