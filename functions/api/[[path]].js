@@ -651,7 +651,8 @@ async function handleAttendance(request, env) {
     for (const item of items) {
       if (!item || typeof item !== 'object') continue;
       const studentId = item.studentId || item.student_id || item.userid || null;
-      const date = item.date || new Date().toISOString().split('T')[0];
+      const rawDate = item.date || new Date().toISOString();
+      const date = rawDate.split('T')[0];
       const now = new Date().toISOString();
 
       let existingId = item.id;
@@ -924,6 +925,17 @@ async function handleHomework(request, env) {
   if (request.method === 'DELETE') {
     const id = url.searchParams.get('id');
     if (!id) return json(400, { error: 'Missing homework ID' });
+
+    // Ownership validation – ensure the caller is the coach who created the assignment.
+    const callerCoachId = request.headers.get('x-portal-coach-id') || request.headers.get('x-portal-coach') || null;
+    if (callerCoachId) {
+      const owner = await env.DB.prepare('SELECT coach_id, coach FROM assignments WHERE id = ?').bind(id).first();
+      const ownerId = owner?.coach_id ?? owner?.coach;
+      if (ownerId && String(ownerId) !== String(callerCoachId)) {
+        return json(403, { error: 'Not authorized to delete this homework' });
+      }
+    }
+
     await env.DB.prepare('DELETE FROM assignments WHERE id = ?').bind(id).run();
     await env.DB.prepare('DELETE FROM hw_submissions WHERE assignment_id = ?').bind(id).run();
     return json(200, { success: true });
@@ -1036,23 +1048,18 @@ async function handleResources(request, env) {
   if (request.method === 'POST') {
     const body = await request.json();
     const id = body.id || `res-${Date.now()}`;
-    // Map the LMS/portal friendly fields (title/description/url) onto the real
-    // D1 columns (name/notes/link). The API also returns title/desc/url so the
-    // resource card always renders, regardless of which columns were written.
+    // The live D1 `resources` table has columns: id, name, url, type, level,
+    // created_at. It does NOT have batch/coach/notes/link/title/description,
+    // so write only into the real columns and alias the response back to the
+    // front-end contract (title/description/url) afterwards.
     await env.DB.prepare(
-      `INSERT INTO resources (id, name, type, level, batch, coach, notes, link, title, description, url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO resources (id, name, url, type, level, created_at) VALUES (?, ?, ?, ?, ?, ?)`
     ).bind(
       id,
       body.name ?? body.title ?? null,
+      body.link ?? body.url ?? null,
       body.type ?? null,
       body.level ?? null,
-      body.batch ?? null,
-      body.coach ?? null,
-      body.notes ?? body.description ?? null,
-      body.link ?? body.url ?? null,
-      body.title ?? null,
-      body.description ?? null,
-      body.url ?? null,
       new Date().toISOString()
     ).run();
     const row = await env.DB.prepare('SELECT * FROM resources WHERE id = ?').bind(id).first();
@@ -1132,39 +1139,40 @@ async function handleRatingHistory(request, env) {
     // Front-end contract: GET /api/rating_history returns every rating the LMS
     // tracks (the admin rating list and the child "Growth" chart both read
     // this). The legacy "rating_history?userid=" query is still honoured.
+    //
+    // The live D1 `ratings` table has columns: id, user_id, online,
+    // international, date. It does NOT have student_id / rating / recorded_at
+    // (migration 0007 was never applied to the remote database), so every
+    // column name below matches the real schema.
     if (studentId) {
       const { results } = await env.DB.prepare(
-        'SELECT * FROM ratings WHERE student_id = ? ORDER BY recorded_at DESC, date DESC'
+        'SELECT * FROM ratings WHERE user_id = ? ORDER BY date DESC'
       ).bind(studentId).all();
       return json(200, { data: results });
     }
-    const { results } = await env.DB.prepare('SELECT * FROM ratings ORDER BY recorded_at DESC, date DESC').all();
+    const { results } = await env.DB.prepare('SELECT * FROM ratings ORDER BY date DESC').all();
     return json(200, { data: results });
   }
 
   if (request.method === 'POST') {
     const body = await request.json();
     const id = body.id || `rating-${Date.now()}`;
-    // The LMS sends snake_case: student_id, rating, change_type, notes.
-    // Persist everything the schema offers so nothing is silently dropped.
+    // Persist into the real columns. `online` carries the ELO rating the LMS
+    // submits (body.rating / body.elo); `international` is left NULL.
     await env.DB.prepare(
-      `INSERT INTO ratings (id, student_id, user_id, rating, event, change_type, notes, date, recorded_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO ratings (id, user_id, online, international, date) VALUES (?, ?, ?, ?, ?)`
     ).bind(
       id,
       body.student_id ?? body.userid ?? null,
-      body.student_id ?? body.userid ?? null,
       body.rating ?? body.elo ?? null,
-      body.event ?? null,
-      body.change_type ?? null,
-      body.notes ?? null,
-      body.date ?? null,
-      body.recorded_at ?? body.date ?? null,
-      new Date().toISOString()
+      body.international ?? null,
+      body.date ?? new Date().toISOString()
     ).run();
     const row = await env.DB.prepare('SELECT * FROM ratings WHERE id = ?').bind(id).first();
     if (row) {
-      row.student_id = row.student_id ?? row.user_id ?? null;
-      row.recorded_at = row.recorded_at ?? row.date ?? null;
+      row.student_id = row.user_id ?? null;
+      row.rating = row.online ?? null;
+      row.recorded_at = row.date ?? null;
     }
     return json(201, { data: row });
   }

@@ -485,18 +485,7 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
       }
     } catch (_) {}
 
-    // 2. Try Supabase direct
-    if (!fetched.length && window.supabaseClient) {
-      try {
-        const { data: sbSubs } = await window.supabaseClient
-          .from('hw_submissions')
-          .select('*')
-          .order('submitted_at', { ascending: false });
-        if (sbSubs && sbSubs.length) fetched = sbSubs;
-      } catch (_) {}
-    }
-
-    // 3. Merge with localStorage cache
+    // 2. Merge with localStorage cache
     try {
       const localSubs = JSON.parse(localStorage.getItem('ck_hw_submissions') || '[]');
       const map = new Map();
@@ -1023,57 +1012,19 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
 
     let saved = false;
 
-    // Route 1: Try direct Supabase client insertion first
+    // Homework now lives exclusively on Cloudflare D1 (`assignments` table),
+    // so there is no Supabase direct-write path. Everything goes through the
+    // Edge API at /api/homework.
     try {
-      if (window.supabaseClient) {
-        const { data, error } = await window.supabaseClient
-          .from('homework_assignments')
-          .insert({
-            id: payload.id,
-            target_type: payload.target_type,
-            title: payload.title,
-            description: payload.description,
-            due_date: payload.due_date,
-            student_id: payload.student_id,
-            batch_id: payload.batch_id,
-            coach_id: payload.coach_id,
-            created_by: payload.created_by,
-            questions_files: payload.questions_files,
-            status: payload.status,
-            created_at: payload.created_at,
-            updated_at: payload.updated_at,
-            present_student_ids: payload.present_student_ids
-          })
-          .select()
-          .single();
-
-        if (!error && data) {
-          saved = true;
-        } else if (error) {
-          // Try fallback table 'homework'
-          const { error: altErr } = await window.supabaseClient
-            .from('homework')
-            .insert(payload);
-          if (!altErr) saved = true;
-        }
+      const res = await window.apiCall('/api/homework', {
+        method: 'POST',
+        body: JSON.stringify(payload)
+      });
+      if (res && res.ok) {
+        saved = true;
       }
-    } catch (sbErr) {
-      console.warn('[Homework] Direct Supabase insert failed, attempting apiCall fallback:', sbErr);
-    }
-
-    // Route 2: Try apiCall fallback if direct Supabase insert did not complete
-    if (!saved) {
-      try {
-        const res = await window.apiCall('/api/homework', {
-          method: 'POST',
-          body: JSON.stringify(payload)
-        });
-        if (res && res.ok) {
-          saved = true;
-        }
-      } catch (apiErr) {
-        console.warn('[Homework] apiCall POST failed:', apiErr);
-      }
+    } catch (apiErr) {
+      console.warn('[Homework] POST failed:', apiErr);
     }
 
     if (!saved) {
@@ -1193,7 +1144,9 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
 
     let deleted = false;
 
-    // Route 1: API call to Supabase Edge Function
+    // Homework lives exclusively on Cloudflare D1, so delete through the
+    // Edge API only. No Supabase fallback — the old `homework_assignments`
+    // table is dead and would only resurrect stale rows.
     try {
       const res = await window.apiCall(`/api/homework?id=${encodeURIComponent(id)}`, { method: 'DELETE', silent: true });
       if (res && res.ok) {
@@ -1204,21 +1157,6 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
       }
     } catch (apiErr) {
       console.warn('[Homework] apiCall DELETE error:', apiErr);
-    }
-
-    // Route 2: Direct Supabase client delete (fallback)
-    if (!deleted && window.supabaseClient && typeof window.supabaseClient.from === 'function') {
-      try {
-        const { error } = await window.supabaseClient
-          .from('homework_assignments')
-          .delete()
-          .eq('id', id);
-        if (!error) {
-          deleted = true;
-        }
-      } catch (e) {
-        console.warn('[Homework] Direct Supabase delete error:', e);
-      }
     }
 
     if (!deleted) {
@@ -1623,7 +1561,9 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
 
     let updated = false;
 
-    // Route 1: API call to Supabase Edge Function
+    // Homework lives exclusively on Cloudflare D1, so edits go through the
+    // Edge API only. No Supabase fallback — the old `homework_assignments`
+    // table is dead and would only resurrect stale rows.
     try {
       const res = await window.apiCall(`/api/homework?id=${encodeURIComponent(id)}`, {
         method: 'PATCH',
@@ -1646,29 +1586,6 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
       }
     } catch (apiErr) {
       console.warn('[Homework] apiCall PATCH error:', apiErr);
-    }
-
-    // Route 2: Direct Supabase update (fallback)
-    if (!updated && window.supabaseClient && typeof window.supabaseClient.from === 'function') {
-      try {
-        const { error } = await window.supabaseClient
-          .from('homework_assignments')
-          .update({
-            title: updatedPayload.title,
-            description: updatedPayload.description,
-            due_date: updatedPayload.due_date,
-            updated_at: updatedPayload.updated_at,
-            attachment_urls: updatedPayload.attachment_urls,
-            questions_files: updatedPayload.questions_files,
-            present_student_ids: updatedPayload.present_student_ids
-          })
-          .eq('id', id);
-        if (!error) {
-          updated = true;
-        }
-      } catch (e) {
-        console.warn('[Homework] Direct Supabase update error:', e);
-      }
     }
 
     if (!updated) {
@@ -1778,28 +1695,7 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
         submitted = true;
       }
     } catch (apiErr) {
-      console.warn('[Homework] apiCall submit failed, trying direct Supabase fallback:', apiErr);
-    }
-
-    if (!submitted && window.supabaseClient) {
-      try {
-        const { error: sbErr } = await window.supabaseClient
-          .from('hw_submissions')
-          .upsert(
-            {
-              assignment_id: subPayload.assignment_id,
-              student_id: subPayload.student_id,
-              submission_text: subPayload.submission_text || '',
-              submission_url: subPayload.submission_url || '',
-              file_urls: subPayload.file_urls,
-              status: 'submitted',
-              submitted_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            },
-            { onConflict: 'assignment_id,student_id' }
-          );
-        if (!sbErr) submitted = true;
-      } catch (e) {}
+      console.warn('[Homework] apiCall submit failed:', apiErr);
     }
 
     // Always persist submission locally
@@ -1871,23 +1767,7 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
         reviewed = true;
       }
     } catch (apiErr) {
-      console.warn('[Homework] apiCall review failed, trying direct Supabase fallback:', apiErr);
-    }
-
-    if (!reviewed && window.supabaseClient) {
-      try {
-        const { error: sbErr } = await window.supabaseClient
-          .from('hw_submissions')
-          .update({
-            status,
-            feedback: feedback || null,
-            score: score || null,
-            reviewed_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', submissionId);
-        if (!sbErr) reviewed = true;
-      } catch (e) {}
+      console.warn('[Homework] apiCall review failed:', apiErr);
     }
 
     // Always update local storage
@@ -2731,17 +2611,12 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
         if (res && res.ok) {
           const d = await res.json().catch(() => ({}));
           fetched = d.data || d || [];
-        } else if (window.supabaseClient) {
-          const { data: dbHw } = await window.supabaseClient.from("homework_assignments").select("*").order("created_at", { ascending: false });
-          if (dbHw && dbHw.length) fetched = dbHw;
         }
+        // Everything now lives on Cloudflare D1 (`assignments` table). No
+        // Supabase fallback — the old `homework_assignments` table is dead.
       } catch (err) {
-        if (window.supabaseClient) {
-          try {
-            const { data: dbHw } = await window.supabaseClient.from("homework_assignments").select("*").order("created_at", { ascending: false });
-            if (dbHw && dbHw.length) fetched = dbHw;
-          } catch (_) {}
-        }
+        // Keep the fetch failure non-fatal so the caller still gets an empty
+        // list and can show a proper "no assignments" state instead of a loop.
       }
       try {
         const localHw = JSON.parse(localStorage.getItem("ck_homework_assignments") || "[]");
@@ -2765,7 +2640,10 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
           }
         });
         window.allHomework = Array.from(map.values()).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+        // Clear the coach-assignments dead-end flag whenever we actually get
+        // data, so a later assignment creation re-renders the table.
         if (window.allHomework.length) {
+          window._coachHwLoadFailed = false;
           try { localStorage.setItem("ck_homework_assignments", JSON.stringify(window.allHomework)); } catch (_) {}
         }
       } catch (_) {

@@ -692,14 +692,16 @@ async function handleRatingHistory(request, env) {
 
   if (request.method === 'GET') {
     if (!userid) return json(200, { data: [] });
-    const { results } = await env.DB.prepare('SELECT * FROM ratings WHERE userid = ? ORDER BY date DESC').bind(userid).all();
+    // The D1 `ratings` table stores the owner column as `user_id`, not
+    // `userid`. Query the real column name so this handler stops 500'ing.
+    const { results } = await env.DB.prepare('SELECT * FROM ratings WHERE user_id = ? ORDER BY date DESC').bind(userid).all();
     return json(200, { data: results });
   }
 
   if (request.method === 'POST') {
     const body = await request.json();
     const id = body.id || `rating-${Date.now()}`;
-    await env.DB.prepare(`INSERT INTO ratings (id, userid, rating, date, event, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.rating || null, body.date || null, body.event || null, new Date().toISOString()).run();
+    await env.DB.prepare(`INSERT INTO ratings (id, user_id, rating, date, event, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.rating || null, body.date || null, body.event || null, new Date().toISOString()).run();
     const row = await env.DB.prepare('SELECT * FROM ratings WHERE id = ?').bind(id).first();
     return json(201, row);
   }
