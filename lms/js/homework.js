@@ -513,7 +513,10 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
     }
 
     window.homeworkSubmissionCache = homeworkSubmissionCache;
+    // Clear the coach-submissions dead-end flag whenever we actually get data,
+    // so a later upload can re-trigger the table render.
     if (homeworkSubmissionCache.length) {
+      window._coachSubsLoadFailed = false;
       try {
         localStorage.setItem('ck_hw_submissions', JSON.stringify(homeworkSubmissionCache));
       } catch (_) {}
