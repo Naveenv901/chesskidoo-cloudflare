@@ -1812,15 +1812,28 @@ function initStudentPageObserver() {
       return;
     }
 
-    if ((!window.homeworkSubmissionCache || window.homeworkSubmissionCache.length === 0) && window.loadHomeworkSubmissions && !window._loadingCoachSubs) {
+if ((!window.homeworkSubmissionCache || window.homeworkSubmissionCache.length === 0) && window.loadHomeworkSubmissions && !window._loadingCoachSubs && !window._coachSubsLoadFailed) {
       window._loadingCoachSubs = true;
       tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell"><span class="spinner"></span> Loading submissions...</td></tr>';
       window.loadHomeworkSubmissions(true).then(() => {
         window._loadingCoachSubs = false;
+        // If the fetch came back empty, don't loop forever — show the empty
+        // state once and stop. renderCoachSubmissions would re-fire the load
+        // because the cache is still empty, so mark the attempt as terminal.
+        if (!window.homeworkSubmissionCache || window.homeworkSubmissionCache.length === 0) {
+          window._coachSubsLoadFailed = true;
+          tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell">No submissions found.</td></tr>';
+          if (pagination) pagination.innerHTML = '';
+          if (countEl) countEl.textContent = '';
+          return;
+        }
         window.renderCoachSubmissions(query, page);
       }).catch(() => {
         window._loadingCoachSubs = false;
-        window.renderCoachSubmissions(query, page);
+        window._coachSubsLoadFailed = true;
+        tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell">Failed to load submissions.</td></tr>';
+        if (pagination) pagination.innerHTML = '';
+        if (countEl) countEl.textContent = '';
       });
       return;
     }
