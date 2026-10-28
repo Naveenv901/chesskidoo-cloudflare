@@ -1127,11 +1127,17 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
       const hw = (window.allHomework || []).find(h => String(h.id) === String(id));
       const cId = window.currentCoachId || window.userId;
       if (hw && cId && window.ckSameCoach) {
+        // Resolve the logged-in coach's display name from the ID, because the
+        // live D1 `assignments` table stores the owner in `coach` as a NAME
+        // (e.g. "Kirubhakaran") while the coach session holds the UUID
+        // (e.g. "c_kirubhakaran"). ckSameCoach handles the c_ prefix but
+        // cannot bridge a NAME<->UUID pair, so look the name up first.
+        const cName = ((window.allCoaches || []).find(c => String(c.id) === String(cId)) || {}).full_name || cId;
         const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || b.coach_id, cId)).map(b => String(b.id));
         const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id || s.coach, cId)).map(s => String(s.id));
         const assignCoach = hw.coach || hw.coach_id || hw.created_by;
-        const isOwner = (hw.target_type === 'all' && (assignCoach ? window.ckSameCoach(assignCoach, cId) : true))
-          || (assignCoach && window.ckSameCoach(assignCoach, cId))
+        const isOwner = (hw.target_type === 'all' && (assignCoach ? window.ckSameCoach(assignCoach, cName) : true))
+          || (assignCoach && (window.ckSameCoach(assignCoach, cId) || window.ckSameCoach(assignCoach, cName)))
           || (hw.batch_id && myBatchIds.includes(String(hw.batch_id)))
           || (hw.target_type === 'batch' && myBatchIds.includes(String(hw.batch_id)))
           || (hw.student_id && myStudentIds.includes(String(hw.student_id)))
@@ -1342,11 +1348,18 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
     if (String(role).toLowerCase() === 'coach' && !isAdmin) {
       const cId = window.currentCoachId || window.userId;
       if (hw && cId && window.ckSameCoach) {
+        // Resolve the logged-in coach's display name from the ID, because the
+        // live D1 `assignments` table stores the owner in `coach` as a NAME
+        // (e.g. "Kirubhakaran") while the coach session holds the UUID
+        // (e.g. "c_kirubhakaran" / "c0c0c0c0-..."). ckSameCoach already
+        // handles the c_ prefix, but it cannot bridge a NAME<->UUID pair, so
+        // look the name up from the coaches list before comparing.
+        const cName = ((window.allCoaches || []).find(c => String(c.id) === String(cId)) || {}).full_name || cId;
         const myBatchIds = (window.allBatches || []).filter(b => window.ckSameCoach(b.coach || b.coach_id, cId)).map(b => String(b.id));
         const myStudentIds = (window.allStudents || []).filter(s => window.ckSameCoach(s.coach_id || s.coach, cId)).map(s => String(s.id));
         const assignCoach = hw.coach || hw.coach_id || hw.created_by;
-        const isOwner = (hw.target_type === 'all' && (assignCoach ? window.ckSameCoach(assignCoach, cId) : true))
-          || (assignCoach && window.ckSameCoach(assignCoach, cId))
+        const isOwner = (hw.target_type === 'all' && (assignCoach ? window.ckSameCoach(assignCoach, cName) : true))
+          || (assignCoach && (window.ckSameCoach(assignCoach, cId) || window.ckSameCoach(assignCoach, cName)))
           || (hw.batch_id && myBatchIds.includes(String(hw.batch_id)))
           || (hw.target_type === 'batch' && myBatchIds.includes(String(hw.batch_id)))
           || (hw.student_id && myStudentIds.includes(String(hw.student_id)))
