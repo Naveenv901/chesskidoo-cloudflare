@@ -23,7 +23,13 @@ window.renderMonthlyMatrix = function() {
   const [year, month] = monthVal.split('-').map(Number);
   const daysInMonth = new Date(year, month, 0).getDate();
   
-  let filteredStudents = allStudents.filter(s => s.status === 'active');
+  // Always read from window.allAttendance / window.allStudents — the single
+  // source of truth that toggleCellAttendance mutates. The module-level
+  // `allAttendance` / `allStudents` variables are stale copies that do not
+  // reflect live changes, which is why the calendar kept showing "present".
+  const attList = window.allAttendance || [];
+  const studentList = window.allStudents || [];
+  let filteredStudents = studentList.filter(s => s.status === 'active');
   if (coachId) filteredStudents = filteredStudents.filter(s => String(s.coach_id) === String(coachId));
   
   // Build header
@@ -40,15 +46,15 @@ window.renderMonthlyMatrix = function() {
     html += `<td style="position:sticky;left:0;background:var(--bg2);z-index:1;text-align:left;font-weight:600;white-space:nowrap;border-bottom:1px solid var(--border)">
                ${escapeHtml(getStudentName(s))}
              </td>`;
-             
+              
     for (let i = 1; i <= daysInMonth; i++) {
       const dateStr = `${year}-${String(month).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-      const record = allAttendance.find(a => {
+      const record = attList.find(a => {
     const sid = String(a.student_id || a.studentId);
     if (sid !== String(s.id)) return false;
     const recDate = a.date ? new Date(a.date).toISOString().slice(0,10) : '';
     return recDate === dateStr;
-});
+  });
       const status = record ? record.status : '';
       
       let cellContent = '';
@@ -70,50 +76,54 @@ window.renderMonthlyMatrix = function() {
 };
 
 window.toggleCellAttendance = async function(studentId, date, currentStatus) {
-   // Cycle: empty -> present -> absent -> late -> excused -> empty
-   const statusCycle = ['', 'present', 'absent', 'late', 'excused'];
-   let newStatus = '';
-   if (!currentStatus) newStatus = 'present';
-   else {
-     const currentIndex = statusCycle.indexOf(currentStatus);
-     newStatus = currentIndex < statusCycle.length - 1 ? statusCycle[currentIndex + 1] : '';
-   }
-  
-  // Optimistic UI update in local state
-  const existingIndex = allAttendance.findIndex(a => {
-    if (String(a.student_id) !== String(studentId)) return false;
-    const recDate = a.date ? new Date(a.date).toISOString().slice(0,10) : '';
-    return recDate === date;
-});
-  if (newStatus === '') {
-    if (existingIndex > -1) {
-      allAttendance.splice(existingIndex, 1); // remove
+    // Cycle: empty -> present -> absent -> late -> excused -> empty
+    const statusCycle = ['', 'present', 'absent', 'late', 'excused'];
+    let newStatus = '';
+    if (!currentStatus) newStatus = 'present';
+    else {
+      const currentIndex = statusCycle.indexOf(currentStatus);
+      newStatus = currentIndex < statusCycle.length - 1 ? statusCycle[currentIndex + 1] : '';
     }
-  } else {
-    if (existingIndex > -1) {
-      allAttendance[existingIndex].status = newStatus;
-    } else {
-      allAttendance.push({ student_id: studentId, date: date, status: newStatus, notes: '' });
-    }
-}
    
-// Re-render everything that depends on this student's attendance, so the
-    // calendar reflects the new status immediately after a Present/Absent/Late
-    // toggle instead of waiting for the next month change.
-    if (typeof window.renderMonthlyMatrix === 'function') window.renderMonthlyMatrix();
-    if (typeof window.renderChildAttendance === 'function') window.renderChildAttendance();
-    if (typeof window.renderAttendanceCalendar === 'function') {
-      const calEl = document.getElementById('child-attendance-cal-container') ||
-                    document.getElementById('attendance-cal-container');
-      if (calEl) window.renderAttendanceCalendar(studentId, calEl, window.currentCalYear, window.currentCalMonth);
-    }
+   // Always mutate window.allAttendance (the single source of truth the
+   // calendar reads). The module-level `allAttendance` variable is a stale
+   // copy — updating it left the calendar rendering from the old data.
+   const attList = window.allAttendance || [];
+   const existingIndex = attList.findIndex(a => {
+     if (String(a.student_id) !== String(studentId)) return false;
+     const recDate = a.date ? new Date(a.date).toISOString().slice(0,10) : '';
+     return recDate === date;
+   });
+   if (newStatus === '') {
+     if (existingIndex > -1) {
+       attList.splice(existingIndex, 1); // remove
+     }
+   } else {
+     if (existingIndex > -1) {
+       attList[existingIndex].status = newStatus;
+     } else {
+       attList.push({ student_id: studentId, date: date, status: newStatus, notes: '' });
+     }
+   }
+   window.allAttendance = attList;
 
-   // LocalStorage persistence
-   try {
-     localStorage.setItem('ck_attendance_records', JSON.stringify(window.allAttendance || allAttendance || []));
-   } catch (_) {}
-  
-// API Call in background (Cloudflare D1 only — no Supabase fallback)
+   // Re-render everything that depends on this student's attendance, so the
+   // calendar reflects the new status immediately after a Present/Absent/Late
+   // toggle instead of waiting for the next month change.
+   if (typeof window.renderMonthlyMatrix === 'function') window.renderMonthlyMatrix();
+   if (typeof window.renderChildAttendance === 'function') window.renderChildAttendance();
+   if (typeof window.renderAttendanceCalendar === 'function') {
+     const calEl = document.getElementById('child-attendance-cal-container') ||
+                   document.getElementById('attendance-cal-container');
+     if (calEl) window.renderAttendanceCalendar(studentId, calEl, window.currentCalYear, window.currentCalMonth);
+   }
+
+    // LocalStorage persistence
+    try {
+      localStorage.setItem('ck_attendance_records', JSON.stringify(window.allAttendance || []));
+    } catch (_) {}
+   
+   // API Call in background (Cloudflare D1 only — no Supabase fallback)
     if (newStatus !== '') {
       const payload = [{ student_id: studentId, date: date, status: newStatus, notes: '' }];
       apiCall('/api/attendance', { method: 'POST', body: JSON.stringify(payload) })
@@ -138,7 +148,7 @@ window.toggleCellAttendance = async function(studentId, date, currentStatus) {
         })
         .catch(() => {});
     }
- };
+  };
 
 // --- MASTER SCHEDULE MATRIX (100% DYNAMIC) ---
 // No more hardcoded data. Everything comes from live student/coach data via
@@ -1082,7 +1092,7 @@ window.renderSessionSheet = function(studentId, containerEl, filterMonth) {
   container.innerHTML = sheetHtml;
 };
 
-window.renderChildAttendanceAndHomework = function() {
+window.renderChildAttendanceAndHomework = async function() {
   let s = window.currentStudent || window.student;
   if (!s) {
     try {
@@ -1097,14 +1107,24 @@ window.renderChildAttendanceAndHomework = function() {
   }
   if (!s) return;
 
-  const attList = window.allAttendance || [];
+  // Always pull fresh attendance from the server before rendering, so a
+  // Present->Absent change made by the coach on the master matrix shows up
+  // on the student's calendar immediately instead of relying on stale
+  // in-memory `window.allAttendance` or a cached localStorage copy.
   try {
-    const localAtt = JSON.parse(localStorage.getItem('ck_attendance_records') || '[]');
-    if (localAtt.length) {
-      window.allAttendance = localAtt;
+    const res = await apiCall('/api/attendance?limit=1000', { silent: true });
+    if (res && res.ok) {
+      const data = await res.json().catch(() => ({}));
+      const fresh = data.data || data || [];
+      if (fresh.length) {
+        window.allAttendance = fresh;
+        try { localStorage.setItem('ck_attendance_records', JSON.stringify(fresh)); } catch (_) {}
+      }
     }
   } catch (_) {}
-  const finalAttList = window.allAttendance || [];
+
+  const attList = window.allAttendance || [];
+  const finalAttList = attList;
   const myAtt = finalAttList
     .filter((a) => {
       const aSid = String(a.student_id || a.studentId || a.userid || '');
