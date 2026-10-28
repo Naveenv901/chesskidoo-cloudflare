@@ -1685,15 +1685,23 @@ function initStudentPageObserver() {
       return;
     }
 
-    if ((!window.allHomework || window.allHomework.length === 0) && window.loadHomeworkData && !window._loadingCoachHw) {
+if ((!window.allHomework || window.allHomework.length === 0) && window.loadHomeworkData && !window._loadingCoachHw && !window._coachHwLoadFailed) {
       window._loadingCoachHw = true;
       tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell"><span class="spinner"></span> Loading assignments...</td></tr>';
       window.loadHomeworkData(true).then(() => {
         window._loadingCoachHw = false;
+        if (!window.allHomework || window.allHomework.length === 0) {
+          window._coachHwLoadFailed = true;
+          tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell">No assignments found.</td></tr>';
+          if (pagination) pagination.innerHTML = '';
+          return;
+        }
         window.renderCoachAssignments(page);
       }).catch(() => {
         window._loadingCoachHw = false;
-        window.renderCoachAssignments(page);
+        window._coachHwLoadFailed = true;
+        tbody.innerHTML = '<tr><td colspan="5" class="coach-loading-cell">Failed to load assignments.</td></tr>';
+        if (pagination) pagination.innerHTML = '';
       });
       return;
     }
