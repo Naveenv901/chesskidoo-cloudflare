@@ -529,6 +529,12 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
     const activePage = document.querySelector('.page.active')?.id;
     if (activePage === 'page-homework') renderHomeworkSubmissionReview();
     if (window.renderCoachSubmissions) {
+      // Don't re-enter renderCoachSubmissions while it is already fetching.
+      // renderCoachSubmissions recurses after loadHomeworkSubmissions(true)
+      // completes, and loadHomeworkSubmissions calls us back — without this
+      // guard a failed/empty fetch loops forever (cache stays empty,
+      // _loadingCoachSubs gets reset, and it fires again).
+      if (window._loadingCoachSubs) return;
       try {
         window.renderCoachSubmissions(
           document.getElementById('coach-hw-search')?.value || '',
