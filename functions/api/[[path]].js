@@ -927,9 +927,14 @@ async function handleHomework(request, env) {
     if (!id) return json(400, { error: 'Missing homework ID' });
 
     // Ownership validation – ensure the caller is the coach who created the assignment.
+    // The live D1 `assignments` table stores the owner in a `coach` column; it does
+    // NOT have a `coach_id` column, so introspect the real columns before querying.
     const callerCoachId = request.headers.get('x-portal-coach-id') || request.headers.get('x-portal-coach') || null;
     if (callerCoachId) {
-      const owner = await env.DB.prepare('SELECT coach_id, coach FROM assignments WHERE id = ?').bind(id).first();
+      const cols = await tableColumns(env, 'assignments');
+      const owner = await env.DB.prepare(
+        `SELECT id${cols.has('coach_id') ? ', coach_id' : ''}${cols.has('coach') ? ', coach' : ''} FROM assignments WHERE id = ?`
+      ).bind(id).first();
       const ownerId = owner?.coach_id ?? owner?.coach;
       if (ownerId && String(ownerId) !== String(callerCoachId)) {
         return json(403, { error: 'Not authorized to delete this homework' });
