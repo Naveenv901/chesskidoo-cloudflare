@@ -1087,6 +1087,16 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
     if (window.renderChildHomework) window.renderChildHomework();
     if (window.renderCoachHomework) window.renderCoachHomework();
     if (window.renderCoachAssignments) window.renderCoachAssignments(window.coachAssignPage || 1);
+    // Sync the attendance calendar so homework/attendance changes show up
+    // immediately instead of waiting for the next month change.
+    if (typeof window.renderAttendanceCalendar === 'function') {
+      const calEl = document.getElementById('child-attendance-cal-container') ||
+                    document.getElementById('attendance-cal-container');
+      if (calEl) {
+        const targetStudent = window.currentStudent || (window.allStudents || [])[0];
+        if (targetStudent) window.renderAttendanceCalendar(targetStudent, calEl, window.currentCalYear, window.currentCalMonth);
+      }
+    }
   }
 
   async function applyBulkHomeworkStatus() {
@@ -1638,6 +1648,17 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
     else if (window.loadAllData) await window.loadAllData(true).catch(() => {});
     refreshHomeworkViews();
     if (window.renderCoachAssignments) window.renderCoachAssignments(window.coachAssignPage || 1);
+
+    // Re-render the student attendance calendar so homework/attendance changes
+    // show up immediately instead of waiting for the next month change.
+    if (typeof window.renderAttendanceCalendar === 'function') {
+      const calEl = document.getElementById('child-attendance-cal-container') ||
+                    document.getElementById('attendance-cal-container');
+      if (calEl) {
+        const targetStudent = window.currentStudent || (window.allStudents || [])[0];
+        if (targetStudent) window.renderAttendanceCalendar(targetStudent, calEl, window.currentCalYear, window.currentCalMonth);
+      }
+    }
   };
 
   async function submitHomeworkForChild(assignmentId) {

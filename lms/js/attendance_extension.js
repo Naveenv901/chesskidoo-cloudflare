@@ -97,37 +97,47 @@ window.toggleCellAttendance = async function(studentId, date, currentStatus) {
     }
 }
    
-   // Re-render
-   if (typeof window.renderMonthlyMatrix === 'function') window.renderMonthlyMatrix();
-   if (typeof window.renderChildAttendance === 'function') window.renderChildAttendance();
+// Re-render everything that depends on this student's attendance, so the
+    // calendar reflects the new status immediately after a Present/Absent/Late
+    // toggle instead of waiting for the next month change.
+    if (typeof window.renderMonthlyMatrix === 'function') window.renderMonthlyMatrix();
+    if (typeof window.renderChildAttendance === 'function') window.renderChildAttendance();
+    if (typeof window.renderAttendanceCalendar === 'function') {
+      const calEl = document.getElementById('child-attendance-cal-container') ||
+                    document.getElementById('attendance-cal-container');
+      if (calEl) window.renderAttendanceCalendar(studentId, calEl, window.currentCalYear, window.currentCalMonth);
+    }
 
    // LocalStorage persistence
    try {
      localStorage.setItem('ck_attendance_records', JSON.stringify(window.allAttendance || allAttendance || []));
    } catch (_) {}
   
-   // API / Supabase Call in background
-   if (newStatus !== '') {
-     const payload = [{ student_id: studentId, date: date, status: newStatus, notes: '' }];
-     apiCall('/api/attendance', { method: 'POST', body: JSON.stringify(payload) })
-       .catch(async () => {
-         if (window.supabaseClient) {
-           await window.supabaseClient.from('attendance').upsert(payload).catch(() => {});
-         }
-       });
-   } else {
-     // Delete the attendance record when status is cleared
-     apiCall(`/api/attendance?student_id=${encodeURIComponent(studentId)}&date=${encodeURIComponent(date)}`, { method: 'DELETE' })
-       .catch(async () => {
-         if (window.supabaseClient) {
-           await window.supabaseClient.from('attendance')
-             .delete()
-             .eq('student_id', studentId)
-             .eq('date', date)
-             .catch(() => {});
-         }
-       });
-   }
+// API Call in background (Cloudflare D1 only — no Supabase fallback)
+    if (newStatus !== '') {
+      const payload = [{ student_id: studentId, date: date, status: newStatus, notes: '' }];
+      apiCall('/api/attendance', { method: 'POST', body: JSON.stringify(payload) })
+        .then(() => {
+          // Sync the calendar after the server write succeeds
+          if (typeof window.renderAttendanceCalendar === 'function') {
+            const calEl = document.getElementById('child-attendance-cal-container') ||
+                          document.getElementById('attendance-cal-container');
+            if (calEl) window.renderAttendanceCalendar(studentId, calEl, window.currentCalYear, window.currentCalMonth);
+          }
+        })
+        .catch(() => {});
+    } else {
+      // Delete the attendance record when status is cleared
+      apiCall(`/api/attendance?student_id=${encodeURIComponent(studentId)}&date=${encodeURIComponent(date)}`, { method: 'DELETE' })
+        .then(() => {
+          if (typeof window.renderAttendanceCalendar === 'function') {
+            const calEl = document.getElementById('child-attendance-cal-container') ||
+                          document.getElementById('attendance-cal-container');
+            if (calEl) window.renderAttendanceCalendar(studentId, calEl, window.currentCalYear, window.currentCalMonth);
+          }
+        })
+        .catch(() => {});
+    }
  };
 
 // --- MASTER SCHEDULE MATRIX (100% DYNAMIC) ---
