@@ -1710,7 +1710,13 @@ CK.classroom = (() => {
         .subscribe();
     } catch (e) { console.warn('[classroom] realtime subscribe failed', e); }
   }
-  _subscribeRealtime();
+  // Only start realtime polling on the LMS portal. The landing page also loads
+  // this module (for the enrollment flow), and firing _subscribeRealtime()
+  // there spins a 3s poll against assignments + hw_submissions for nothing.
+  const _isLms = location.pathname.startsWith('/lms') ||
+                 document.getElementById('login-screen') !== null ||
+                 document.body.classList.contains('login-mode');
+  if (_isLms) _subscribeRealtime();
 
   return {
     /* Student */
