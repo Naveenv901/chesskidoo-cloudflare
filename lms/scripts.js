@@ -94000,6 +94000,31 @@
 
 
 
+
+    // Sync window.allAttendance immediately so the calendar reflects the
+    // new Present/Absent status without waiting for the debounced
+    // loadAllData() call (which may skip the fetch on a rapid second save).
+    try {
+      const freshRecords = records;
+      const existing = window.allAttendance || [];
+      freshRecords.forEach((r) => {
+        const idx = existing.findIndex(a => String(a.student_id) === String(r.student_id) && String(a.date || '').slice(0, 10) === String(r.date || '').slice(0, 10));
+        if (idx > -1) { existing[idx].status = r.status; existing[idx].notes = r.notes; }
+        else { existing.push({ student_id: r.student_id, date: r.date, status: r.status, notes: r.notes }); }
+      });
+      window.allAttendance = existing;
+      try { localStorage.setItem('ck_attendance_records', JSON.stringify(existing)); } catch (_) {}
+    } catch (_) {}
+
+    // Re-render the calendar so the tick/X flips immediately
+    if (typeof window.renderMonthlyMatrix === 'function') window.renderMonthlyMatrix();
+    if (typeof window.renderAttendanceCalendar === 'function') {
+      const calEl = document.getElementById('child-attendance-cal-container') || document.getElementById('attendance-cal-container');
+      if (calEl) {
+        const targetStudent = window.currentStudent || (window.allStudents || [])[0];
+        if (targetStudent) window.renderAttendanceCalendar(targetStudent, calEl, window.currentCalYear, window.currentCalMonth);
+      }
+    }
   }
 
 
