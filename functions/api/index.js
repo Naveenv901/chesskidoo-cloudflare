@@ -1,4 +1,5 @@
 function cors() {
+import { handleBlogQuery, handleBlogMutate } from './blogs.js';
   return {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
@@ -18,6 +19,14 @@ function notFound(pathname, method) {
 }
 
 const ALLOWED_TABLES = [
+  'users', 'expenses', 'document', 'attendance', 'ratings', 'tourRatings',
+  'resources', 'meetings', 'leads', 'coach_notes', 'credentials', 'batch_links',
+  'classes', 'monthly_reports', 'puzzle_scores', 'coach_attendance',
+  'assignments', 'hw_submissions', 'feedback', 'broadcasts', 'sessions',
+  'students', 'payments', 'coaches', 'batches', 'messages', 'achievements',
+  'events', 'audit_log', 'rating_history', 'homework_assignments', 'homework_submissions',
+  'blogs' // added blog table
+];
   'users', 'expenses', 'document', 'attendance', 'ratings', 'tourRatings',
   'resources', 'meetings', 'leads', 'coach_notes', 'credentials', 'batch_links',
   'classes', 'monthly_reports', 'puzzle_scores', 'coach_attendance',
@@ -1335,6 +1344,14 @@ if (pathname === '/api/attendance' || pathname.startsWith('/api/attendance')) {
     }
 
     if (pathname === '/api/coaches' || pathname.startsWith('/api/coaches')) {
+        return handleCoaches(request, env);
+      }
+      // Blog API
+      if (pathname === '/api/blogs' || pathname.startsWith('/api/blogs')) {
+        if (request.method === 'GET') return handleBlogQuery(request, env);
+        if (request.method === 'POST') return handleBlogMutate(request, env);
+        return methodNotAllowed();
+      }
       return handleCoaches(request, env);
     }
 
