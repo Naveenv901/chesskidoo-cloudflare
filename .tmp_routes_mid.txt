@@ -1,0 +1,25 @@
+  handleAttendance: IDENTICAL  (A L494, B L436)
+  handleAudit: IDENTICAL  (A L908, B L752)
+  handleBatches: DIFFERENT  (A L764, B L664)
+      A sql: ["SELECT * FROM batches ORDER BY created_at DESC","INSERT INTO batches (id, name, coach, level, time, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)","SELECT * FROM batches WHERE id = ?","SELECT * FROM batches WHERE id = ?","UPDATE batches SET ${updates.join(","SELECT * FROM batches WHERE id = ?"]
+      B sql: ["SELECT * FROM batches ORDER BY created_at DESC","INSERT INTO batches (id, name, coach, level, time, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)","SELECT * FROM batches WHERE id = ?"]
+  handleChesscom: IDENTICAL  (A L729, B L608)
+  handleClasses: IDENTICAL  (A L466, B L408)
+  handleCoaches: DIFFERENT  (A L1133, B L920)
+      A sql: ["\n        SELECT \n          u.id,\n          u.full_name as name,\n          u.email,\n          u.phone_number as phone,\n          u.level,\n          u.rating,\n          u.status,\n          u.created_at,\n          COALESCE(e.amount, 0) as salary\n        FROM users u\n        LEFT JOIN (\n          SELECT description, amount\n          FROM expenses\n          WHERE category = ","INSERT INTO coaches (id, name, email, phone, specialization, experience, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)","SELECT * FROM coaches WHERE id = ?"]
+      B sql: ["SELECT id, full_name as name, email, phone_number as phone, level, rating, status, created_at FROM users WHERE LOWER(role)=","INSERT INTO users (id, full_name, email, phone_number, level, rating, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)","SELECT * FROM users WHERE id = ?"]
+  handleDemoSheet: IDENTICAL  (A L699, B L578)
+  handleEvents: IDENTICAL  (A L887, B L731)
+  handleExpenditures: IDENTICAL  (A L1053, B L840)
+  handleFeedback: IDENTICAL  (A L652, B L531)
+  handleHomework: DIFFERENT  (A L545, B L487)
+      A sql: ["SELECT * FROM hw_submissions ORDER BY submittedAt DESC LIMIT ? OFFSET ?","SELECT COUNT(*) as c FROM hw_submissions","SELECT * FROM assignments ORDER BY created DESC","SELECT * FROM hw_submissions WHERE assignment_id = ? AND student_id = ?","INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at, submittedAt, completed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)","SELECT * FROM hw_submissions WHERE id = ?","PRAGMA table_info(assignments)","INSERT OR REPLACE INTO assignments (${keys.join(","SELECT * FROM assignments WHERE id = ?"]
+      B sql: ["SELECT * FROM hw_submissions ORDER BY submittedAt DESC LIMIT ? OFFSET ?","SELECT COUNT(*) as c FROM hw_submissions","SELECT * FROM assignments ORDER BY created DESC","SELECT * FROM hw_submissions WHERE assignment_id = ? AND student_id = ?","INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at, submittedAt, completed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)","SELECT * FROM hw_submissions WHERE id = ?"]
+  handleLeads: IDENTICAL  (A L679, B L558)
+  handleLichess: IDENTICAL  (A L713, B L592)
+  handleLogin: DIFFERENT  (A L29, B L29)
+      A sql: ["INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)","SELECT id, email, full_name, role, userid FROM users WHERE email = ?","SELECT password FROM credentials WHERE email = ?","INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)"]
+      B sql: ["INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)","SELECT id, email, full_name, role, userid FROM users WHERE email = ?","SELECT password FROM credentials WHERE email = ?","INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)"]
+  handleLogout: IDENTICAL  (A L137, B L145)
+  handleMe: DIFFERENT  (A L150, B L158)
+      A sql: ["SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?","SELECT id, email, full_name as name, role, id as userid, phone_number, city, level, rating, coach, batch, status, childEmail as parent_email, session, session_type, fee FROM users WHERE id = ?","SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?","PRAGMA table_info(${table})"]

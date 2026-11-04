@@ -1,0 +1,1139 @@
+{
+  "findings": [
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 51,
+      "sql": "INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 64,
+      "sql": "SELECT id, email, full_name, role, userid FROM users WHERE email = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 72,
+      "sql": "SELECT password FROM credentials WHERE email = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 88,
+      "sql": "INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 115,
+      "sql": "SELECT id FROM users WHERE email = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 124,
+      "sql": "INSERT INTO users (id, email, full_name, role) VALUES (?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 128,
+      "sql": "INSERT INTO credentials (email, password) VALUES (?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 142,
+      "sql": "DELETE FROM sessions WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 159,
+      "sql": "SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 167,
+      "sql": "SELECT id, email, full_name as name, role, id as userid, phone_number, city, level, rating, coach, batch, status, childEmail as parent_email, session, session_type, fee FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 184,
+      "sql": "SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 283,
+      "sql": "SELECT id LIMIT 1000"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 285,
+      "sql": "SELECT COUNT(*) AS n FROM ${actualTable}${where}"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 301,
+      "sql": "SELECT ${colList} FROM ${actualTable}${where}"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 346,
+      "sql": "INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${keys.map(() => '?').join(', ')})"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 348,
+      "sql": "SELECT * FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 368,
+      "sql": "UPDATE ${actualTable} SET ${fields.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 369,
+      "sql": "SELECT * FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 376,
+      "sql": "DELETE FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 388,
+      "sql": "INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${keys.map(() => '?').join(', ')})"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 391,
+      "sql": "Nothing to update"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 392,
+      "sql": "UPDATE ${actualTable} SET ${updKeys.map(k => "
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 396,
+      "sql": "SELECT * FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 431,
+      "sql": "SELECT * FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 442,
+      "sql": "SELECT * FROM users WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 458,
+      "sql": "INSERT INTO users (id, full_name, role, email, phone_number, city, level, rating, coach, batch, status, due_date, join_date, age, grade, payment_status, xp, classes, streak_count, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 459,
+      "sql": "SELECT * FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 475,
+      "sql": "SELECT * FROM classes WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 486,
+      "sql": "INSERT INTO classes (id, coachId, coachName, title, level, batch, days, time, duration, zoomLink, maxStudents, studentIds, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 487,
+      "sql": "SELECT * FROM classes WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 504,
+      "sql": "SELECT * FROM attendance WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 516,
+      "sql": "INSERT OR REPLACE INTO attendance (id, userid, studentId, studentName, classId, className, coachId, coachName, markedAt, date, status, class_title, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 517,
+      "sql": "SELECT * FROM attendance WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 530,
+      "sql": "SELECT * FROM assignments ORDER BY created DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 537,
+      "sql": "INSERT INTO assignments (id, title, pgn, type, assignedTo, dueDate, description, coach, moves, created, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 538,
+      "sql": "SELECT * FROM assignments WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 558,
+      "sql": "SELECT * FROM hw_submissions ORDER BY submittedAt DESC LIMIT ? OFFSET ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 559,
+      "sql": "SELECT COUNT(*) as c FROM hw_submissions"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 565,
+      "sql": "SELECT * FROM assignments ORDER BY created DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 576,
+      "sql": "SELECT * FROM hw_submissions WHERE assignment_id = ? AND student_id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 579,
+      "sql": "INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at, submittedAt, completed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 580,
+      "sql": "SELECT * FROM hw_submissions WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 644,
+      "sql": "INSERT OR REPLACE INTO assignments (${keys.join(', ')}) VALUES (${placeholders})"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 646,
+      "sql": "SELECT * FROM assignments WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 660,
+      "sql": "SELECT * FROM feedback WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 671,
+      "sql": "INSERT INTO feedback (id, fromId, fromName, fromRole, childId, childName, toId, toName, message, rating, category, replied, reply, parent_name, parent_email, student_email, text, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 672,
+      "sql": "SELECT * FROM feedback WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 687,
+      "sql": "INSERT INTO leads (id, name, phone, parent_name, child_age, city, status, email, message, source, full_name, age, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 692,
+      "sql": "SELECT * FROM leads ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 749,
+      "sql": "SELECT * FROM resources ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 756,
+      "sql": "INSERT INTO resources (id, title, type, url, batch, level, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 757,
+      "sql": "SELECT * FROM resources WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 770,
+      "sql": "SELECT * FROM batches ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 777,
+      "sql": "INSERT INTO batches (id, name, coach, level, time, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 778,
+      "sql": "SELECT * FROM batches WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 789,
+      "sql": "SELECT * FROM batches WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 808,
+      "sql": "UPDATE batches SET ${updates.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 809,
+      "sql": "SELECT * FROM batches WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 826,
+      "sql": "SELECT * FROM ratings WHERE userid = ? ORDER BY date DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 833,
+      "sql": "INSERT INTO ratings (id, userid, rating, date, event, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 834,
+      "sql": "SELECT * FROM ratings WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 847,
+      "sql": "SELECT * FROM achievements ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 854,
+      "sql": "INSERT INTO achievements (id, userid, title, description, date, img_url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 855,
+      "sql": "SELECT * FROM achievements WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 879,
+      "sql": "UPDATE achievements SET ${updates.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 880,
+      "sql": "SELECT * FROM achievements WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 893,
+      "sql": "SELECT * FROM events ORDER BY date DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 900,
+      "sql": "INSERT INTO events (id, title, date, location, type, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 901,
+      "sql": "SELECT * FROM events WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 914,
+      "sql": "SELECT * FROM audit_log ORDER BY created_at DESC LIMIT 100"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 921,
+      "sql": "INSERT INTO audit_log (id, action, user, details, created_at) VALUES (?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 922,
+      "sql": "SELECT * FROM audit_log WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 937,
+      "sql": "\r\n        SELECT \r\n          u.id,\r\n          u.full_name as name,\r\n          u.email,\r\n          u.phone_number as phone,\r\n          u.childEmail as parent_email,\r\n          u.grade,\r\n          u.level,\r\n          u.batch,\r\n          b.name as batch_name,\r\n          u.coach,\r\n          u.coach as coach_id,\r\n          c.full_name as coach_name,\r\n          u.status,\r\n          u.rating,\r\n          u.session,\r\n          u.session_type,\r\n          u.fee,\r\n          u.payment_status,\r\n          u.learning_mode,\r\n          u.due_date,\r\n          u.created_at\r\n        FROM users u\r\n        LEFT JOIN batches b ON u.batch = b.id\r\n        LEFT JOIN users c ON u.coach = c.id\r\n        WHERE LOWER(u.role)='student' \r\n        ORDER BY u.created_at DESC\r\n      "
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 975,
+      "sql": "INSERT INTO users (id, full_name, email, phone_number, childEmail, grade, level, batch, coach, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 976,
+      "sql": "SELECT * FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 987,
+      "sql": "SELECT * FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1004,
+      "sql": "UPDATE users SET ${updates.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1005,
+      "sql": "SELECT * FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1019,
+      "sql": "SELECT * FROM payments ORDER BY payment_date DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1029,
+      "sql": "INSERT INTO payments (id, student_id, amount, method, status, payment_date, due_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1030,
+      "sql": "SELECT * FROM payments WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1068,
+      "sql": "SELECT COALESCE(SUM(CAST(amount AS REAL)), 0) as total_expense FROM expenses WHERE strftime('%Y-%m', date) = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1075,
+      "sql": "SELECT * FROM expenses WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1080,
+      "sql": "SELECT * FROM expenses WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1101,
+      "sql": "INSERT INTO expenses (id, date, category, description, amount, mode, bill, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1102,
+      "sql": "SELECT * FROM expenses WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1118,
+      "sql": "UPDATE expenses SET ${fields.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1119,
+      "sql": "SELECT * FROM expenses WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1126,
+      "sql": "DELETE FROM expenses WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1142,
+      "sql": "\r\n        SELECT \r\n          u.id,\r\n          u.full_name as name,\r\n          u.email,\r\n          u.phone_number as phone,\r\n          u.level,\r\n          u.rating,\r\n          u.status,\r\n          u.created_at,\r\n          COALESCE(e.amount, 0) as salary\r\n        FROM users u\r\n        LEFT JOIN (\r\n          SELECT description, amount\r\n          FROM expenses\r\n          WHERE category = 'Coach Salary'\r\n            AND strftime('%Y-%m', date) = ?\r\n        ) e ON e.description = u.id || ' monthly salary'\r\n        WHERE LOWER(u.role)='coach'\r\n        ORDER BY u.created_at DESC\r\n      "
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1172,
+      "sql": "INSERT INTO coaches (id, name, email, phone, specialization, experience, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1173,
+      "sql": "SELECT * FROM coaches WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1192,
+      "sql": "SELECT * FROM complaint_feedback WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1208,
+      "sql": "\r\n      INSERT INTO complaint_feedback (id, name, contact, category, rating, subject, message, status, created_at, updated_at)\r\n      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\r\n    "
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1216,
+      "sql": "\r\n        INSERT INTO messages (id, sender_id, subject, body, category, is_read, created_at)\r\n        VALUES (?, ?, ?, ?, ?, 0, ?)\r\n      "
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1232,
+      "sql": "\r\n      UPDATE complaint_feedback SET status = ?, admin_notes = ?, assigned_to = ?, updated_at = ? WHERE id = ?\r\n    "
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1252,
+      "sql": "SELECT * FROM registration_queries WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1267,
+      "sql": "\r\n      INSERT INTO registration_queries (id, parent_name, phone, child_name, child_age, city, country, preferred_mode, preferred_slot, level, message, status, source, created_at, updated_at)\r\n      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\r\n    "
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1290,
+      "sql": "\r\n      UPDATE registration_queries SET status = ?, updated_at = ? WHERE id = ?\r\n    "
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1318,
+      "sql": "SELECT * FROM ${type} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1334,
+      "sql": "SELECT *, '${table}' as type FROM ${table} WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1377,
+      "sql": "UPDATE ${type} SET updated_at = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1414,
+      "sql": "SELECT * FROM messages WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1433,
+      "sql": "\r\n      INSERT INTO messages (id, sender_id, receiver_id, subject, body, category, is_read, created_at)\r\n      VALUES (?, ?, ?, ?, ?, ?, ?, ?)\r\n    "
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1445,
+      "sql": "UPDATE messages SET is_read = ? WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1452,
+      "sql": "DELETE FROM messages WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 52,
+      "sql": "INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 68,
+      "sql": "SELECT id, email, full_name, role, userid FROM users WHERE email = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 76,
+      "sql": "SELECT password FROM credentials WHERE email = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 93,
+      "sql": "INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 123,
+      "sql": "SELECT id FROM users WHERE email = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 132,
+      "sql": "INSERT INTO users (id, email, full_name, role) VALUES (?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 136,
+      "sql": "INSERT INTO credentials (email, password) VALUES (?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 150,
+      "sql": "DELETE FROM sessions WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 167,
+      "sql": "SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 175,
+      "sql": "SELECT id, email, full_name, role, userid, phone_number, city, level, rating, coach, batch, status FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 214,
+      "sql": "SELECT ${cols} FROM ${actualTable} WHERE 1=1"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 280,
+      "sql": "INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${allPlaceholders})"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 282,
+      "sql": "SELECT * FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 299,
+      "sql": "UPDATE ${actualTable} SET ${fields.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 300,
+      "sql": "SELECT * FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 305,
+      "sql": "DELETE FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 320,
+      "sql": "INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${placeholders})"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 327,
+      "sql": "UPDATE ${actualTable} SET ${fields} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 330,
+      "sql": "SELECT * FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 373,
+      "sql": "SELECT * FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 384,
+      "sql": "SELECT * FROM users WHERE 1=1"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 400,
+      "sql": "INSERT INTO users (id, full_name, role, email, phone_number, city, level, rating, coach, batch, status, due_date, join_date, age, grade, payment_status, xp, classes, streak_count, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 401,
+      "sql": "SELECT * FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 417,
+      "sql": "SELECT * FROM classes WHERE 1=1"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 428,
+      "sql": "INSERT INTO classes (id, coachId, coachName, title, level, batch, days, time, duration, zoomLink, maxStudents, studentIds, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 429,
+      "sql": "SELECT * FROM classes WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 446,
+      "sql": "SELECT * FROM attendance WHERE 1=1"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 458,
+      "sql": "INSERT OR REPLACE INTO attendance (id, userid, studentId, studentName, classId, className, coachId, coachName, markedAt, date, status, class_title, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 459,
+      "sql": "SELECT * FROM attendance WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 472,
+      "sql": "SELECT * FROM assignments ORDER BY created DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 479,
+      "sql": "INSERT INTO assignments (id, title, pgn, type, assignedTo, dueDate, description, coach, moves, created, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 480,
+      "sql": "SELECT * FROM assignments WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 500,
+      "sql": "SELECT * FROM hw_submissions ORDER BY submittedAt DESC LIMIT ? OFFSET ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 501,
+      "sql": "SELECT COUNT(*) as c FROM hw_submissions"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 507,
+      "sql": "SELECT * FROM assignments ORDER BY created DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 518,
+      "sql": "SELECT * FROM hw_submissions WHERE assignment_id = ? AND student_id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 521,
+      "sql": "INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at, submittedAt, completed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 522,
+      "sql": "SELECT * FROM hw_submissions WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 539,
+      "sql": "SELECT * FROM feedback WHERE 1=1"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 550,
+      "sql": "INSERT INTO feedback (id, fromId, fromName, fromRole, childId, childName, toId, toName, message, rating, category, replied, reply, parent_name, parent_email, student_email, text, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 551,
+      "sql": "SELECT * FROM feedback WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 566,
+      "sql": "INSERT INTO leads (id, name, phone, parent_name, child_age, city, status, email, message, source, full_name, age, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 571,
+      "sql": "SELECT * FROM leads ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 628,
+      "sql": "SELECT * FROM messages ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 635,
+      "sql": "INSERT INTO messages (id, sender_id, receiver_id, subject, body, read, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 636,
+      "sql": "SELECT * FROM messages WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 649,
+      "sql": "SELECT * FROM resources ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 656,
+      "sql": "INSERT INTO resources (id, title, type, url, batch, level, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 657,
+      "sql": "SELECT * FROM resources WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 670,
+      "sql": "SELECT * FROM batches ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 677,
+      "sql": "INSERT INTO batches (id, name, coach, level, time, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 678,
+      "sql": "SELECT * FROM batches WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 695,
+      "sql": "SELECT * FROM ratings WHERE userid = ? ORDER BY date DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 702,
+      "sql": "INSERT INTO ratings (id, userid, rating, date, event, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 703,
+      "sql": "SELECT * FROM ratings WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 716,
+      "sql": "SELECT * FROM achievements ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 723,
+      "sql": "INSERT INTO achievements (id, userid, title, description, date, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 724,
+      "sql": "SELECT * FROM achievements WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 737,
+      "sql": "SELECT * FROM events ORDER BY date DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 744,
+      "sql": "INSERT INTO events (id, title, date, location, type, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 745,
+      "sql": "SELECT * FROM events WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 758,
+      "sql": "SELECT * FROM audit_log ORDER BY created_at DESC LIMIT 100"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 765,
+      "sql": "INSERT INTO audit_log (id, action, user, details, created_at) VALUES (?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 766,
+      "sql": "SELECT * FROM audit_log WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 781,
+      "sql": "SELECT id, full_name as name, email, phone_number as phone, childEmail as parent_email, grade, level, batch, coach, coach as coach_id, status, created_at FROM users WHERE role='student' ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 791,
+      "sql": "INSERT INTO users (id, full_name, email, phone_number, childEmail, grade, level, batch, coach, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 792,
+      "sql": "SELECT * FROM users WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 806,
+      "sql": "SELECT * FROM payments ORDER BY payment_date DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 816,
+      "sql": "INSERT INTO payments (id, student_id, amount, method, status, payment_date, due_date, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 817,
+      "sql": "SELECT * FROM payments WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 855,
+      "sql": "SELECT COALESCE(SUM(CAST(amount AS REAL)), 0) as total_expense FROM expenses WHERE strftime('%Y-%m', date) = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 862,
+      "sql": "SELECT * FROM expenses WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 867,
+      "sql": "SELECT * FROM expenses WHERE 1=1"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 888,
+      "sql": "INSERT INTO expenses (id, date, category, description, amount, mode, bill, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 889,
+      "sql": "SELECT * FROM expenses WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 905,
+      "sql": "UPDATE expenses SET ${fields.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 906,
+      "sql": "SELECT * FROM expenses WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 913,
+      "sql": "DELETE FROM expenses WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 927,
+      "sql": "SELECT id, full_name as name, email, phone_number as phone, level, rating, status, created_at FROM users WHERE LOWER(role)='coach' ORDER BY created_at DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 937,
+      "sql": "INSERT INTO users (id, full_name, email, phone_number, level, rating, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 938,
+      "sql": "SELECT * FROM users WHERE id = ?"
+    }
+  ],
+  "errors": [
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 283,
+      "msg": "no such column: id",
+      "sql": "SELECT id LIMIT 1000"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 285,
+      "msg": "no such table: NULLNULL",
+      "sql": "SELECT COUNT(*) AS n FROM ${actualTable}${where}"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 301,
+      "msg": "no such table: NULLNULL",
+      "sql": "SELECT ${colList} FROM ${actualTable}${where}"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 346,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${keys.map(() => '?').join(', ')})"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 348,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "SELECT * FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 368,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE ${actualTable} SET ${fields.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 376,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "DELETE FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 391,
+      "msg": "near \"Nothing\": syntax error",
+      "sql": "Nothing to update"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 392,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE ${actualTable} SET ${updKeys.map(k =>"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 644,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "INSERT OR REPLACE INTO assignments (${keys.join(', ')}) VALUES (${placeholders})"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 756,
+      "msg": "table resources has no column named title",
+      "sql": "INSERT INTO resources (id, title, type, url, batch, level, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 808,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE batches SET ${updates.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 826,
+      "msg": "no such column: userid",
+      "sql": "SELECT * FROM ratings WHERE userid = ? ORDER BY date DESC"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 833,
+      "msg": "table ratings has no column named userid",
+      "sql": "INSERT INTO ratings (id, userid, rating, date, event, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 879,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE achievements SET ${updates.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1004,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE users SET ${updates.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1118,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE expenses SET ${fields.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1172,
+      "msg": "no such table: coaches",
+      "sql": "INSERT INTO coaches (id, name, email, phone, specialization, experience, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1173,
+      "msg": "no such table: coaches",
+      "sql": "SELECT * FROM coaches WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1318,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "SELECT * FROM ${type} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1334,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "SELECT *, '${table}' as type FROM ${table} WHERE 1=1"
+    },
+    {
+      "file": "functions/api/[[path]].js",
+      "line": 1377,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE ${type} SET updated_at = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 214,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "SELECT ${cols} FROM ${actualTable} WHERE 1=1"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 280,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${allPlaceholders})"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 282,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "SELECT * FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 299,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE ${actualTable} SET ${fields.join(', ')} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 305,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "DELETE FROM ${actualTable} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 320,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "INSERT INTO ${actualTable} (${keys.join(', ')}) VALUES (${placeholders})"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 327,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE ${actualTable} SET ${fields} WHERE id = ?"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 656,
+      "msg": "table resources has no column named title",
+      "sql": "INSERT INTO resources (id, title, type, url, batch, level, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 695,
+      "msg": "no such column: userid",
+      "sql": "SELECT * FROM ratings WHERE userid = ? ORDER BY date DESC"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 702,
+      "msg": "table ratings has no column named userid",
+      "sql": "INSERT INTO ratings (id, userid, rating, date, event, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+    },
+    {
+      "file": "functions/api/index.js",
+      "line": 905,
+      "msg": "near \"NULL\": syntax error",
+      "sql": "UPDATE expenses SET ${fields.join(', ')} WHERE id = ?"
+    }
+  ]
+}

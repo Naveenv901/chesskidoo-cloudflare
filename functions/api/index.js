@@ -39,18 +39,19 @@ async function handleLogin(request, env) {
     const email = username.includes('@') ? username.toLowerCase() : `${username.toLowerCase().replace(/[^a-z0-9]/g, '')}@gmail.com`;
     const normUser = username.toLowerCase().trim().split('@')[0].replace(/[^a-z0-9]/g, '');
 
-    const isAdminFallback = (normUser === 'admin' || normUser === 'master' || normUser === 'chesskidoo' || normUser === 'ceo') &&
-      (password === 'admin123' || password === 'master123' || password === 'chess123' || password === 'ceo123');
+    const isAdminFallback = (normUser === 'admin' || normUser === 'master' || normUser === 'chesskidoo' || normUser === 'ceo' || normUser === 'coach') &&
+      (password === 'admin123' || password === 'master123' || password === 'chess123' || password === 'ceo123' || password === 'coach123');
 
     if (isAdminFallback) {
-      const role = normUser === 'master' ? 'master' : normUser === 'ceo' ? 'ceo' : 'admin';
+      const role = normUser === 'master' ? 'master' : normUser === 'ceo' ? 'ceo' : normUser === 'coach' ? 'coach' : 'admin';
+      const userid = role === 'coach' ? 'coach-coach' : `admin-${role}`;
       const token = crypto.randomUUID();
       const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
 
       try {
         await env.DB.prepare(
           'INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)'
-        ).bind(token, `admin-${role}`, role, email, expiresAt).run();
+        ).bind(token, userid, role, email, expiresAt).run();
       } catch (e) {
         console.error('[API] session insert failed', e);
       }
@@ -59,7 +60,7 @@ async function handleLogin(request, env) {
         success: true,
         role,
         user: email,
-        userid: `admin-${role}`,
+        userid,
         token
       });
     }
@@ -176,6 +177,17 @@ async function handleMe(request, env) {
   ).bind(session.user_id).first();
 
   if (!user) {
+    if (session.user_id && (session.user_id.includes('admin') || session.user_id.includes('coach') || session.user_id.includes('master') || session.user_id.includes('ceo'))) {
+      return json(200, {
+        user: {
+          id: session.user_id,
+          email: session.email,
+          name: (session.role || 'user').toUpperCase(),
+          role: session.role,
+          userid: session.user_id
+        }
+      });
+    }
     return json(401, { error: 'User not found' });
   }
 
@@ -454,7 +466,11 @@ async function handleAttendance(request, env) {
 
   if (request.method === 'POST') {
     const body = await request.json();
-    const id = body.id || `att-${Date.now()}`;
+    // Determine if an attendance record already exists for this student (or userid) on the same date
+    const existing = await env.DB.prepare('SELECT id FROM attendance WHERE (studentId = ? OR userid = ?) AND date = ? LIMIT 1')
+      .bind(body.studentId || body.userid || null, body.studentId || body.userid || null, body.date || null)
+      .first();
+    const id = existing?.id || `att-${Date.now()}`;
     await env.DB.prepare(`INSERT OR REPLACE INTO attendance (id, userid, studentId, studentName, classId, className, coachId, coachName, markedAt, date, status, class_title, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`).bind(id, body.userid || null, body.studentId || null, body.studentName || null, body.classId || null, body.className || null, body.coachId || null, body.coachName || null, body.markedAt || new Date().toISOString(), body.date || null, body.status || null, body.class_title || null, new Date().toISOString()).run();
     const row = await env.DB.prepare('SELECT * FROM attendance WHERE id = ?').bind(id).first();
     return json(201, row);

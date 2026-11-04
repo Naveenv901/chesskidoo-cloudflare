@@ -1,0 +1,129 @@
+=== ROUTES in [[path]].js ===
+  /api/auth/profile  ->  undefined  (L1564)
+  /api/auth/signin  ->  undefined  (L1568)
+  /api/auth/signup  ->  undefined  (L1572)
+  /api/auth/signout  ->  undefined  (L1576)
+  /api/query  ->  undefined  (L1580)
+  /api/mutate  ->  undefined  (L1584)
+  /api/users  ->  undefined  (L1588)
+  /api/classes  ->  undefined  (L1592)
+  /api/attendance  ->  undefined  (L1596)
+  /api/assignments  ->  undefined  (L1600)
+  /api/homework  ->  undefined  (L1604)
+  /api/feedback  ->  undefined  (L1608)
+  /api/leads  ->  undefined  (L1612)
+  /api/complaints  ->  undefined  (L1616)
+  /api/registrations  ->  undefined  (L1620)
+  /api/demo-sheet  ->  undefined  (L1624)
+  /api/lichess  ->  undefined  (L1628)
+  /api/chesscom-proxy  ->  undefined  (L1632)
+  /api/messages  ->  undefined  (L1636)
+  /api/resources  ->  undefined  (L1640)
+  /api/batches  ->  undefined  (L1644)
+  /api/rating_history  ->  undefined  (L1648)
+  /api/achievements  ->  undefined  (L1652)
+  /api/events  ->  undefined  (L1656)
+  /api/upload  ->  undefined  (L1660)
+  /api/files  ->  undefined  (L1663)
+  /api/audit  ->  undefined  (L1666)
+  /api/students  ->  undefined  (L1670)
+  /api/payments  ->  undefined  (L1674)
+  /api/ai  ->  undefined  (L1678)
+  /api/expenditures  ->  undefined  (L1682)
+  /api/coaches  ->  undefined  (L1686)
+  /api/admin/analyze  ->  undefined  (L1690)
+
+=== ROUTES in index.js ===
+  /api/auth/profile  ->  undefined  (L956)
+  /api/auth/signin  ->  undefined  (L960)
+  /api/auth/signup  ->  undefined  (L964)
+  /api/auth/signout  ->  undefined  (L968)
+  /api/query  ->  undefined  (L972)
+  /api/mutate  ->  undefined  (L976)
+  /api/users  ->  undefined  (L980)
+  /api/classes  ->  undefined  (L984)
+  /api/attendance  ->  undefined  (L988)
+  /api/assignments  ->  undefined  (L992)
+  /api/homework  ->  undefined  (L996)
+  /api/feedback  ->  undefined  (L1000)
+  /api/leads  ->  undefined  (L1004)
+  /api/demo-sheet  ->  undefined  (L1008)
+  /api/lichess  ->  undefined  (L1012)
+  /api/chesscom-proxy  ->  undefined  (L1016)
+  /api/messages  ->  undefined  (L1020)
+  /api/resources  ->  undefined  (L1024)
+  /api/batches  ->  undefined  (L1028)
+  /api/rating_history  ->  undefined  (L1032)
+  /api/achievements  ->  undefined  (L1036)
+  /api/events  ->  undefined  (L1040)
+  /api/audit  ->  undefined  (L1044)
+  /api/students  ->  undefined  (L1048)
+  /api/payments  ->  undefined  (L1052)
+  /api/ai  ->  undefined  (L1056)
+  /api/expenditures  ->  undefined  (L1060)
+  /api/coaches  ->  undefined  (L1064)
+
+=== HANDLERS only in [[path]].js ===
+  handleAdminAnalyze (L1302-1405)
+  handleComplaintFeedback (L1183-1243)
+  handleFileServe (L1528-1551)
+  handleRegistrationQueries (L1244-1301)
+  handleUpload (L1462-1527)
+=== HANDLERS only in index.js ===
+=== SHARED HANDLERS ===
+  handleAI: IDENTICAL  (A L1037, B L824)
+  handleAchievements: DIFFERENT  (A L841, B L710)
+      A sql: ["SELECT * FROM achievements ORDER BY created_at DESC","INSERT INTO achievements (id, userid, title, description, date, img_url, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)","SELECT * FROM achievements WHERE id = ?","UPDATE achievements SET ${updates.join(","SELECT * FROM achievements WHERE id = ?"]
+      B sql: ["SELECT * FROM achievements ORDER BY created_at DESC","INSERT INTO achievements (id, userid, title, description, date, created_at) VALUES (?, ?, ?, ?, ?, ?)","SELECT * FROM achievements WHERE id = ?"]
+  handleAssignments: IDENTICAL  (A L524, B L466)
+  handleAttendance: IDENTICAL  (A L494, B L436)
+  handleAudit: IDENTICAL  (A L908, B L752)
+  handleBatches: DIFFERENT  (A L764, B L664)
+      A sql: ["SELECT * FROM batches ORDER BY created_at DESC","INSERT INTO batches (id, name, coach, level, time, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)","SELECT * FROM batches WHERE id = ?","SELECT * FROM batches WHERE id = ?","UPDATE batches SET ${updates.join(","SELECT * FROM batches WHERE id = ?"]
+      B sql: ["SELECT * FROM batches ORDER BY created_at DESC","INSERT INTO batches (id, name, coach, level, time, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)","SELECT * FROM batches WHERE id = ?"]
+  handleChesscom: IDENTICAL  (A L729, B L608)
+  handleClasses: IDENTICAL  (A L466, B L408)
+  handleCoaches: DIFFERENT  (A L1133, B L920)
+      A sql: ["\n        SELECT \n          u.id,\n          u.full_name as name,\n          u.email,\n          u.phone_number as phone,\n          u.level,\n          u.rating,\n          u.status,\n          u.created_at,\n          COALESCE(e.amount, 0) as salary\n        FROM users u\n        LEFT JOIN (\n          SELECT description, amount\n          FROM expenses\n          WHERE category = ","INSERT INTO coaches (id, name, email, phone, specialization, experience, active, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)","SELECT * FROM coaches WHERE id = ?"]
+      B sql: ["SELECT id, full_name as name, email, phone_number as phone, level, rating, status, created_at FROM users WHERE LOWER(role)=","INSERT INTO users (id, full_name, email, phone_number, level, rating, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)","SELECT * FROM users WHERE id = ?"]
+  handleDemoSheet: IDENTICAL  (A L699, B L578)
+  handleEvents: IDENTICAL  (A L887, B L731)
+  handleExpenditures: IDENTICAL  (A L1053, B L840)
+  handleFeedback: IDENTICAL  (A L652, B L531)
+  handleHomework: DIFFERENT  (A L545, B L487)
+      A sql: ["SELECT * FROM hw_submissions ORDER BY submittedAt DESC LIMIT ? OFFSET ?","SELECT COUNT(*) as c FROM hw_submissions","SELECT * FROM assignments ORDER BY created DESC","SELECT * FROM hw_submissions WHERE assignment_id = ? AND student_id = ?","INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at, submittedAt, completed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)","SELECT * FROM hw_submissions WHERE id = ?","PRAGMA table_info(assignments)","INSERT OR REPLACE INTO assignments (${keys.join(","SELECT * FROM assignments WHERE id = ?"]
+      B sql: ["SELECT * FROM hw_submissions ORDER BY submittedAt DESC LIMIT ? OFFSET ?","SELECT COUNT(*) as c FROM hw_submissions","SELECT * FROM assignments ORDER BY created DESC","SELECT * FROM hw_submissions WHERE assignment_id = ? AND student_id = ?","INSERT OR REPLACE INTO hw_submissions (id, assignment_id, student_id, submission_text, submission_url, file_urls, status, submitted_at, updated_at, submittedAt, completed, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?)","SELECT * FROM hw_submissions WHERE id = ?"]
+  handleLeads: IDENTICAL  (A L679, B L558)
+  handleLichess: IDENTICAL  (A L713, B L592)
+  handleLogin: DIFFERENT  (A L29, B L29)
+      A sql: ["INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)","SELECT id, email, full_name, role, userid FROM users WHERE email = ?","SELECT password FROM credentials WHERE email = ?","INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)"]
+      B sql: ["INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)","SELECT id, email, full_name, role, userid FROM users WHERE email = ?","SELECT password FROM credentials WHERE email = ?","INSERT INTO sessions (id, user_id, role, email, expires_at) VALUES (?, ?, ?, ?, ?)"]
+  handleLogout: IDENTICAL  (A L137, B L145)
+  handleMe: DIFFERENT  (A L150, B L158)
+      A sql: ["SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?","SELECT id, email, full_name as name, role, id as userid, phone_number, city, level, rating, coach, batch, status, childEmail as parent_email, session, session_type, fee FROM users WHERE id = ?","SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?","PRAGMA table_info(${table})"]
+      B sql: ["SELECT user_id, role, email, expires_at FROM sessions WHERE id = ?","SELECT id, email, full_name, role, userid, phone_number, city, level, rating, coach, batch, status FROM users WHERE id = ?"]
+  handleMessages: DIFFERENT  (A L1406, B L622)
+      A sql: ["\n      INSERT INTO messages (id, sender_id, receiver_id, subject, body, category, is_read, created_at)\n      VALUES (?, ?, ?, ?, ?, ?, ?, ?)\n    ","UPDATE messages SET is_read = ? WHERE id = ?","DELETE FROM messages WHERE id = ?"]
+      B sql: ["SELECT * FROM messages ORDER BY created_at DESC","INSERT INTO messages (id, sender_id, receiver_id, subject, body, read, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)","SELECT * FROM messages WHERE id = ?"]
+  handleMutate: DIFFERENT  (A L324, B L249)
+      A sql: ["INSERT INTO ${actualTable} (${keys.join(","SELECT * FROM ${actualTable} WHERE id = ?","UPDATE ${actualTable} SET ${fields.join(","SELECT * FROM ${actualTable} WHERE id = ?","DELETE FROM ${actualTable} WHERE id = ?","INSERT INTO ${actualTable} (${keys.join(","UPDATE ${actualTable} SET ${updKeys.map(k => ","SELECT * FROM ${actualTable} WHERE id = ?"]
+      B sql: ["INSERT INTO ${actualTable} (${keys.join(","SELECT * FROM ${actualTable} WHERE id = ?","UPDATE ${actualTable} SET ${fields.join(","SELECT * FROM ${actualTable} WHERE id = ?","DELETE FROM ${actualTable} WHERE id = ?","INSERT INTO ${actualTable} (${keys.join(","UPDATE ${actualTable} SET ${fields} WHERE id = ?","SELECT * FROM ${actualTable} WHERE id = ?"]
+  handlePayments: IDENTICAL  (A L1012, B L799)
+  handleQuery: DIFFERENT  (A L242, B L185)
+      A sql: ["SELECT COUNT(*) AS n FROM ${actualTable}${where}"]
+      B sql: []
+  handleRatingHistory: IDENTICAL  (A L816, B L685)
+  handleRegister: IDENTICAL  (A L103, B L111)
+  handleResources: IDENTICAL  (A L743, B L643)
+  handleStudents: DIFFERENT  (A L930, B L774)
+      A sql: ["\n        SELECT \n          u.id,\n          u.full_name as name,\n          u.email,\n          u.phone_number as phone,\n          u.childEmail as parent_email,\n          u.grade,\n          u.level,\n          u.batch,\n          b.name as batch_name,\n          u.coach,\n          u.coach as coach_id,\n          c.full_name as coach_name,\n          u.status,\n          u.rating,\n          u.session,\n          u.session_type,\n          u.fee,\n          u.payment_status,\n          u.learning_mode,\n          u.due_date,\n          u.created_at\n        FROM users u\n        LEFT JOIN batches b ON u.batch = b.id\n        LEFT JOIN users c ON u.coach = c.id\n        WHERE LOWER(u.role)=","INSERT INTO users (id, full_name, email, phone_number, childEmail, grade, level, batch, coach, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)","SELECT * FROM users WHERE id = ?","SELECT * FROM users WHERE id = ?","UPDATE users SET ${updates.join(","SELECT * FROM users WHERE id = ?"]
+      B sql: ["SELECT id, full_name as name, email, phone_number as phone, childEmail as parent_email, grade, level, batch, coach, coach as coach_id, status, created_at FROM users WHERE role=","INSERT INTO users (id, full_name, email, phone_number, childEmail, grade, level, batch, coach, status, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)","SELECT * FROM users WHERE id = ?"]
+  handleUsers: IDENTICAL  (A L422, B L364)
+
+=== ROUTES MISSING in index.js (present in [[path]].js) ===
+  /api/complaints -> undefined
+  /api/registrations -> undefined
+  /api/upload -> undefined
+  /api/files -> undefined
+  /api/admin/analyze -> undefined
+=== ROUTES MISSING in [[path]].js (present in index.js) ===

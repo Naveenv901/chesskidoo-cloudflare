@@ -1,0 +1,10 @@
+﻿const fs=require('fs');
+const a=fs.readFileSync('functions/api/index.js','utf8').split(/\r?\n/);
+const b=fs.readFileSync('functions/api/[[path]].js','utf8').split(/\r?\n/);
+console.log('index.js lines',a.length,'path.js lines',b.length);
+const fa=new Map(), fb=new Map();
+a.forEach((l,i)=>{const m=l.match(/^(?:async )?function (\w+)/); if(m) fa.set(m[1],i+1);});
+b.forEach((l,i)=>{const m=l.match(/^(?:async )?function (\w+)/); if(m) fb.set(m[1],i+1);});
+console.log('--- only in index.js ---'); for(const k of fa.keys()) if(!fb.has(k)) console.log('  '+k+' @'+fa.get(k));
+console.log('--- only in [[path]].js ---'); for(const k of fb.keys()) if(!fa.has(k)) console.log('  '+k+' @'+fb.get(k));
+console.log('--- in both (line numbers) ---'); for(const [k,v] of fa) if(fb.has(k)) console.log('  '+k+': index='+v+' path='+fb.get(k));

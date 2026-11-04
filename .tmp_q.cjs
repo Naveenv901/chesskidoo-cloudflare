@@ -1,0 +1,18 @@
+﻿const { DatabaseSync } = require('node:sqlite');
+const fs=require('fs'),path=require('path');
+const dir=path.join('.wrangler','state','v3','d1','miniflare-D1DatabaseObject');
+const file=path.join(dir, fs.readdirSync(dir).filter(f=>f.endsWith('.sqlite')&&f!=='metadata.sqlite')[0]);
+const db=new DatabaseSync(file,{readOnly:true});
+const q=(s)=>{ try{ db.prepare(s).all(); console.log('OK  : '+s.slice(0,80)); }catch(e){ console.log('FAIL: '+s.slice(0,80)+'  ==> '+e.message); } };
+q('SELECT * FROM hw_submissions ORDER BY submittedAt DESC LIMIT 10 OFFSET 0');
+q("SELECT * FROM ratings WHERE userid = 'x' ORDER BY date DESC");
+q('SELECT * FROM messages ORDER BY created_at DESC');
+q('SELECT * FROM resources ORDER BY created_at DESC');
+q('SELECT * FROM assignments ORDER BY created DESC');
+q('SELECT * FROM feedback WHERE 1=1');
+q('SELECT * FROM meetings ORDER BY date DESC');
+q('SELECT * FROM tourRatings');
+q('SELECT * FROM rating_history');
+q('SELECT * FROM coach_notes');
+q('SELECT * FROM documents');
+q('SELECT * FROM document');

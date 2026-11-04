@@ -1,0 +1,59 @@
+[36mvite v5.4.21 [32mbuilding for production...[36m[39m
+<script src="assets/js/cloudflare-client.js?v=1.0"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/board-fx.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/i18n-enroll.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/gmeet-scheduler.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/schedule-matrix.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/swiss-pairing.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/tomai.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/form-wizard.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/enterprise.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/calculator.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/animations.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/gsap-effects.js?v=20260818a"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/landing-fx.js?v=20260818a"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/world-geo.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/world-map.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/pgn-vault.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/pwa-install.js?v=20260728k"> in "/index.html" can't be bundled without type="module" attribute
+<script src="assets/js/landing-interactive-suite.js?v=20260831"> in "/index.html" can't be bundled without type="module" attribute
+transforming...
+[32m✓[39m 53 modules transformed.
+rendering chunks...
+computing gzip size...
+[2mdist/[22m[32massets/json/manifest-CwubVOxa.json                        [39m[1m[2m     0.71 kB[22m[1m[22m[2m │ gzip:   0.37 kB[22m
+[2mdist/[22m[32massets/png/apple-touch-icon-HFBnoCwk.png                  [39m[1m[2m     2.24 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpeg/fide-DEOzPfMu.jpeg                            [39m[1m[2m    31.03 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpg/team-trophy-oo_yitAX.jpg                       [39m[1m[2m    52.79 kB[22m[1m[22m
+[2mdist/[22m[32massets/png/new-logo-full-BvTFYbfj.png                     [39m[1m[2m    56.96 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpg/arivuselvam-DgKo09b3.jpg                       [39m[1m[2m    72.08 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpg/saran-BdjRHdMo.jpg                             [39m[1m[2m    89.74 kB[22m[1m[22m
+[2mdist/[22m[32massets/png/haris-BqM_jtoy.png                             [39m[1m[2m   129.74 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpg/landing-play-with-us-DKRNjiKj.jpg              [39m[1m[2m   156.91 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpg/newspaper-coverage-CBo88DSz.jpg                [39m[1m[2m   163.32 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpeg/rohith-1xLM85ph.jpeg                          [39m[1m[2m   167.02 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpg/team-playing-B0vXheNd.jpg                      [39m[1m[2m   173.28 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpeg/vishnu-De6lfnpq.jpeg                          [39m[1m[2m   186.68 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpg/pila-school-thindal-t9Bf09A9.jpg               [39m[1m[2m   246.25 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpg/ranjith-DbZJ1BIX.jpg                           [39m[1m[2m   268.29 kB[22m[1m[22m
+[2mdist/[22m[32mindex.html                                                [39m[1m[2m   281.21 kB[22m[1m[22m[2m │ gzip:  57.27 kB[22m
+[2mdist/[22m[32massets/jpg/map-location-DagzeQ24.jpg                      [39m[1m[2m   340.96 kB[22m[1m[22m
+[2mdist/[22m[32massets/jpg/ranjith-anna-university-champion-Cp8jVi6e.jpg  [39m[1m[2m   404.49 kB[22m[1m[22m
+[2mdist/[22m[32massets/png/yogesh-C8onnV7J.png                            [39m[1m[2m   527.70 kB[22m[1m[22m
+[2mdist/[22m[32massets/png/gyanasurya-_olznP2Q.png                        [39m[1m[2m   585.55 kB[22m[1m[22m
+[2mdist/[22m[32massets/png/classes_banner-C2MzHsAG.png                    [39m[1m[2m   744.52 kB[22m[1m[22m
+[2mdist/[22m[32massets/png/levels_banner-DSEj620K.png                     [39m[1m[2m   746.62 kB[22m[1m[22m
+[2mdist/[22m[32massets/png/programs_banner-CN9H6kXr.png                   [39m[1m[2m   836.08 kB[22m[1m[22m
+[2mdist/[22m[32massets/mp4/ranjith-testimonial-CejmEgDj.mp4               [39m[1m[2m 4,264.58 kB[22m[1m[22m
+[2mdist/[22m[32massets/mp4/tournament-video-CIua28ge.mp4                  [39m[1m[2m 6,381.23 kB[22m[1m[22m
+[2mdist/[22m[32massets/mp4/testimonial-2-0LYaD5fY.mp4                     [39m[1m[2m 7,659.79 kB[22m[1m[22m
+[2mdist/[22m[32massets/mp4/playful-video-BndZUoUt.mp4                     [39m[1m[2m 7,756.23 kB[22m[1m[22m
+[2mdist/[22m[32massets/mp4/testimonial-1-CIExkfdT.mp4                     [39m[1m[2m12,481.28 kB[22m[1m[22m
+[2mdist/[22m[35massets/css/landing-CutXryDe.css                           [39m[1m[2m   498.48 kB[22m[1m[22m[2m │ gzip:  92.68 kB[22m
+[2mdist/[22m[36massets/js/landing-ZMumLSLF.js                             [39m[1m[33m   995.32 kB[39m[22m[2m │ gzip: 283.92 kB[22m[2m │ map: 2,335.84 kB[22m
+[33m
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.[39m
+[32m✓ built in 11.49s[39m

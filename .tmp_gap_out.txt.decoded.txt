@@ -1,0 +1,85 @@
+﻿SQL statements captured: 169
+
+=== MISSING TABLES (used in API, absent in D1) ===
+  achievements  <- functions/api/[[path]].js, functions/api/index.js
+  audit_log  <- functions/api/[[path]].js, functions/api/index.js
+  batches  <- functions/api/[[path]].js, functions/api/index.js
+  coaches  <- functions/api/[[path]].js
+  complaint_feedback  <- functions/api/[[path]].js
+  events  <- functions/api/[[path]].js, functions/api/index.js
+  messages  <- functions/api/[[path]].js, functions/api/index.js
+  payments  <- functions/api/[[path]].js, functions/api/index.js
+  registration_queries  <- functions/api/[[path]].js
+
+=== CANDIDATE MISSING COLUMNS ===
+  assignments:
+      - assignments   (functions/api/[[path]].js)
+      - keys   (functions/api/[[path]].js)
+      - placeholders   (functions/api/[[path]].js)
+  attendance:
+      - attendance   (functions/api/[[path]].js)
+  classes:
+      - classes   (functions/api/[[path]].js)
+  credentials:
+      - credentials   (functions/api/[[path]].js)
+  expenses:
+      - total_expense   (functions/api/[[path]].js)
+      - expenses   (functions/api/[[path]].js)
+      - strftime   (functions/api/[[path]].js)
+      - fields   (functions/api/[[path]].js)
+      - full_name   (functions/api/[[path]].js)
+      - name   (functions/api/[[path]].js)
+      - email   (functions/api/[[path]].js)
+      - phone_number   (functions/api/[[path]].js)
+      - phone   (functions/api/[[path]].js)
+      - level   (functions/api/[[path]].js)
+      - rating   (functions/api/[[path]].js)
+      - status   (functions/api/[[path]].js)
+      - salary   (functions/api/[[path]].js)
+      - users   (functions/api/[[path]].js)
+      - coach   (functions/api/[[path]].js)
+      - monthly   (functions/api/[[path]].js)
+      - role   (functions/api/[[path]].js)
+  feedback:
+      - feedback   (functions/api/[[path]].js)
+  hw_submissions:
+      - hw_submissions   (functions/api/[[path]].js)
+      - submission_text   (functions/api/[[path]].js)
+      - submission_url   (functions/api/[[path]].js)
+      - file_urls   (functions/api/[[path]].js)
+      - status   (functions/api/[[path]].js)
+      - submitted_at   (functions/api/[[path]].js)
+      - updated_at   (functions/api/[[path]].js)
+  leads:
+      - leads   (functions/api/[[path]].js)
+  ratings:
+      - ratings   (functions/api/[[path]].js)
+      - userid   (functions/api/[[path]].js)
+      - rating   (functions/api/[[path]].js)
+      - event   (functions/api/[[path]].js)
+      - created_at   (functions/api/[[path]].js)
+  resources:
+      - resources   (functions/api/[[path]].js)
+      - title   (functions/api/[[path]].js)
+      - url   (functions/api/[[path]].js)
+  sessions:
+      - sessions   (functions/api/[[path]].js)
+  users:
+      - users   (functions/api/[[path]].js)
+      - name   (functions/api/[[path]].js)
+      - parent_email   (functions/api/[[path]].js)
+      - phone   (functions/api/[[path]].js)
+      - batch_name   (functions/api/[[path]].js)
+      - coach_id   (functions/api/[[path]].js)
+      - coach_name   (functions/api/[[path]].js)
+      - learning_mode   (functions/api/[[path]].js)
+      - batches   (functions/api/[[path]].js)
+      - student   (functions/api/[[path]].js)
+      - updates   (functions/api/[[path]].js)
+      - amount   (functions/api/[[path]].js)
+      - salary   (functions/api/[[path]].js)
+      - description   (functions/api/[[path]].js)
+      - expenses   (functions/api/[[path]].js)
+      - category   (functions/api/[[path]].js)
+      - strftime   (functions/api/[[path]].js)
+      - monthly   (functions/api/[[path]].js)

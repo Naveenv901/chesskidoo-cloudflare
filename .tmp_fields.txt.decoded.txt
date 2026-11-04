@@ -1,0 +1,16 @@
+﻿/api/events -> ok
+
+/api/achievements -> 
+
+/api/batches -> 
+
+/api/payments -> id, json, ok
+
+/api/rating_history -> 
+
+/api/audit -> 
+
+/api/messages -> ok
+
+/api/resources -> 
+

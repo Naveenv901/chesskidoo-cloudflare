@@ -1,0 +1,119 @@
+    insert(row) { this._kind = 'insert'; this._payload = Array.isArray(row) ? row[0] : row; return this; }
+    update(row) { this._kind = 'update'; this._payload = row; return this; }
+    upsert(row) { this._kind = 'upsert'; this._payload = Array.isArray(row) ? row[0] : row; return this; }
+    delete() { this._kind = 'delete'; return this; }
+
+    _addFilter(op, field, value) { this._filters.push({ op, field, value }); return this; }
+    eq(f, v) { return this._addFilter('eq', f, v); }
+    neq(f, v) { return this._addFilter('neq', f, v); }
+    gt(f, v) { return this._addFilter('gt', f, v); }
+    gte(f, v) { return this._addFilter('gte', f, v); }
+    lt(f, v) { return this._addFilter('lt', f, v); }
+    lte(f, v) { return this._addFilter('lte', f, v); }
+    like(f, v) { return this._addFilter('like', f, v); }
+    ilike(f, v) { return this._addFilter('ilike', f, v); }
+    is(f, v) { return this._addFilter('is', f, v); }
+    in(f, arr) { return this._addFilter('in', f, Array.isArray(arr) ? arr.join(',') : arr); }
+
+    order(col, opts) {
+      this._order = { col, ascending: !opts || opts.ascending !== false };
+      return this;
+    }
+    limit(n) { this._limit = n; return this; }
+    range(from, to) { this._limit = (to - from + 1); return this; }
+    single() { this._single = 'single'; return this; }
+    maybeSingle() { this._single = 'maybe'; return this; }
+
+    // Make the builder awaitable
+    then(resolve, reject) {
+      if (!this._executed) {
+        this._executed = true;
+        this._result = this._run();
+      }
+      return Promise.resolve(this._result).then(resolve, reject);
+    }
+    catch (fn) { return Promise.resolve(this.then()).catch(fn); }
+
+    async _run() {
+      const t = this._table;
+
+      // ── select ──
+      if (this._kind === 'select') {
+        const params = new URLSearchParams();
+        params.set('table', t);
+        params.set('op', 'select');
+        params.set('cols', this._cols);
+        for (const f of this._filters) {
+          const op = FILTER_OPS[f.op];
+          if (!op) continue;
+          params.append('filter_' + op + '_' + f.field, f.value);
+        }
+        if (this._order) {
+          params.set('sort', this._order.col);
+          params.set('order', this._order.ascending ? 'asc' : 'desc');
+        }
+        if (this._limit) params.set('limit', String(this._limit));
+        const out = await req(API + '/query?' + params.toString());
+        if (out.error) return { data: null, error: out.error };
+        let rows = Array.isArray(out.data) ? out.data : (out.data && out.data.data) || [];
+        if (this._single === 'single' || this._single === 'maybe') {
+          const first = rows.length ? rows[0] : null;
+          if (this._single === 'single' && !first) {
+            return { data: null, error: { message: 'No rows found' } };
+          }
+          return { data: first, error: null };
+        }
+        return { data: rows, error: null };
+      }
+
+      // ── mutations ──
+      if (['insert', 'update', 'upsert', 'delete'].includes(this._kind)) {
+        const payload = this._payload;
+        // For update/delete the id usually comes from an .eq('id', ...) filter
+        if ((this._kind === 'update' || this._kind === 'delete')) {
+          const idFilter = this._filters.find(f => f.field === 'id');
+          let row = payload;
+          if (idFilter) row = Object.assign({}, payload || {}, { id: idFilter.value });
+          if (!row || !row.id) {
+            return { data: null, error: { message: 'An id is required for update/delete' } };
+          }
+          const out = await req(API + '/mutate', {
+            method: 'POST',
+            body: JSON.stringify({ table: t, op: this._kind, data: row })
+          });
+          if (out.error) return { data: null, error: out.error };
+          return { data: (out.data && out.data.data) || out.data, error: null };
+        }
+
+        // insert / upsert
+        const rowsArr = Array.isArray(payload) ? payload : [payload];
+        const outData = [];
+        for (const r of rowsArr) {
+          const out = await req(API + '/mutate', {
+            method: 'POST',
+            body: JSON.stringify({ table: t, op: this._kind, data: r })
+          });
+          if (out.error) return { data: null, error: out.error };
+          outData.push((out.data && out.data.data) || out.data);
+        }
+        return { data: Array.isArray(payload) ? outData : outData[0], error: null };
+      }
+
+      return { data: null, error: { message: 'Unsupported operation: ' + this._kind } };
+    }
+  }
+
+  // ── storage (R2) ──────────────────────────────────────────────────────────
+  class StorageBucket {
+    constructor(name) { this.name = name; }
+
+    // Supabase: storage.from(b).upload(path, file, opts) -> {data:{path}, error}
+    async upload(path, file, opts) {
+      try {
+        let blob = file;
+        if (!(file instanceof Blob) && file && typeof file === 'object' && 'arrayBuffer' in file) {
+          blob = file;
+        }
+        if (typeof blob === 'string') blob = new Blob([blob]);
+        const qs = path ? '?key=' + encodeURIComponent(this.name + '/' + path) : '';
+        const res = await fetch(API + '/upload' + qs, {

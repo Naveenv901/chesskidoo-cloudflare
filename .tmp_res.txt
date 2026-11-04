@@ -1,0 +1,255 @@
+--- @23689 (undefined) ---
+lySchedule) {
+            window.renderChildWeeklySchedule(s);
+          }
+        } else if (tabId === "growth") {
+          renderChildGrowth();
+        } else if (tabId === "learning") {
+          renderChildResources();
+        } else if (tabId === "events") {
+          if (window.setChildEventsSubTab) window.setChildEventsSubTab("academy");
+          else renderChildEvents();
+        } else if (tabId === "reports" && typeof window.renderChildReports === "function") {
+          window.renderChildReports();
+        } else if (
+          tabId === "productivity" &&
+          typeof window.renderChildProductivity === "function"
+        ) {
+          window.renderChildProductivity();
+        } else if (tabId === "chess") {
+          if (chartInstances.childElo) { chartInstances.childElo.destroy(); chartInstances.childElo = null; }
+          if (chartInstances.lichessElo) { chartInstances.lichessElo.destroy(); chartInstances.lichessElo = null; }
+          if (chartInstances.chesscomElo) { chartInstances.chesscomElo.destroy(); chartInstances.chesscomElo = null; }
+          if (chartInstances.chessableProgress) { chartInstances.chessableProgress.destroy(); chartInstances.chessableProgress = null; }
+          if (window.chessChartInstance) { window.chessChartInstance.destroy(); window.chessChartInstance = null; }
+          window.currentChessGames = [];
+          if (typeof window.renderChildChessPerformance === "function" && (window.currentStudent || currentStudent)) {
+            window.renderChildChessPerformance(window.currentStudent || currentStudent);
+          }
+        }
+      } catch (err) {
+        console.error("[setChildTab] Error rendering tab:", tabId, err);
+        // Ensure tab is still visible even if render fails
+        const target = document.getElementById("child-tab-" + tabId);
+        if (target) {
+          target.classList.add("active");
+          target.style.removeProperty("display");
+        }
+      }
+    } catch (err) {
+      console.error("[setChildTab] Critical error:", err);
+    }
+  }
+  window.setCoachPortalTab = function (tabId, btn) {
+    const tabBar = document.querySelector("#page-coach-dash .tabs-nav");
+    if (tabBar) {
+      tabBar.querySelectorAll(".tab-link").forEach((l) => l.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+    }
+    document.querySelectorAll("#page-coach-dash .child-tab-content").
+
+--- @84969 (undefined) ---
+} } } }
+          });
+      } catch (e) {
+          console.error("Chessable fetch error", e);
+      }
+    } else if (chessableCard) {
+      chessableCard.style.display = "none";
+    }
+  }
+  function renderChildResources() {
+    const grid = document.getElementById("resource-grid");
+    if (!grid || !currentStudent) return;
+    const levelRank = { Beginner: 0, Intermediate: 1, Advanced: 2, Elite: 3 };
+    const sRank = levelRank[getStudentLevel(currentStudent)] || 0;
+    const myRes = allResources.filter(
+      (r) => (levelRank[r.level_requirement] || 0) <= sRank,
+    );
+    const myBatches = allBatches.filter(b => b.student_ids && (typeof b.student_ids === 'string' ? JSON.parse(b.student_ids) : b.student_ids).map(String).includes(String(currentStudent.id)) && b.chessable_url);
+    const classroomsHtml = myBatches.map(b => `<div class="resource-card" style="border: 1px solid var(--gold); background: rgba(218, 163, 62, 0.05);"><div class="res-type" style="color:var(--gold);">♟️ BATCH CLASSROOM</div><div class="res-title">${escapeHtml(b.name)}</div><div class="res-desc">Your official Chessable classroom for this batch.</div><div class="res-action"><a href="${safeUrl(b.chessable_url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%">Join Classroom</a></div></div>`).join("");
+    if (!myRes.length && !classroomsHtml) {
+      grid.innerHTML = `<div class="empty-state">No resources yet.</div>`;
+      return;
+    }
+    grid.innerHTML = classroomsHtml + myRes
+      .map(
+        (r) =>
+          `<div class="resource-card"><div class="res-type">${escapeHtml(r.type.toUpperCase())}</div><div class="res-title">${escapeHtml(r.title)}</div><div class="res-desc">${escapeHtml(r.description || "")}</div><div class="res-action"><a href="${safeUrl(r.url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%">Open</a></div></div>`,
+      )
+      .join("");
+  }
+  function renderChildBilling() {
+    const tbody = document.getElementById("child-bill-body");
+    if (!tbody || !currentStudent) return;
+    const s = currentStudent;
+    const status = getStudentPaymentStatus(s);
+    const fee = getStudentMonthlyFee(s) || 0;
+    const dueDate = (() => {
+      if (!s.due_date) return "Not set";
+      const match = String(s.due_date).match(/(\d{4})-(\d{2})-(\d{2})/);
+      if (match) {
+        const _dd = parseInt(match[3], 10);
+  
+
+--- @85306 (undefined) ---
+evelRank = { Beginner: 0, Intermediate: 1, Advanced: 2, Elite: 3 };
+    const sRank = levelRank[getStudentLevel(currentStudent)] || 0;
+    const myRes = allResources.filter(
+      (r) => (levelRank[r.level_requirement] || 0) <= sRank,
+    );
+    const myBatches = allBatches.filter(b => b.student_ids && (typeof b.student_ids === 'string' ? JSON.parse(b.student_ids) : b.student_ids).map(String).includes(String(currentStudent.id)) && b.chessable_url);
+    const classroomsHtml = myBatches.map(b => `<div class="resource-card" style="border: 1px solid var(--gold); background: rgba(218, 163, 62, 0.05);"><div class="res-type" style="color:var(--gold);">♟️ BATCH CLASSROOM</div><div class="res-title">${escapeHtml(b.name)}</div><div class="res-desc">Your official Chessable classroom for this batch.</div><div class="res-action"><a href="${safeUrl(b.chessable_url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%">Join Classroom</a></div></div>`).join("");
+    if (!myRes.length && !classroomsHtml) {
+      grid.innerHTML = `<div class="empty-state">No resources yet.</div>`;
+      return;
+    }
+    grid.innerHTML = classroomsHtml + myRes
+      .map(
+        (r) =>
+          `<div class="resource-card"><div class="res-type">${escapeHtml(r.type.toUpperCase())}</div><div class="res-title">${escapeHtml(r.title)}</div><div class="res-desc">${escapeHtml(r.description || "")}</div><div class="res-action"><a href="${safeUrl(r.url)}" target="_blank" rel="noopener" class="btn btn-gold btn-sm" style="width:100%">Open</a></div></div>`,
+      )
+      .join("");
+  }
+  function renderChildBilling() {
+    const tbody = document.getElementById("child-bill-body");
+    if (!tbody || !currentStudent) return;
+    const s = currentStudent;
+    const status = getStudentPaymentStatus(s);
+    const fee = getStudentMonthlyFee(s) || 0;
+    const dueDate = (() => {
+      if (!s.due_date) return "Not set";
+      const match = String(s.due_date).match(/(\d{4})-(\d{2})-(\d{2})/);
+      if (match) {
+        const _dd = parseInt(match[3], 10);
+        const y = window.reportYear !== undefined ? window.reportYear : new Date().getFullYear();
+        const m = window.reportMonth !== undefined ? window.reportMonth : new Date().getMonth();
+        return new Date(y, m, _dd).toLocaleDateString();
+      }
+      return new Date(s.due_date).toLocaleDateString();
+    })();
+    const myP
+
+--- @751166 (undefined) ---
+erChild;
+  window.setChildTab = setChildTab;
+  window.renderChildEvents = renderChildEvents;
+  window.renderChildBilling = renderChildBilling;
+  window.renderChildGrowth = renderChildGrowth;
+  window.renderChildResources = renderChildResources;
+  window.renderChildSkills = renderChildSkills;
+  window.renderChildAchievements = renderChildAchievements;
+  window.openContactModal = openContactModal;
+  window.sendMsg = sendMsg;
+  window.sendFeedback = sendFeedback;
+  window.informAllDueStudents = informAllDueStudents;
+  window.viewPaymentHistory = viewPaymentHistory;
+  window.openAttendanceMarking = openAttendanceMarking;
+  window.saveBatchAttendance = saveBatchAttendance;
+  window.updateAttStats = updateAttStats;
+  window.markAllPresent = markAllPresent;
+  window.markAllAbsent = markAllAbsent;
+  window.toggleMoreMenu = toggleMoreMenu;
+  window.openPromote = openPromote;
+  window.executePromotion = executePromotion;
+  window.syncLichess = async function(username) {
+    if (!username) return;
+    const btn = document.getElementById('lichess-sync-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Syncing...';
+    }
+    try {
+      const res = await fetch('/api/lichess', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.success || data.cached) {
+        window.showToast ? window.showToast('Lichess data synced successfully', 'success') : alert('Lichess data synced');
+        // Reload growth tab if current student matches
+        if (window.currentStudent && window.currentStudent.lichess_username === username) {
+          if (window.renderChildGrowth) window.renderChildGrowth();
+        }
+      } else {
+        const err = data.error || 'Failed to sync';
+        window.showToast ? window.showToast(err, 'error') : alert(err);
+      }
+    } catch (e) {
+      console.error('Lichess sync error:', e);
+      window.showToast ? window.showToast('Sync failed', 'error') : alert('Sync failed');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Sync Lichess';
+      }
+    }
+  };
+  window.openChessableModal = function() {
+    const modal = $("chessable-redirect-modal");
+    if (!modal) return;
+    const searchInput = $("chessable-search");
+    if (searchInput) sear
+
+--- @751189 (undefined) ---
+ildTab = setChildTab;
+  window.renderChildEvents = renderChildEvents;
+  window.renderChildBilling = renderChildBilling;
+  window.renderChildGrowth = renderChildGrowth;
+  window.renderChildResources = renderChildResources;
+  window.renderChildSkills = renderChildSkills;
+  window.renderChildAchievements = renderChildAchievements;
+  window.openContactModal = openContactModal;
+  window.sendMsg = sendMsg;
+  window.sendFeedback = sendFeedback;
+  window.informAllDueStudents = informAllDueStudents;
+  window.viewPaymentHistory = viewPaymentHistory;
+  window.openAttendanceMarking = openAttendanceMarking;
+  window.saveBatchAttendance = saveBatchAttendance;
+  window.updateAttStats = updateAttStats;
+  window.markAllPresent = markAllPresent;
+  window.markAllAbsent = markAllAbsent;
+  window.toggleMoreMenu = toggleMoreMenu;
+  window.openPromote = openPromote;
+  window.executePromotion = executePromotion;
+  window.syncLichess = async function(username) {
+    if (!username) return;
+    const btn = document.getElementById('lichess-sync-btn');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Syncing...';
+    }
+    try {
+      const res = await fetch('/api/lichess', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data.success || data.cached) {
+        window.showToast ? window.showToast('Lichess data synced successfully', 'success') : alert('Lichess data synced');
+        // Reload growth tab if current student matches
+        if (window.currentStudent && window.currentStudent.lichess_username === username) {
+          if (window.renderChildGrowth) window.renderChildGrowth();
+        }
+      } else {
+        const err = data.error || 'Failed to sync';
+        window.showToast ? window.showToast(err, 'error') : alert(err);
+      }
+    } catch (e) {
+      console.error('Lichess sync error:', e);
+      window.showToast ? window.showToast('Sync failed', 'error') : alert('Sync failed');
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Sync Lichess';
+      }
+    }
+  };
+  window.openChessableModal = function() {
+    const modal = $("chessable-redirect-modal");
+    if (!modal) return;
+    const searchInput = $("chessable-search");
+    if (searchInput) searchInput.value = "";
+   

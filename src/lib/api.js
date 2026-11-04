@@ -1,16 +1,31 @@
 const BASE = '/api';
 
+/**
+ * Build a map of the newest attendance record for each student+date.
+ * Used by the UI to decide which icon to show and whether homework should be visible.
+ */
+function buildLatestAttendanceMap(records) {
+  const map = {};
+  for (const rec of records) {
+    const key = `${rec.student}_${rec.date}`;
+    if (!map[key] || new Date(rec.createdAt) > new Date(map[key].createdAt)) {
+      map[key] = rec;
+    }
+  }
+  return map;
+}
+
 async function request(path, options = {}) {
   const token = localStorage.getItem('ck_token');
   const headers = {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    ...options.headers
+    ...options.headers,
   };
 
   const res = await fetch(`${BASE}${path}`, {
     ...options,
-    headers
+    headers,
   });
 
   if (res.status === 401) {
@@ -27,7 +42,37 @@ async function request(path, options = {}) {
     throw new Error(error);
   }
 
-  return res.json();
+  const json = await res.json();
+
+  // ------- Attendance post‑processing -------
+  if (path === '/api/attendance') {
+    const records = json?.data ?? json;
+    // Sort newest first – helps any UI that picks the first element.
+    if (Array.isArray(records)) {
+      records.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+    const latestMap = buildLatestAttendanceMap(records);
+    // Return both the original payload and the computed map.
+    return { ...json, latestAttendance: latestMap };
+  }
+
+  // ------- Homework post‑processing -------
+  if (path === '/api/homework') {
+    // Ensure we have the latest attendance map for filtering.
+    const attResp = await request('/api/attendance', { method: 'GET' });
+    const attRecords = attResp?.data ?? attResp;
+    const latestMap = buildLatestAttendanceMap(attRecords);
+    const hwRecords = json?.data ?? json;
+    const filtered = Array.isArray(hwRecords)
+      ? hwRecords.filter(hw => {
+          const status = latestMap[`${hw.student}_${hw.date}`]?.status;
+          return status === 'present';
+        })
+      : [];
+    return { ...json, data: filtered };
+  }
+
+  return json;
 }
 
 export function get(path) {
