@@ -1052,6 +1052,54 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
       : targetType === 'batch'
         ? `Batch: ${(window.allBatches || []).find(b => String(b.id) === String(batchId))?.name || 'Batch #' + batchId}`
         : 'All Active Students';
+    if (Array.isArray(payload.present_student_ids) && payload.present_student_ids.length > 0) {
+      const attDate = (payload.due_date || payload.created_at || new Date().toISOString()).slice(0, 10);
+      const targetStudents = window.getTargetStudentsForHomework ? window.getTargetStudentsForHomework(payload) : [];
+      if (targetStudents.length > 0) {
+        const pSet = new Set(payload.present_student_ids.map(String));
+        const attRecords = targetStudents.map(s => {
+          const sid = String(s.id);
+          return {
+            student_id: sid,
+            studentId: sid,
+            studentName: window.getStudentName ? window.getStudentName(s) : (s.full_name || s.name || null),
+            coachId: payload.coach_id || window.currentCoachId || window.userId || null,
+            date: attDate,
+            status: pSet.has(sid) ? 'present' : 'absent',
+            class_title: 'HW:' + (payload.title || 'Homework')
+          };
+        });
+        if (!window.allAttendance) window.allAttendance = [];
+        attRecords.forEach(rec => {
+          const aIdx = window.allAttendance.findIndex(a =>
+            String(a.studentId || a.student_id || a.userid || '') === String(rec.studentId) &&
+            (a.date || '').slice(0, 10) === attDate
+          );
+          if (aIdx !== -1) window.allAttendance[aIdx] = { ...window.allAttendance[aIdx], ...rec };
+          else window.allAttendance.unshift(rec);
+        });
+        try {
+          const storedAtt = JSON.parse(localStorage.getItem('ck_attendance_records') || '[]');
+          attRecords.forEach(rec => {
+            const sIdx = storedAtt.findIndex(a =>
+              String(a.studentId || a.student_id || a.userid || '') === String(rec.studentId) &&
+              (a.date || '').slice(0, 10) === attDate
+            );
+            if (sIdx !== -1) storedAtt[sIdx] = { ...storedAtt[sIdx], ...rec };
+            else storedAtt.unshift(rec);
+          });
+          localStorage.setItem('ck_attendance_records', JSON.stringify(storedAtt));
+        } catch (_) {}
+        try {
+          await window.apiCall('/api/attendance', {
+            method: 'POST',
+            body: JSON.stringify(attRecords),
+            silent: true
+          });
+        } catch (_) {}
+      }
+    }
+
     if (!quiet && window.toast) window.toast(`âœ… Homework "${title}" assigned successfully to ${targetLabel}!`, 'success');
     if (!quiet) window.closeModals && window.closeModals();
 
@@ -1630,6 +1678,61 @@ async function loadHomeworkSubmissions(forceRefresh = false) {
       const cacheIdx = (dataCache.homework || []).findIndex(h => String(h.id) === String(id));
       if (cacheIdx !== -1) dataCache.homework[cacheIdx] = updatedPayload;
       dataCache.timestamp = Date.now();
+    }
+
+    // Sync attendance for all students in this homework target
+    const attDate = (hw.created_at || hw.assigned_date || updatedPayload.due_date || new Date().toISOString()).slice(0, 10);
+    const targetStudents = window.editingHomeworkTargetStudents || [];
+    if (targetStudents.length > 0) {
+      const attRecords = targetStudents.map(s => {
+        const sid = String(s.id);
+        const isPresent = window.editingHomeworkPresentIds ? window.editingHomeworkPresentIds.has(sid) : false;
+        return {
+          student_id: sid,
+          studentId: sid,
+          studentName: window.getStudentName ? window.getStudentName(s) : (s.full_name || s.name || null),
+          coachId: hw.coach || hw.coach_id || window.currentCoachId || window.userId || null,
+          date: attDate,
+          status: isPresent ? 'present' : 'absent',
+          class_title: 'HW:' + (newTitle || hw.title || 'Homework')
+        };
+      });
+
+      if (!window.allAttendance) window.allAttendance = [];
+      attRecords.forEach(rec => {
+        const aIdx = window.allAttendance.findIndex(a =>
+          String(a.studentId || a.student_id || a.userid || '') === String(rec.studentId) &&
+          (a.date || '').slice(0, 10) === attDate
+        );
+        if (aIdx !== -1) {
+          window.allAttendance[aIdx] = { ...window.allAttendance[aIdx], ...rec };
+        } else {
+          window.allAttendance.unshift(rec);
+        }
+      });
+
+      try {
+        const storedAtt = JSON.parse(localStorage.getItem('ck_attendance_records') || '[]');
+        attRecords.forEach(rec => {
+          const sIdx = storedAtt.findIndex(a =>
+            String(a.studentId || a.student_id || a.userid || '') === String(rec.studentId) &&
+            (a.date || '').slice(0, 10) === attDate
+          );
+          if (sIdx !== -1) storedAtt[sIdx] = { ...storedAtt[sIdx], ...rec };
+          else storedAtt.unshift(rec);
+        });
+        localStorage.setItem('ck_attendance_records', JSON.stringify(storedAtt));
+      } catch (_) {}
+
+      try {
+        await window.apiCall('/api/attendance', {
+          method: 'POST',
+          body: JSON.stringify(attRecords),
+          silent: true
+        });
+      } catch (attErr) {
+        console.warn('[Homework] attendance sync error:', attErr);
+      }
     }
 
     if (window.toast) window.toast('Homework updated successfully', 'success');

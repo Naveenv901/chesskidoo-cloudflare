@@ -655,8 +655,19 @@ async function handleAttendance(request, env) {
   }
 
   if (request.method === 'POST') {
-    const rawBody = await request.json();
-    const items = Array.isArray(rawBody) ? rawBody : [rawBody];
+    const rawBody = await request.json().catch(() => ({}));
+    let items;
+    if (rawBody && typeof rawBody === 'object' && !Array.isArray(rawBody) && (rawBody.present_student_ids !== undefined || rawBody.absent_student_ids !== undefined)) {
+      const bDate = (rawBody.date || new Date().toISOString()).split('T')[0];
+      const pIds = Array.isArray(rawBody.present_student_ids) ? rawBody.present_student_ids : [];
+      const aIds = Array.isArray(rawBody.absent_student_ids) ? rawBody.absent_student_ids : [];
+      items = [
+        ...pIds.map(sid => ({ studentId: sid, date: bDate, status: 'present', class_title: rawBody.class_title || null, coachId: rawBody.coachId || null })),
+        ...aIds.map(sid => ({ studentId: sid, date: bDate, status: 'absent', class_title: rawBody.class_title || null, coachId: rawBody.coachId || null }))
+      ];
+    } else {
+      items = Array.isArray(rawBody) ? rawBody : [rawBody];
+    }
     const realCols = await tableColumns(env, 'attendance');
     const results = [];
 
@@ -667,33 +678,35 @@ async function handleAttendance(request, env) {
       const date = rawDate.split('T')[0];
       const now = new Date().toISOString();
 
-      let existingId = item.id;
-      if (!existingId && studentId && date) {
-        const existing = await env.DB.prepare('SELECT id FROM attendance WHERE (studentId = ? OR userid = ?) AND date = ? LIMIT 1')
-          .bind(studentId, studentId, date).first();
-        if (existing?.id) existingId = existing.id;
+      let existing = null;
+      if (item.id) {
+        existing = await env.DB.prepare('SELECT * FROM attendance WHERE id = ? LIMIT 1').bind(item.id).first();
       }
-      const id = existingId || `att-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      if (!existing && studentId && date) {
+        existing = await env.DB.prepare('SELECT * FROM attendance WHERE (studentId = ? OR userid = ?) AND (date = ? OR date LIKE ?) LIMIT 1')
+          .bind(studentId, studentId, date, `${date}%`).first();
+      }
+      const id = existing?.id || item.id || `att-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
       const dataObj = {
         id,
-        userid: item.userid || studentId,
-        studentId: studentId,
-        studentName: item.studentName || item.student_name || null,
-        classId: item.classId || item.class_id || null,
-        className: item.className || item.class_name || null,
-        coachId: item.coachId || item.coach_id || null,
-        coachName: item.coachName || item.coach_name || null,
+        userid: item.userid || studentId || existing?.userid,
+        studentId: studentId || existing?.studentId,
+        studentName: item.studentName || item.student_name || existing?.studentName || null,
+        classId: item.classId || item.class_id || existing?.classId || null,
+        className: item.className || item.class_name || existing?.className || null,
+        coachId: item.coachId || item.coach_id || existing?.coachId || null,
+        coachName: item.coachName || item.coach_name || existing?.coachName || null,
         markedAt: item.markedAt || now,
         date: date,
-        status: item.status || 'present',
-        class_title: item.class_title || item.notes || null,
-        created_at: now
+        status: item.status || existing?.status || 'present',
+        class_title: item.class_title || item.notes || existing?.class_title || null,
+        created_at: existing?.created_at || now
       };
 
-      if (realCols.has('student_id')) dataObj.student_id = studentId;
-      if (realCols.has('notes')) dataObj.notes = item.notes || null;
-      if (realCols.has('coach_id')) dataObj.coach_id = item.coachId || item.coach_id || null;
+      if (realCols.has('student_id')) dataObj.student_id = dataObj.studentId;
+      if (realCols.has('notes')) dataObj.notes = item.notes || existing?.notes || null;
+      if (realCols.has('coach_id')) dataObj.coach_id = dataObj.coachId;
 
       const keys = Object.keys(dataObj).filter(k => realCols.has(k) && dataObj[k] !== undefined);
       const vals = keys.map(k => dataObj[k]);
@@ -702,7 +715,7 @@ async function handleAttendance(request, env) {
         `INSERT OR REPLACE INTO attendance (${keys.join(', ')}) VALUES (${keys.map(() => '?').join(', ')})`
       ).bind(...vals).run();
 
-      results.push({ id, studentId, date, status: item.status });
+      results.push({ id, studentId: dataObj.studentId, date, status: dataObj.status });
     }
 
     return json(201, { success: true, count: results.length, data: Array.isArray(rawBody) ? results : results[0] });
@@ -746,6 +759,110 @@ async function handleAssignments(request, env) {
   }
 
   return methodNotAllowed();
+}
+
+async function syncHomeworkAttendance(env, hwId, body) {
+  try {
+    let presentIds = body.present_student_ids;
+    if (typeof presentIds === 'string') {
+      try { presentIds = JSON.parse(presentIds); } catch (_) { presentIds = null; }
+    }
+    if (!Array.isArray(presentIds)) return;
+
+    const presentSet = new Set(presentIds.map(String));
+    const hwRow = await env.DB.prepare('SELECT * FROM assignments WHERE id = ?').bind(hwId).first();
+    if (!hwRow) return;
+
+    const rawDate = body.due_date || hwRow.due_date || hwRow.dueDate || hwRow.created_at || new Date().toISOString();
+    const attDate = String(rawDate).split('T')[0];
+    const coachId = hwRow.coach || hwRow.coach_id || hwRow.created_by || null;
+    const classTitle = 'HW:' + (body.title || hwRow.title || 'Homework');
+    const nowIso = new Date().toISOString();
+
+    const targetMap = new Map();
+
+    // 1. If batch_id, find all students in this batch
+    if (hwRow.batch_id) {
+      const batchRow = await env.DB.prepare('SELECT id, name FROM batches WHERE id = ? OR name = ?').bind(hwRow.batch_id, hwRow.batch_id).first();
+      const bId = batchRow?.id || hwRow.batch_id;
+      const bName = batchRow?.name || hwRow.batch_id;
+      const { results } = await env.DB.prepare(
+        "SELECT id, full_name, email, coach FROM users WHERE role = 'student' AND (batch = ? OR batch = ?)"
+      ).bind(bId, bName).all();
+      (results || []).forEach(s => targetMap.set(String(s.id), s));
+    } else if (hwRow.student_id) {
+      const student = await env.DB.prepare("SELECT id, full_name, email, coach FROM users WHERE id = ?").bind(hwRow.student_id).first();
+      if (student) targetMap.set(String(student.id), student);
+    } else if (coachId) {
+      const { results } = await env.DB.prepare(
+        "SELECT id, full_name, email, coach FROM users WHERE role = 'student' AND (coach = ? OR coach = ?)"
+      ).bind(coachId, coachId.replace(/^c_/, '')).all();
+      (results || []).forEach(s => targetMap.set(String(s.id), s));
+    }
+
+    // 2. Also ensure all IDs in presentSet are in targetMap
+    for (const pid of presentSet) {
+      if (!targetMap.has(pid)) {
+        const sRow = await env.DB.prepare("SELECT id, full_name, email, coach FROM users WHERE id = ?").bind(pid).first();
+        targetMap.set(pid, sRow || { id: pid, full_name: null, coach: coachId });
+      }
+    }
+
+    // 3. Also check existing attendance records on this date for this class_title or coach
+    const { results: existingAtt } = await env.DB.prepare(
+      "SELECT id, studentId, userid, studentName, coachId, class_title, created_at FROM attendance WHERE (date = ? OR date LIKE ?) AND (class_title = ? OR coachId = ?)"
+    ).bind(attDate, `${attDate}%`, classTitle, coachId).all();
+    (existingAtt || []).forEach(a => {
+      const sid = String(a.studentId || a.userid || '');
+      if (sid && !targetMap.has(sid)) {
+        targetMap.set(sid, { id: sid, full_name: a.studentName, coach: a.coachId || coachId });
+      }
+    });
+
+    const realCols = await tableColumns(env, 'attendance');
+
+    // 4. Upsert attendance for every student in targetMap
+    for (const [sid, student] of targetMap.entries()) {
+      const isPresent = presentSet.has(sid);
+      const status = isPresent ? 'present' : 'absent';
+      const sName = student?.full_name || student?.name || null;
+      const cId = student?.coach || coachId;
+
+      const existing = await env.DB.prepare(
+        "SELECT * FROM attendance WHERE (studentId = ? OR userid = ?) AND (date = ? OR date LIKE ?) LIMIT 1"
+      ).bind(sid, sid, attDate, `${attDate}%`).first();
+
+      const attId = existing?.id || `att-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const finalStudentName = sName || existing?.studentName || null;
+      const finalCoachId = cId || existing?.coachId || null;
+      const finalClassTitle = existing?.class_title || classTitle;
+      const createdAt = existing?.created_at || nowIso;
+
+      const dataObj = {
+        id: attId,
+        userid: sid,
+        studentId: sid,
+        studentName: finalStudentName,
+        coachId: finalCoachId,
+        markedAt: nowIso,
+        date: attDate,
+        status: status,
+        class_title: finalClassTitle,
+        created_at: createdAt
+      };
+      if (realCols.has('student_id')) dataObj.student_id = sid;
+      if (realCols.has('coach_id')) dataObj.coach_id = finalCoachId;
+
+      const keys = Object.keys(dataObj).filter(k => realCols.has(k) && dataObj[k] !== undefined);
+      const vals = keys.map(k => dataObj[k]);
+
+      await env.DB.prepare(
+        `INSERT OR REPLACE INTO attendance (${keys.join(', ')}) VALUES (${keys.map(() => '?').join(', ')})`
+      ).bind(...vals).run();
+    }
+  } catch (err) {
+    console.error('[API] syncHomeworkAttendance error:', err);
+  }
 }
 
 async function handleHomework(request, env) {
@@ -870,6 +987,10 @@ async function handleHomework(request, env) {
     const placeholders = keys.map(() => '?').join(', ');
     await env.DB.prepare(`INSERT OR REPLACE INTO assignments (${keys.join(', ')}) VALUES (${placeholders})`).bind(...values).run();
 
+    if (body.present_student_ids !== undefined) {
+      await syncHomeworkAttendance(env, hwId, body);
+    }
+
     const row = await env.DB.prepare('SELECT * FROM assignments WHERE id = ?').bind(hwId).first();
     return json(201, { data: row, success: true });
   }
@@ -930,6 +1051,9 @@ async function handleHomework(request, env) {
     if (updates.length) {
       vals.push(id);
       await env.DB.prepare(`UPDATE assignments SET ${updates.join(', ')} WHERE id = ?`).bind(...vals).run();
+    }
+    if (body.present_student_ids !== undefined) {
+      await syncHomeworkAttendance(env, id, body);
     }
     return json(200, { success: true });
   }
