@@ -848,6 +848,20 @@ async function handleBatches(request, env) {
     return json(201, row);
   }
 
+  if (request.method === 'DELETE') {
+    const url = new URL(request.url);
+    let id = url.searchParams.get('id');
+    if (!id) {
+      const body = await request.json().catch(() => ({}));
+      id = body?.id;
+    }
+    if (!id) {
+      return json(400, { error: 'Missing batch id' });
+    }
+    await env.DB.prepare('DELETE FROM batches WHERE id = ?').bind(id).run();
+    return json(200, { success: true, message: 'Batch deleted' });
+  }
+
   return methodNotAllowed();
 }
 
@@ -896,6 +910,20 @@ async function handleAchievements(request, env) {
     return json(201, row);
   }
 
+  if (request.method === 'DELETE') {
+    const url = new URL(request.url);
+    let id = url.searchParams.get('id');
+    if (!id) {
+      const body = await request.json().catch(() => ({}));
+      id = body?.id;
+    }
+    if (!id) {
+      return json(400, { error: 'Missing achievement id' });
+    }
+    await env.DB.prepare('DELETE FROM achievements WHERE id = ?').bind(id).run();
+    return json(200, { success: true, message: 'Achievement deleted' });
+  }
+
   return methodNotAllowed();
 }
 
@@ -915,6 +943,20 @@ async function handleEvents(request, env) {
     await env.DB.prepare(`INSERT INTO events (id, title, date, location, type, created_at) VALUES (?, ?, ?, ?, ?, ?)`).bind(id, body.title || null, body.date || null, body.location || null, body.type || null, new Date().toISOString()).run();
     const row = await env.DB.prepare('SELECT * FROM events WHERE id = ?').bind(id).first();
     return json(201, row);
+  }
+
+  if (request.method === 'DELETE') {
+    const url = new URL(request.url);
+    let id = url.searchParams.get('id');
+    if (!id) {
+      const body = await request.json().catch(() => ({}));
+      id = body?.id;
+    }
+    if (!id) {
+      return json(400, { error: 'Missing event id' });
+    }
+    await env.DB.prepare('DELETE FROM events WHERE id = ?').bind(id).run();
+    return json(200, { success: true, message: 'Event deleted' });
   }
 
   return methodNotAllowed();
