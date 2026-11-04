@@ -246227,7 +246227,7 @@ try {
 
 
 
-    const pageEl = $("page-" + p);
+    const pageEl = document.getElementById('page-' + p);
 
 
 
