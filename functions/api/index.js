@@ -479,6 +479,35 @@ async function handleAttendance(request, env) {
   return methodNotAllowed();
 }
 
+async function handleBatchAttendance(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  if (request.method === 'POST') {
+    const body = await request.json();
+    const { date, present_student_ids = [], absent_student_ids = [] } = body;
+    if (!date) return json(400, { error: 'date required' });
+    const results = [];
+    const process = async (studentId, status) => {
+      const id = `att-${studentId}-${date}`;
+      await env.DB.prepare(
+        `INSERT OR REPLACE INTO attendance (id, userid, studentId, date, status, created_at) VALUES (?, ?, ?, ?, ?, ?)`
+      ).bind(id, null, studentId, date, status, new Date().toISOString()).run();
+      const row = await env.DB.prepare('SELECT * FROM attendance WHERE id = ?').bind(id).first();
+      results.push(row);
+    };
+    for (const sid of present_student_ids) {
+      await process(sid, 'present');
+    }
+    for (const sid of absent_student_ids) {
+      await process(sid, 'absent');
+    }
+    return json(200, { data: results });
+  }
+  return methodNotAllowed();
+}
+
 async function handleAssignments(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
@@ -1060,7 +1089,10 @@ export async function onRequest(context) {
       return handleClasses(request, env);
     }
 
-    if (pathname === '/api/attendance' || pathname.startsWith('/api/attendance')) {
+    if (pathname === '/api/attendance/batch') {
+  return handleBatchAttendance(request, env);
+}
+if (pathname === '/api/attendance' || pathname.startsWith('/api/attendance')) {
       return handleAttendance(request, env);
     }
 
