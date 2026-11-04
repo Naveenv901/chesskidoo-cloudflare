@@ -23,7 +23,7 @@ const ALLOWED_TABLES = [
   'classes', 'monthly_reports', 'puzzle_scores', 'coach_attendance',
   'assignments', 'hw_submissions', 'homework_submissions', 'homework_assignments',
   'feedback', 'broadcasts', 'sessions', 'students', 'payments', 'coaches', 'batches',
-  'messages', 'achievements', 'events', 'audit_log', 'rating_history'
+  'messages', 'achievements', 'events', 'audit_log', 'rating_history', 'blogs'
 ];
 
 async function handleLogin(request, env) {
@@ -2012,6 +2012,89 @@ async function handleMessages(request, env) {
   return methodNotAllowed();
 }
 
+
+async function ensureBlogsTable(env) {
+  try {
+    await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS blogs (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        content TEXT,
+        author TEXT,
+        created_at TEXT,
+        updated_at TEXT
+      )
+    `).run();
+  } catch (e) {
+    console.warn('[DB] ensureBlogsTable error:', e.message);
+  }
+}
+
+async function handleBlogs(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  await ensureBlogsTable(env);
+
+  if (request.method === 'GET') {
+    try {
+      const { results } = await env.DB.prepare('SELECT * FROM blogs ORDER BY created_at DESC').all();
+      return json(200, { data: results || [] });
+    } catch (e) {
+      return json(200, { data: [] });
+    }
+  }
+
+  if (request.method === 'POST') {
+    try {
+      const body = await request.json();
+      const id = body.id || `blog-${Date.now()}`;
+      const now = body.created_at || new Date().toISOString();
+      await env.DB.prepare(`INSERT OR REPLACE INTO blogs (id, title, content, author, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`)
+        .bind(id, body.title || '', body.content || '', body.author || 'Admin', now, now).run();
+      const row = await env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(id).first();
+      return json(201, { data: row });
+    } catch (e) {
+      return json(500, { error: e.message });
+    }
+  }
+
+  if (request.method === 'PUT') {
+    try {
+      const url = new URL(request.url);
+      const id = url.searchParams.get('id');
+      if (!id) return json(400, { error: 'Missing blog id' });
+      const body = await request.json();
+      const now = new Date().toISOString();
+      await env.DB.prepare(`UPDATE blogs SET title = ?, content = ?, author = ?, updated_at = ? WHERE id = ?`)
+        .bind(body.title || '', body.content || '', body.author || 'Admin', now, id).run();
+      const row = await env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(id).first();
+      return json(200, { data: row });
+    } catch (e) {
+      return json(500, { error: e.message });
+    }
+  }
+
+  if (request.method === 'DELETE') {
+    try {
+      const url = new URL(request.url);
+      let id = url.searchParams.get('id');
+      if (!id) {
+        const body = await request.json().catch(() => ({}));
+        id = body.id;
+      }
+      if (!id) return json(400, { error: 'Missing blog id' });
+      await env.DB.prepare('DELETE FROM blogs WHERE id = ?').bind(id).run();
+      return json(200, { success: true });
+    } catch (e) {
+      return json(500, { error: e.message });
+    }
+  }
+
+  return methodNotAllowed();
+}
+
 export async function onRequest(context) {
   try {
     const { request, env } = context;
@@ -2118,6 +2201,10 @@ export async function onRequest(context) {
 
     if (pathname === '/api/events' || pathname.startsWith('/api/events')) {
       return handleEvents(request, env);
+    }
+
+    if (pathname === '/api/blogs' || pathname.startsWith('/api/blogs')) {
+      return handleBlogs(request, env);
     }
 
     if (pathname === '/api/upload' || pathname === '/upload') {

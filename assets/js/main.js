@@ -244,7 +244,7 @@
       return;
     }
 
-    const landingSections = ['home', 'features', 'levels', 'coaches', 'achievements', 'tournaments', 'about', 'ck-world', 'ck-centres', 'centres', 'careers', 'pricing', 'faq', 'reviews', 'why-choose', 'cta'];
+    const landingSections = ['home', 'features', 'levels', 'coaches', 'achievements', 'blog', 'tournaments', 'about', 'ck-world', 'ck-centres', 'centres', 'careers', 'pricing', 'faq', 'reviews', 'why-choose', 'cta'];
     const isLandingSection = landingSections.includes(section);
     
     if (isLandingSection) {

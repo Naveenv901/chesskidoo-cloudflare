@@ -244082,6 +244082,7 @@ try {
 
 
     fame: "Wall of Fame",
+    blog: "Blog & Content Manager",
 
 
 
@@ -245138,6 +245139,7 @@ try {
 
 
       "events",
+      "blog",
 
 
 
@@ -250420,6 +250422,7 @@ setTimeout(function () {
 
 
       if (p === "fame") renderFame();
+      if (p === "blog") { if (typeof window.renderAdminBlog === "function") window.renderAdminBlog(); }
 
 
 
