@@ -1,4 +1,4 @@
-const { handleBlogQuery, handleBlogMutate } = require('./blogs.js');
+import { handleBlogQuery, handleBlogMutate } from './blogs.js';
 
 function cors() {
   return {

@@ -83,4 +83,4 @@ async function handleBlogMutate(request, env) {
   }
 }
 
-module.exports = { handleBlogQuery, handleBlogMutate };
+export { handleBlogQuery, handleBlogMutate };
