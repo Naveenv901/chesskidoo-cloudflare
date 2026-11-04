@@ -74,19 +74,20 @@ export const test = base.extend({
   },
 
   /** Admin API request with auth token – preferred for API tests. */
-  adminApi: async ({ request }, use) => {
+  adminApi: async ({ playwright, request }, use) => {
     const loginRes = await request.post(`${process.env.BASE_URL || 'https://chesskidoo.pages.dev'}/api/auth/signin`, {
       data: { email: ADMIN_EMAIL, password: ADMIN_PASSWORD },
     });
     const { token } = await loginRes.json();
     if (!token) throw new Error('Admin login failed');
-    const api = await request.newContext({
+    const api = await playwright.request.newContext({
       baseURL: process.env.BASE_URL || 'https://chesskidoo.pages.dev',
       extraHTTPHeaders: { Authorization: `Bearer ${token}` },
     });
     await use(api);
     await api.dispose();
   },
+
 
   /** Generate a unique test ID prefix to avoid collisions. */
   uid: async ({}, use) => {
@@ -132,7 +133,18 @@ export const test = base.extend({
           { authData: authDataStr, token: body.token }
         );
         // Navigate to the dev server root so relative URLs work
-        await page.goto(process.env.DEV_URL || 'http://localhost:1573', { waitUntil: 'domcontentloaded' });
+        // Navigate to the dev server (default port 5174) and trim any stray spaces
+        await page.goto((process.env.DEV_URL || 'http://localhost:5174').trim(), { waitUntil: 'domcontentloaded', timeout: 60000 });
+        // Load the attendance UI helper as a module
+        await page.addInitScript(`
+          import { fixAttendanceIcons } from '/src/lib/attendance-ui.js';
+          // expose a global for later manual refreshes
+          window.__fixAttendanceIcons = () => fixAttendanceIcons(window);
+        `);
+        // Run once after initial load
+        await page.evaluate(() => {
+          if (window.__fixAttendanceIcons) window.__fixAttendanceIcons();
+        });
       }
     } catch {}
     await use(page);
