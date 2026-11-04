@@ -1,0 +1,481 @@
+/* assets/css/animations.css ------------------------------------------------
+   Premium motion layer — scroll reveals, micro-interactions, button shine,
+   floating elements, gradient shimmer, scroll-progress bar.
+   Additive: does NOT modify the existing `.reveal` system in style.css.
+   --------------------------------------------------------------------------- */
+
+/* ── Smooth scrolling for anchor jumps ── */
+html { scroll-behavior: smooth; }
+
+/* ═══ SCROLL-REVEAL VARIANTS (data-anim) — independent of .reveal ═══ */
+[data-anim] {
+  opacity: 0;
+  transition: opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.16,1,.3,1);
+  will-change: opacity, transform;
+}
+[data-anim="up"]    { transform: translateY(46px); }
+[data-anim="down"]  { transform: translateY(-46px); }
+[data-anim="left"]  { transform: translateX(-56px); }
+[data-anim="right"] { transform: translateX(56px); }
+[data-anim="zoom"]  { transform: scale(.88); }
+[data-anim="flip"]  { transform: perspective(900px) rotateX(14deg); transform-origin: top center; }
+[data-anim].in-view { opacity: 1; transform: none; }
+
+/* ═══ STAGGERED CHILDREN — parent gets data-stagger ═══ */
+[data-stagger] > * {
+  opacity: 0;
+  transform: translateY(34px);
+  transition: opacity .6s ease, transform .6s cubic-bezier(.16,1,.3,1);
+}
+[data-stagger].in-view > * { opacity: 1; transform: none; }
+[data-stagger].in-view > *:nth-child(1) { transition-delay: .04s; }
+[data-stagger].in-view > *:nth-child(2) { transition-delay: .12s; }
+[data-stagger].in-view > *:nth-child(3) { transition-delay: .20s; }
+[data-stagger].in-view > *:nth-child(4) { transition-delay: .28s; }
+[data-stagger].in-view > *:nth-child(5) { transition-delay: .36s; }
+[data-stagger].in-view > *:nth-child(6) { transition-delay: .44s; }
+[data-stagger].in-view > *:nth-child(7) { transition-delay: .52s; }
+[data-stagger].in-view > *:nth-child(8) { transition-delay: .60s; }
+
+/* ═══ SCROLL PROGRESS BAR (top of page) ═══ */
+#scroll-progress {
+  position: fixed; top: 0; left: 0; height: 3px; width: 0;
+  background: linear-gradient(90deg, #E8A020, #F5C842, #E8A020);
+  background-size: 200% 100%;
+  z-index: 99999; pointer-events: none;
+  box-shadow: 0 0 10px rgba(232,160,32,0.6);
+  transition: width .1s linear;
+  animation: progressShimmer 3s linear infinite;
+}
+@keyframes progressShimmer { to { background-position: 200% 0; } }
+
+/* ═══ BUTTON SHINE SWEEP on hover ═══ */
+.btn-primary, .hero-cta, .p-btn-gold, .sd-join-btn, .login-btn, .ck-btn-upload {
+  position: relative; overflow: hidden;
+}
+.btn-primary::after, .hero-cta::after, .p-btn-gold::after, .sd-join-btn::after, .login-btn::after, .ck-btn-upload::after {
+  content: ''; position: absolute; top: 0; left: -120%; width: 60%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.45), transparent);
+  transform: skewX(-20deg); pointer-events: none; transition: none;
+}
+.btn-primary:hover::after, .hero-cta:hover::after, .p-btn-gold:hover::after,
+.sd-join-btn:hover::after, .login-btn:hover::after, .ck-btn-upload:hover::after {
+  animation: btnShine .85s ease;
+}
+@keyframes btnShine { 0% { left: -120%; } 100% { left: 130%; } }
+
+/* ═══ FLOAT / PULSE micro-animations ═══ */
+@keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+.anim-float { animation: floatY 4.5s ease-in-out infinite; }
+.anim-float-slow { animation: floatY 7s ease-in-out infinite; }
+
+@keyframes softPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+.anim-pulse { animation: softPulse 2.8s ease-in-out infinite; }
+
+/* ═══ HERO STATS — ALL on ONE straight horizontal line ═══ */
+.hero-stats {
+  display: flex !important;
+  flex-wrap: nowrap !important;     /* keep the 4 stats on a single line */
+  align-items: baseline;
+  gap: 14px;
+  overflow-x: auto;                 /* scroll instead of wrapping on tight widths */
+  padding-bottom: 6px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.hero-stats::-webkit-scrollbar { display: none; }
+.hero-stats .stat-item {
+  display: flex !important;
+  align-items: baseline;
+  gap: 6px;
+  white-space: nowrap;
+  flex: 0 0 auto;                   /* don't shrink/wrap each stat */
+}
+.hero-stats .hero-stat-num { font-size: 1.5rem; line-height: 1; }
+.hero-stats .hero-stat-label { font-size: 0.72rem; margin: 0; }
+/* slim divider between stats */
+.hero-stats .stat-item:not(:last-child)::after {
+  content: '';
+  width: 1px; height: 18px; margin-left: 14px;
+  background: rgba(255,255,255,0.18);
+  align-self: center;
+}
+@media (max-width: 768px) {
+  .hero-stats { gap: 10px; justify-content: flex-start; }
+  .hero-stats .hero-stat-num { font-size: 1.25rem; }
+  .hero-stats .hero-stat-label { font-size: 0.66rem; }
+  .hero-stats .stat-item:not(:last-child)::after { height: 14px; margin-left: 10px; }
+}
+
+/* ═══ HERO TITLE — letters bounce in smoothly like chess pieces landing ═══ */
+.hero-char {
+  display: inline-block;
+  animation: heroCharDrop 1.1s cubic-bezier(.25,1,.5,1) both;
+  animation-delay: calc(var(--i, 0) * 0.06s);
+  will-change: transform, opacity;
+}
+@keyframes heroCharDrop {
+  0%   { opacity: 0; transform: translateY(-30px) scale(.85); }
+  65%  { opacity: 1; transform: translateY(4px) scale(1.03); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* Hover a letter and it floats up gently */
+.hero-char:hover { animation: heroCharHop .85s ease; }
+@keyframes heroCharHop {
+  0%,100% { transform: translateY(0); }
+  45% { transform: translateY(-7px) scale(1.06); }
+}
+/* Once letters animate individually, drop the block-level entrance so they
+   don't fight each other; emphasized letters stay solid gold (the per-word
+   shimmer can't co-exist with per-letter spans). */
+.hero-title[data-lettered] { animation: none !important; }
+.hero-title[data-lettered] em { -webkit-text-fill-color: initial; background: none; }
+.hero-title em .hero-char {
+  -webkit-text-fill-color: var(--amber, #E8A020) !important;
+  color: var(--amber, #E8A020);
+  background: none;
+}
+
+/* ═══ HERO TITLE — per-WORD entrance (GSAP slides each word in from a side) ═══ */
+.hero-word {
+  display: inline-block;
+  will-change: transform, opacity;
+  cursor: pointer;
+}
+.hero-word-em {
+  color: var(--amber, #E8A020) !important;
+  -webkit-text-fill-color: var(--amber, #E8A020) !important;
+  background: none !important;
+}
+/* When GSAP word-animates the title, disable the block entrance + em shimmer
+   (per-word spans can't carry the clipped gradient). */
+.hero-title[data-worded] { animation: none !important; }
+.hero-title[data-worded] em {
+  background: none !important;
+  -webkit-text-fill-color: initial;
+  animation: none !important;
+}
+
+/* ═══ HERO TITLE — emphasized words shimmer in gold continuously ═══ */
+/* "think two" / "moves" already use color:var(--amber); upgrade to a moving
+   gold gradient so the headline feels alive (time2chess-style motion). */
+.hero-title em {
+  background: linear-gradient(100deg,
+    #c8821a 0%, #E8A020 30%, #ffe7a0 48%, #fffef2 52%, #ffe7a0 56%, #E8A020 72%, #c8821a 100%);
+  background-size: 250% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: heroEmShimmer 4.5s linear infinite;
+}
+@keyframes heroEmShimmer { to { background-position: 250% center; } }
+/* Subtle continuous float on the decorative hero chess pieces (if not already) */
+.hero-floating-piece { will-change: transform; }
+
+/* ═══ GRADIENT SHIMMER on headings (opt-in via .anim-shimmer) ═══ */
+.anim-shimmer {
+  background: linear-gradient(90deg, currentColor 0%, #E8A020 25%, currentColor 50%);
+  background-size: 200% auto;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmer 4s linear infinite;
+}
+@keyframes textShimmer { to { background-position: 200% center; } }
+
+/* ═══ ICON / CARD micro-interactions ═══ */
+.feat-icon-wrap { transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.feat-card:hover .feat-icon-wrap { transform: scale(1.12) rotate(-6deg); }
+
+.tvid-card .tvid-player { transition: filter .3s ease; }
+.tvid-card:hover .tvid-player { filter: brightness(1.04); }
+
+/* Nav links: animated underline.
+   The underline itself lives in style.css, which centres it with
+   `left:50%` + `translateX(-50%)` and reveals it by scaling X. A second
+   width-based definition used to sit here; because this file loads later it
+   won `left`/`width`, while the higher-specificity `.nav-link.active::after`
+   in style.css still applied `translateX(-50%)`. The two combined put the bar
+   at left:0 and then shifted it half its own width to the left of the label.
+   Only the positioning context belongs here. */
+.nav-link { position: relative; }
+
+/* Section heads rise a touch on reveal (works with existing .reveal too) */
+.section-head h2 { transition: letter-spacing .6s ease; }
+
+/* ═══ SPA PAGE TRANSITIONS — smooth fade between landing / portals ═══ */
+.page.ck-fade-out { opacity: 0; transform: translateY(-6px); transition: opacity .22s ease, transform .22s ease; pointer-events: none; }
+.page.ck-fade-in  { animation: ckPageFadeIn .42s cubic-bezier(.16,1,.3,1) both; }
+@keyframes ckPageFadeIn {
+  0%   { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+/* Smooth in-section scroll/anchor jumps on the landing page */
+.page#landing-page section { scroll-margin-top: 80px; }
+
+/* ═══ SECTION DIVIDERS — decorative gradient lines between sections ═══ */
+.section-padding + .section-padding::before {
+  content: '';
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #E8A020, transparent);
+  margin: 0 auto 80px;
+  border-radius: 2px;
+  opacity: 0.5;
+}
+
+/* ═══ CARD HOVER GLOW — subtle ambient glow on interactive cards ═══ */
+.feat-card,
+.review-card,
+.achievement-card,
+.why-item,
+.skill-card,
+.coach-card-premium {
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
+}
+.feat-card:hover,
+.review-card:hover,
+.achievement-card:hover,
+.why-item:hover,
+.coach-card-premium:hover {
+  box-shadow: 0 20px 50px -12px rgba(217, 119, 6, 0.15), 0 0 0 1px rgba(217, 119, 6, 0.08);
+}
+
+/* ═══ SKILL CARDS — bounce on hover ═══ */
+.skill-card {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
+}
+.skill-card:hover {
+  transform: translateY(-8px) scale(1.04);
+  box-shadow: 0 16px 32px rgba(0,0,0,0.12);
+}
+.skill-card:hover .skill-icon {
+  animation: skillIconBounce 0.5s ease;
+}
+@keyframes skillIconBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  40% { transform: translateY(-6px) scale(1.15); }
+  60% { transform: translateY(-2px) scale(1.05); }
+}
+
+/* ═══ REVIEW CARDS — smooth lift on hover ═══ */
+.review-card {
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+}
+.review-card:hover {
+  transform: translateY(-6px);
+}
+.review-card:nth-child(even):hover {
+  transform: translateY(-6px);
+}
+
+/* ═══ REVIEW STARS — shimmer on hover ═══ */
+.review-stars {
+  transition: letter-spacing 0.4s ease, filter 0.4s ease;
+}
+.review-card:hover .review-stars {
+  letter-spacing: 3px;
+  filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.6));
+}
+
+/* ═══ ACHIEVEMENT CARDS — pulse ring on hover ═══ */
+.achievement-card::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  border: 2px solid transparent;
+  transition: border-color 0.4s ease, transform 0.4s ease;
+  pointer-events: none;
+}
+.achievement-card:hover::after {
+  border-color: rgba(217, 119, 6, 0.3);
+  transform: scale(1.02);
+}
+
+/* ═══ COACH CARDS — subtle lift + shine ═══ */
+.coach-card-premium {
+  overflow: hidden;
+}
+.coach-card-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.08), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.coach-card-premium:hover::before {
+  left: 130%;
+}
+
+/* ═══ WHY-ITEM — icon scale + glow ═══ */
+.why-icon {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), filter 0.35s ease;
+}
+.why-item:hover .why-icon {
+  transform: scale(1.2) rotate(-5deg);
+  filter: drop-shadow(0 0 8px rgba(217, 119, 6, 0.4));
+}
+
+/* ═══ PRICING CARDS — perspective tilt on hover ═══ */
+.price-card {
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.5s ease;
+  transform-style: preserve-3d;
+}
+.price-card:hover {
+  transform: translateY(-12px) perspective(800px) rotateX(-2deg);
+  box-shadow: 0 30px 60px -15px rgba(0,0,0,0.2);
+}
+.price-btn {
+  position: relative;
+  overflow: hidden;
+}
+.price-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+.price-btn:hover::after {
+  animation: btnShine 0.85s ease;
+}
+
+/* ═══ FAQ ITEMS — smooth expand with slide ═══ */
+.faq-item {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.faq-item:hover {
+  transform: translateX(4px);
+}
+.faq-item.active {
+  box-shadow: 0 4px 20px rgba(217, 119, 6, 0.1);
+  transform: translateX(6px);
+}
+.faq-icon-arrow svg {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.faq-item.active .faq-icon-arrow svg {
+  transform: rotate(180deg);
+}
+
+/* ═══ TRUST BAR — smooth infinite scroll ═══ */
+.trust-track {
+  display: flex;
+  gap: 48px;
+  animation: trustScroll 35s linear infinite;
+  width: max-content;
+}
+@keyframes trustScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.trust-item {
+  transition: color 0.3s ease, transform 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.trust-item:hover {
+  color: #E8A020;
+  transform: scale(1.05);
+}
+
+/* ═══ SECTION HEADINGS — letter-spacing expand on reveal ═══ */
+.section-head.visible h2,
+.section-head.in-view h2 {
+  animation: headingReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes headingReveal {
+  0% { letter-spacing: 0.08em; opacity: 0; }
+  100% { letter-spacing: -0.02em; opacity: 1; }
+}
+
+/* ═══ EYEBROW BADGES — slide-in from left ═══ */
+.section-head.visible .eyebrow,
+.section-head.in-view .eyebrow {
+  animation: eyebrowSlide 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+@keyframes eyebrowSlide {
+  0% { opacity: 0; transform: translateX(-20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* ═══ COUNTER ANIMATION — number count-up feel ═══ */
+.hero-stat-num {
+  animation: counterPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: calc(var(--stat-i, 0) * 0.15s + 0.8s);
+}
+@keyframes counterPop {
+  0% { opacity: 0; transform: scale(0.5) translateY(10px); }
+  60% { transform: scale(1.1) translateY(-3px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+.hero-stats .stat-item:nth-child(1) { --stat-i: 0; }
+.hero-stats .stat-item:nth-child(2) { --stat-i: 1; }
+.hero-stats .stat-item:nth-child(3) { --stat-i: 2; }
+.hero-stats .stat-item:nth-child(4) { --stat-i: 3; }
+
+/* ═══ SHOWCASE GALLERY — zoom-in on hover ═══ */
+.showcase-gallery-item {
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
+  overflow: hidden;
+}
+.showcase-gallery-item:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+.showcase-img-wrap img {
+  transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.showcase-gallery-item:hover .showcase-img-wrap img {
+  transform: scale(1.08);
+}
+
+/* ═══ TESTIMONIAL VIDEO CARDS — lift + shadow ═══ */
+.tvid-card {
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.4s ease;
+}
+.tvid-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+/* ═══ SMOOTH UNDERLINE for links ═══ */
+.footer-link-btn {
+  position: relative;
+}
+.footer-link-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: #E8A020;
+  transition: width 0.3s ease;
+}
+.footer-link-btn:hover::after {
+  width: 100%;
+}
+
+/* ═══ ACCESSIBILITY — respect reduced motion ═══ */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  [data-anim], [data-stagger] > * { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .anim-float, .anim-float-slow, .anim-pulse, .anim-shimmer, #scroll-progress, .hero-title em { animation: none !important; }
+  .btn-primary::after, .hero-cta::after, .p-btn-gold::after { display: none; }
+  .trust-track { animation: none !important; }
+  .hero-stat-num { animation: none !important; }
+  .section-head h2, .section-head .eyebrow { animation: none !important; }
+  .skill-card:hover .skill-icon { animation: none !important; }
+}

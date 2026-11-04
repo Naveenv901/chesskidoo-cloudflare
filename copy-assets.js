@@ -1,0 +1,20 @@
+import { cpSync, existsSync, mkdirSync } from 'fs';
+import { resolve } from 'path';
+
+const copy = (src, dest) => {
+  if (!existsSync(src)) return;
+  // Skip stockfish neural network file - too large for Cloudflare Pages 25 MiB limit
+  // Stockfish is loaded dynamically via dynamic import() when chess features are needed
+  if (src.includes('stockfish') && src.endsWith('.nnue')) return;
+  if (!existsSync(dest)) mkdirSync(dest, { recursive: true });
+  cpSync(src, dest, { recursive: true });
+};
+
+copy(resolve('assets/js'), resolve('dist/assets/js'));
+copy(resolve('assets/js'), resolve('dist/lms/assets/js'));
+copy(resolve('assets/css'), resolve('dist/assets/css'));
+copy(resolve('assets/css'), resolve('dist/lms/assets/css'));
+copy(resolve('assets/img'), resolve('dist/assets/img'));
+copy(resolve('assets/videos'), resolve('dist/assets/videos'));
+copy(resolve('lms'), resolve('dist/lms'));
+copy(resolve('functions'), resolve('dist/functions'));

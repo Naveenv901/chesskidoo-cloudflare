@@ -1,0 +1,454 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   COMPREHENSIVE MOBILE OPTIMIZATION — ChessKidoo Landing Page
+   assets/css/mobile-landing.css
+   Breakpoints: 768px | 600px | 480px | 390px | 360px
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Global Mobile Base ── */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { -webkit-overflow-scrolling: touch; overflow-x: hidden; }
+*, *::before, *::after { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+img, video, svg, canvas { max-width: 100%; height: auto; }
+
+/* Prevent horizontal scroll from any element.
+   .container is deliberately excluded — it has its own 1400px cap in style.css
+   and listing it here would override that, un-centering every section. */
+section, .hero-content-wrap, .hero-grid,
+.footer-grid, .feat-grid, .coach-grid, .pricing-grid,
+.level-grid, .trust-inner, .hero-btns, .reviews-grid { max-width: 100%; }
+
+/* Touch-optimised interactive targets */
+button, a, select, .btn, .nav-link, .faq-trigger,
+.p-nav-item, .trust-item { touch-action: manipulation; }
+
+/* ══════════════════════════════════════════════════════
+   768px — Mobile Portrait / Small Tablet
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* ── Navbar ── */
+  .header-inner { padding: 14px 20px; }
+  .logo-text { font-size: 1.28rem; }
+  .logo-icon-box { width: 32px; height: 32px; }
+  .logo-icon-symbol { font-size: 18px; }
+  .mobile-menu-btn { width: 44px; height: 44px; padding: 10px; display: flex; }
+
+  /* ── Hero ── */
+  .hero { min-height: auto; padding-top: 88px; padding-bottom: 40px; }
+  .hero-content-wrap { padding: 0 20px 40px; }
+  /* minmax(0,1fr) lets the single column shrink under a wide child's
+     min-content (the board panel) instead of overflowing + being clipped. */
+  .hero-grid { grid-template-columns: minmax(0, 1fr); gap: 32px; text-align: center; }
+  .hero-content, .hero-visual { min-width: 0; }
+  .hero-badge { margin: 0 auto 22px; font-size: 0.72rem; padding: 7px 16px; display: inline-flex; }
+  .hero-title { font-size: clamp(2.1rem, 8.5vw, 3rem); margin-bottom: 18px; letter-spacing: -0.02em; line-height: 1.1; }
+  .hero-sub { font-size: 1rem; margin: 0 auto 32px; max-width: 100%; }
+  .hero-btns { flex-direction: column; gap: 12px; width: 100%; align-items: stretch; }
+  .hero-btns .btn,
+  .hero-btn-demo,
+  .hero-btn-wa {
+    width: 100%; text-align: center; justify-content: center;
+    padding: 16px 20px; font-size: 1rem; border-radius: 14px;
+    font-weight: 700; letter-spacing: 0.01em;
+  }
+  .hero-btn-demo { box-shadow: 0 4px 20px rgba(232,160,32,0.35); }
+  .hero-stats {
+    gap: 16px; margin-top: 32px; padding-top: 24px;
+    justify-content: space-around; flex-wrap: wrap;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .hero-stat-num { font-size: 1.8rem; }
+  .hero-stat-label { font-size: 0.7rem; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  /* ── Hero Chessboard — visible & responsive on mobile ── */
+  .hero-visual {
+    display: block !important;
+    margin-top: 0 !important;
+    perspective: none !important;
+  }
+  .hero-visual .board-panel {
+    margin: 0 auto;
+    max-width: 100%;
+    border-radius: 18px;
+    padding: 14px 12px 12px;
+  }
+  /* Players bar: compact on mobile */
+  .players-bar {
+    grid-template-columns: 1fr auto 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .avatar { width: 36px; height: 36px; font-size: 18px; }
+  .pname { font-size: 12px; }
+  .pelo { font-size: 10px; }
+  .match-loc { font-size: 10px; }
+  .live-pill { font-size: 9px; padding: 3px 8px; margin-bottom: 4px; }
+
+  /* Board section: stack board then moves panel */
+  .board-section { flex-direction: column; align-items: center; gap: 10px; }
+
+  /* Board: Fluid resizing on all mobile devices */
+  #board {
+    grid-template-columns: repeat(8, 12.5%) !important;
+    grid-template-rows: repeat(8, 12.5%) !important;
+    width: 100% !important;
+    max-width: 400px;
+    height: auto !important;
+    aspect-ratio: 1 / 1;
+  }
+  .sq { width: 100% !important; height: 100% !important; }
+  .piece { font-size: clamp(20px, 8vw, 36px) !important; }
+  /* Rank-label column must stretch to the fluid board height (it was bunching
+     at the top because height:100% can't resolve against an auto-height parent) */
+  .board-section div[style*="flex-start"] { align-items: stretch !important; }
+  .coords-col {
+    height: auto !important; align-self: stretch !important;
+    width: 14px !important; margin-right: 2px !important;
+  }
+  .coords-row { width: 100% !important; margin-top: 4px !important; }
+  .coord { font-size: 9px !important; }
+
+  /* Moves panel: full width, compact on mobile */
+  .moves-panel {
+    width: 100% !important;
+    min-width: unset !important;
+    max-height: 120px !important;
+    height: 120px !important;
+    border-radius: 12px !important;
+    overflow-y: auto !important;
+  }
+
+  /* Controls: wrap neatly */
+  .board-controls { flex-direction: row; flex-wrap: wrap; gap: 8px; margin-top: 12px; justify-content: space-between; }
+  .ctrl-group { gap: 6px; }
+  .cb { width: 34px !important; height: 34px !important; border-radius: 10px !important; font-size: 14px !important; }
+  .cb-pause { width: 80px !important; font-size: 11px !important; }
+  .check-level-btn { font-size: 12px !important; padding: 8px 14px !important; border-radius: 22px !important; }
+
+  /* ── Trust Bar ── */
+  .trust-bar { padding: 16px 0; }
+  .trust-inner { flex-wrap: wrap; gap: 10px 20px; justify-content: center; padding: 0 16px; }
+  .trust-item { font-size: 0.75rem; gap: 7px; }
+  .trust-divider { display: none; }
+
+  /* ── General Layout ── */
+  .section-padding { padding: 56px 0; }
+  .section-head { margin-bottom: 36px; }
+  .section-head h2 { font-size: clamp(1.75rem, 6vw, 2.4rem); line-height: 1.2; }
+  .lead { font-size: 0.95rem; line-height: 1.6; }
+  .container { padding: 0 20px; }
+
+  /* ── Feature Cards ── */
+  .feat-grid { grid-template-columns: 1fr; gap: 14px; }
+  .feat-card {
+    padding: 24px 20px; border-radius: 18px;
+    border-left: 3px solid var(--amber);
+    transition: none;
+  }
+  .feat-icon-wrap { width: 50px; height: 50px; font-size: 1.4rem; margin-bottom: 14px; }
+  .feat-card h3 { font-size: 1.05rem; }
+  .feat-card p { font-size: 0.88rem; line-height: 1.5; }
+
+  /* ── Level Cards ── */
+  .level-grid { grid-template-columns: 1fr; gap: 16px; }
+  .level-card { min-height: auto; padding: 28px 22px; border-radius: 20px; }
+  .level-piece { font-size: 3.5rem; }
+
+  /* ── Coach Grid ── */
+  .coach-grid { grid-template-columns: 1fr; gap: 16px; }
+  .coach-img-wrap { height: 240px; }
+  .coach-info, .coach-card-body { padding: 16px 18px; }
+  .coach-name, .coach-card-body h5 { font-size: 1.1rem; font-weight: 700; margin: 0 0 8px 0; }
+  .coach-bio, .coach-card-body p { font-size: 0.85rem; line-height: 1.5; margin: 0; }
+
+  /* ── Pricing ── */
+  .pricing-grid { grid-template-columns: 1fr; gap: 16px; }
+  .price-card { padding: 28px 20px; border-radius: 18px; }
+  .price-card.gold-card { transform: none !important; }
+  .price-title { font-size: 1.5rem; }
+  .price-amount { font-size: 2.4rem; margin-bottom: 20px; }
+  .price-features { margin-bottom: 24px; }
+  .price-features li { font-size: 0.88rem; margin-bottom: 10px; line-height: 1.4; }
+
+  /* ── Tables ── */
+  .table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .table { font-size: 0.82rem; min-width: 500px; }
+  .table th, .table td { padding: 12px 14px; white-space: nowrap; }
+
+  /* ── Modals ── */
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .modal-card {
+    border-radius: 20px 20px 0 0;
+    max-width: 100%; width: 100%;
+    padding: 28px 20px 32px;
+    max-height: 90vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .modal-card h3, .modal-title { font-size: 1.2rem; }
+
+  /* ── FAQ ── */
+  .faq-accordion-wrap { gap: 10px; }
+  .faq-trigger { padding: 18px 20px; min-height: 56px; }
+  .faq-question { font-size: 1rem; }
+  .faq-answer-body { font-size: 0.9rem; padding: 0 20px 18px; }
+
+  /* ── Footer ── */
+  .footer-grid { grid-template-columns: 1fr !important; gap: 32px !important; }
+
+  /* ── Floating Buttons ── */
+  .floating-ui { bottom: 24px; right: 16px; gap: 10px; }
+  .whatsapp-float, .bot-float { width: 52px; height: 52px; }
+  .bot-window { width: calc(100vw - 32px); left: 16px; right: 16px; bottom: 130px; }
+
+  /* ── Scroll-to-top: smaller & tighter on mobile ── */
+  #scrollTopBtn {
+    width: 36px !important; height: 36px !important;
+    bottom: 80px !important; right: 16px !important;
+    border-radius: 8px !important; font-size: 1rem !important;
+    opacity: 0.85 !important;
+  }
+
+  /* ── Login ── */
+  .login-header { padding: 14px 20px; }
+  .login-header-nav { display: none; }
+  .login-card-v2 { padding: 28px 20px; margin: 0; width: 100%; }
+  .login-card {
+    padding: 32px 20px; border-radius: 20px; max-width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .login-card h2 { font-size: 1.4rem; margin-bottom: 6px; }
+  .login-card .login-sub { font-size: 0.88rem; }
+  .login-bg-section {
+    overflow-y: auto !important; justify-content: flex-start !important;
+    padding: 20px 16px 40px !important;
+  }
+  .login-card input[type="email"],
+  .login-card input[type="password"] {
+    font-size: 16px !important;
+    padding: 14px 16px;
+    border-radius: 12px;
+  }
+  .login-card button[type="submit"] {
+    padding: 16px; font-size: 1rem; border-radius: 14px;
+    font-weight: 700; min-height: 52px;
+  }
+
+  /* ── Skills / Why Section ── */
+  .skills-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .skill-card { padding: 28px 14px; gap: 12px; border-radius: 18px; }
+  .skill-icon { width: 60px; height: 60px; font-size: 2rem; }
+  .skill-name { font-size: 0.95rem; }
+  .why-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* ── Showcase Gallery ── */
+  .showcase-gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .showcase-gallery-item { padding: 12px; border-radius: 18px; }
+  .showcase-gallery-item:hover { transform: none; }
+
+  /* ── Chess Board (landing demo) ── */
+  .board-panel { border-radius: 18px; padding: 14px; }
+  .board-controls { flex-direction: column; gap: 10px; }
+  .ctrl-group { justify-content: center; flex-wrap: wrap; }
+}
+
+/* ══════════════════════════════════════════════════════
+   600px — Compact Mobile
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .hero { padding-top: 78px; }
+  .hero-title { font-size: clamp(1.9rem, 8vw, 2.6rem); }
+  .hero-stats { gap: 14px; margin-top: 30px; }
+  .hero-stat-num { font-size: 1.75rem; }
+
+  .section-padding { padding: 52px 0; }
+  .container { padding: 0 16px; }
+  .section-head h2 { font-size: clamp(1.55rem, 7vw, 2rem); }
+
+  /* Coach cards: single column */
+  .coach-grid { grid-template-columns: 1fr; gap: 14px; }
+  .coach-img-wrap { height: 220px; }
+
+  .feat-grid { gap: 12px; }
+  .feat-card { padding: 22px 18px; }
+
+  /* Reviews: force single column */
+  .reviews-grid, [class*="testimonial"] { grid-template-columns: 1fr !important; gap: 14px !important; }
+
+  /* Skills: keep 2-col */
+  .skills-grid { gap: 10px; }
+  .skill-card { padding: 20px 10px; }
+  .why-grid { grid-template-columns: 1fr !important; }
+
+  .showcase-gallery-grid { grid-template-columns: 1fr; gap: 12px; }
+
+  /* Small board fluid inheritance */
+}
+
+/* ══════════════════════════════════════════════════════
+   480px — Standard Phone
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .header-inner { padding: 12px 16px; }
+  .logo-text { font-size: 1.2rem; }
+  .logo-icon-box { width: 30px; height: 30px; }
+  .logo-icon-symbol { font-size: 16px; }
+
+  .hero { padding-top: 74px; }
+  .hero-content-wrap { padding: 0 16px 32px; }
+  .hero-title { font-size: clamp(1.85rem, 8vw, 2.3rem); }
+  .hero-badge { font-size: 0.67rem; padding: 6px 12px; margin-bottom: 18px; }
+  .hero-sub { font-size: 0.93rem; margin-bottom: 26px; }
+  .hero-btns { gap: 12px; }
+  .hero-btn-demo, .hero-btn-wa { padding: 15px 18px; font-size: 0.95rem; }
+  .hero-stat-num { font-size: 1.6rem; }
+  .hero-stat-label { font-size: 0.68rem; }
+
+  .section-padding { padding: 44px 0; }
+  .section-head { margin-bottom: 32px; padding: 0 8px; }
+  .section-head h2 { font-size: clamp(1.45rem, 6.5vw, 1.9rem); }
+  .lead { font-size: 0.9rem; }
+
+  .feat-card { padding: 20px 16px; border-radius: 16px; }
+  .feat-icon-wrap { width: 48px; height: 48px; font-size: 1.3rem; margin-bottom: 14px; }
+  .feat-card h3 { font-size: 1rem; }
+  .feat-card p { font-size: 0.85rem; }
+
+  .level-card { padding: 22px 18px; border-radius: 16px; }
+  .level-piece { font-size: 3rem; }
+  .level-card h3 { font-size: 1.2rem; }
+
+  .price-card { padding: 26px 18px; }
+  .price-amount { font-size: 2.4rem; }
+  .price-title { font-size: 1.5rem; }
+
+  .coach-name, .coach-card-body h5 { font-size: 1rem; }
+  .coach-img-wrap { height: 200px; }
+
+  .modal-card { padding: 22px 16px 28px; border-radius: 18px 18px 0 0; }
+
+  .faq-trigger { padding: 15px 16px; }
+  .faq-question { font-size: 0.93rem; }
+
+  .floating-ui { bottom: 18px; right: 12px; }
+  .whatsapp-float, .bot-float { width: 50px; height: 50px; font-size: 1.25rem; }
+
+  .skills-grid { gap: 8px; }
+  .skill-card { padding: 18px 10px; gap: 10px; }
+  .skill-icon { width: 52px; height: 52px; font-size: 1.7rem; }
+  .skill-name { font-size: 0.88rem; }
+
+  /* 480px board inherits fluid styles */
+  .moves-panel { height: 120px !important; }
+  .players-bar { gap: 4px; }
+  .avatar { width: 32px !important; height: 32px !important; font-size: 16px !important; }
+  .pname { font-size: 11px; }
+  .check-level-btn { font-size: 11px !important; padding: 7px 12px !important; }
+}
+
+/* ══════════════════════════════════════════════════════
+   390px — Compact Modern Phones
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 390px) {
+  .logo-text { font-size: 1.1rem; }
+  .hero-title { font-size: clamp(1.7rem, 8vw, 2.1rem); }
+  .hero-badge { font-size: 0.62rem; padding: 5px 10px; letter-spacing: 0.07em; }
+  .hero-stat-num { font-size: 1.5rem; }
+  .hero-stat-label { font-size: 0.64rem; }
+  .section-head h2 { font-size: 1.45rem; }
+  .lead { font-size: 0.88rem; }
+  .btn { padding: 13px 18px; font-size: 0.92rem; }
+  .feat-card { padding: 18px 14px; }
+  .feat-icon-wrap { width: 44px; height: 44px; font-size: 1.2rem; }
+  .coach-name, .coach-card-body h5 { font-size: 0.97rem; }
+  .price-amount { font-size: 2.1rem; }
+  .skills-grid { gap: 6px; }
+  .skill-icon { width: 46px; height: 46px; font-size: 1.5rem; }
+  .floating-ui { bottom: 16px; right: 10px; }
+  .whatsapp-float, .bot-float { width: 46px; height: 46px; }
+
+  /* 390px board inherits fluid styles */
+  .moves-panel { height: 110px !important; }
+  .hero-visual .board-panel { padding: 10px 8px 8px !important; border-radius: 14px !important; }
+  .cb { width: 30px !important; height: 30px !important; font-size: 12px !important; }
+  .cb-pause { width: 70px !important; font-size: 10px !important; }
+  .check-level-btn { font-size: 10px !important; padding: 6px 10px !important; }
+  .players-bar { margin-bottom: 8px; }
+  .avatar { width: 28px !important; height: 28px !important; font-size: 14px !important; }
+  .pname { font-size: 10px; }
+  .pelo, .match-loc { font-size: 9px; }
+}
+
+/* ══════════════════════════════════════════════════════
+   360px — Very Small / Older Devices
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 360px) {
+  .header-inner { padding: 10px 12px; }
+  .container { padding: 0 12px; }
+  .hero { padding-top: 70px; }
+  .hero-content-wrap { padding: 0 12px 28px; }
+  .hero-title { font-size: 1.65rem; line-height: 1.12; }
+  .hero-stat-num { font-size: 1.4rem; }
+  .hero-stats { gap: 10px; margin-top: 24px; }
+  .trust-inner { gap: 8px; padding: 0 12px; }
+  .trust-item { font-size: 0.7rem; }
+  .section-head h2 { font-size: 1.35rem; }
+  .modal-card { padding: 18px 12px 22px; }
+  .price-card { padding: 22px 14px; }
+  .feat-card { padding: 16px 12px; }
+  .level-card { padding: 18px 14px; }
+  .floating-ui { bottom: 14px; right: 8px; }
+  .whatsapp-float, .bot-float { width: 44px; height: 44px; }
+  .btn { padding: 12px 16px; font-size: 0.88rem; }
+
+  /* 360px board inherits fluid styles */
+  .moves-panel { height: 100px !important; }
+  .hero-visual .board-panel { padding: 8px 6px 6px !important; }
+  .cb { width: 28px !important; height: 28px !important; font-size: 11px !important; border-radius: 8px !important; }
+  .cb-pause { width: 64px !important; font-size: 9px !important; }
+  .check-level-btn { font-size: 9px !important; padding: 5px 8px !important; }
+}
+
+/* ══════════════════════════════════════════════════════
+   iOS Safe Area Support (Notch / Home Indicator)
+   ══════════════════════════════════════════════════════ */
+@supports (padding: max(0px)) {
+  .header-inner {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+  .hero-content-wrap {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+  .floating-ui {
+    bottom: max(20px, calc(env(safe-area-inset-bottom) + 10px));
+    right: max(12px, env(safe-area-inset-right));
+  }
+  .modal-card {
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+  }
+  .container {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   Touch Devices — Disable hover effects (performance)
+   ══════════════════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  .feat-card:hover,
+  .level-card:hover,
+  .price-card:hover,
+  .coach-card:hover,
+  .coach-card-premium:hover,
+  .skill-card:hover,
+  .showcase-gallery-item:hover,
+  .faq-item:hover { transform: none !important; box-shadow: inherit !important; }
+  .hero-btn-demo:hover,
+  .hero-btn-wa:hover,
+  .btn-primary:hover,
+  .btn-ghost:hover { transform: none !important; }
+  .btn-ghost::after { content: ''; }
+}

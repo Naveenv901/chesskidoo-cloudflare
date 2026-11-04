@@ -1,0 +1,5 @@
+$content = [System.IO.File]::ReadAllText("C:\Naveen\chesskidoo_website_cb\lms\scripts.js")
+$old = "window.openQuickClassSessionModal = function () {`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n    // Ensure batch data is loaded for coach batch filtering\n    if ((!window.allBatches || window.allBatches.length === 0) && typeof loadAllData === \"function\") {\n      await loadAllData(false);\n    }\n    const coachSel = `$(""qcs-coach"");"
+$new = "window.openQuickClassSessionModal = function () {`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n`n    // Ensure batch data is loaded for coach batch filtering`n    if ((!window.allBatches || window.allBatches.length === 0) && typeof loadAllData === \"function\") {`n      await loadAllData(false);`n    }`n    const coachSel = `$(""qcs-coach"");"
+$content = $content.Replace($old, $new)
+[System.IO.File]::WriteAllText("C:\Naveen\chesskidoo_website_cb\lms\scripts.js", $content)

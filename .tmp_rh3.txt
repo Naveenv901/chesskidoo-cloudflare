@@ -1,0 +1,102 @@
+--- @157138 ---
+dentLevel(s);
+    openModal("promote-modal");
+  }
+  async function executePromotion() {
+    const id = $("promote-id").value;
+    const newLevel = $("promote-new-level").value;
+    const eloBonus = parseInt($("promote-elo-bonus").value) || 0;
+    const notes = $("promote-notes").value;
+    const s = allStudents.find((x) => String(x.id) === String(id));
+    try {
+      // 1. Update Student Table
+      const newElo = getStudentRating(s) + eloBonus;
+      const updateRes = await apiCall(`/api/students?id=${id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          level: newLevel,
+          rating: newElo,
+          notes: s.notes + "\n[Promoted: " + notes + "]",
+        }),
+      });
+      // 2. Log to Rating History
+      await apiCall("/api/rating_history", {
+        method: "POST",
+        body: JSON.stringify({
+          student_id: id,
+          rating: newElo,
+          change_type: "promotion",
+          notes: "Level Up to " + newLevel,
+        }),
+      });
+      if (updateRes.ok) {
+        toast("Student Promoted!", "success");
+        closeModals();
+        loadAllData(false);
+      }
+    } catch (e) {
+      toast("Promotion failed", "error");
+    }
+  }
+  // Shared, friendly fee-reminder message builder used by all reminder flows.
+  // Emojis are \u{...} escapes (pure ASCII source) so they can never be
+  // corrupted to "?" by file encoding / build / transport.
+  function buildFeeMessage(s, name, amount, dueDateStr, isDueOrOverdue) {
+    const amountText =
+      "\u{20B9}" +
+      Number(amount || 0).toLocaleString() +
+      getStudentLocalCurrencyAmount(s, amount);
+    const payTo = window.getPaymentPayeeText
+      ? window.getPaymentPayeeText()
+      : "9514266505 (Ranjith)";
+    if (isDueOrOverdue) {
+      return (
+        `\u{1F534} FEE PAYMENT
+
+--- @438934 ---
+t apiCall("/api/payments", {
+              method: "POST",
+              body: JSON.stringify(newPayObj),
+            });
+            allPayments = allPayments || [];
+            allPayments.unshift(newPayObj);
+            if (window.allPayments) window.allPayments.unshift(newPayObj);
+            sendPaymentReceiptNotification(id, newFee);
+          } catch (pe) {
+            console.warn("Payment logging failed during profile update:", pe);
+            toast(
+              "Warning: Payment record not created. Student status updated though.",
+              "warning",
+            );
+          }
+        }
+        // Log rating history if changed
+        if (newElo !== oldElo) {
+          try {
+            await apiCall("/api/rating_history", {
+              method: "POST",
+              body: JSON.stringify({
+                student_id: id,
+                rating: newElo,
+                change_type: "manual",
+                notes: "Manual adjustment",
+              }),
+            });
+          } catch (e) {
+            console.warn("Rating history table missing, skipping log.");
+          }
+        }
+        // Determine newStatus once — use the dynamic status for the optimistic update
+        const paymentStatusVal =
+          $("e-payment-status")?.value || oldDynamicPayStatus || "Pending";
+        // OPTIMISTIC UPDATE: immediately patch the in-memory record so the UI
+        // shows the new values without waiting for the next loadAllData fetch.
+        const idx = allStudents.findIndex((x) => String(x.id) === String(id));
+        if (idx !== -1) {
+          allStudents[idx] = {
+            ...allStudents[idx],
+            full_name: data.full_name,
+            name: data.name,
+            phone: data.phone,
+            parent_phone: data.parent_phone,
+            

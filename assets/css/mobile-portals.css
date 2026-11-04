@@ -1,0 +1,394 @@
+/* mobile-portals.css — ChessKidoo Portal Mobile Optimization
+   ───────────────────────────────────────────────────────────
+   SIDEBAR STRATEGY: off-canvas drawer (handled in portals.css @900px
+   via .p-sidebar / .p-sidebar.open + .p-nav-backdrop + .p-menu-toggle).
+   This file ONLY handles content density (grids, tables, modals, forms,
+   touch targets). It must NOT re-layout the sidebar — that caused the
+   bottom-nav vs drawer conflict.
+   Breakpoints: 768px → 600px → 480px → 390px
+   ─────────────────────────────────────────────────────────── */
+
+/* ═══════════════════════════════════════════════════════════
+   BASE MOBILE FOUNDATIONS
+   ═══════════════════════════════════════════════════════════ */
+.portal-body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+.portal-body * {
+  -webkit-tap-highlight-color: transparent;
+}
+.portal-body button,
+.portal-body a,
+.portal-body .p-nav-item,
+.portal-body .p-btn {
+  touch-action: manipulation;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   900px — ICON-STRIP SIDEBAR (layout owned by portals.css)
+   portals.css collapses the sidebar to a 72px icon rail here and owns
+   the .p-topbar margins/padding. We ONLY tighten content here.
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .p-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  /* Hide the desktop search box on tablet/phone to free top-bar space */
+  .p-topbar-search { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   768px — TABLETS PORTRAIT / LARGE PHONES
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* ── Content area ── */
+  .p-main {
+    -webkit-overflow-scrolling: touch;
+  }
+  .p-content {
+    padding: 14px 14px 32px !important;
+  }
+
+  /* ── Panel header ── */
+  .p-panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px;
+  }
+  .p-panel-header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .p-panel-header-actions .p-btn {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+
+  /* ── Stat cards: 2×2 grid ── */
+  .p-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .p-stat-card {
+    padding: 14px 12px;
+  }
+  .p-stat-val {
+    font-size: 1.7rem;
+  }
+
+  /* ── Charts row stacks ── */
+  .p-charts-row,
+  .p-charts-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Tables: horizontal scroll ── */
+  .p-table-wrap,
+  .p-table-container,
+  .p-data-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .p-table {
+    min-width: 580px;
+  }
+  .p-table th,
+  .p-table td {
+    padding: 10px 10px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+
+  /* ── Modals: bottom sheet ── */
+  .p-modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .p-modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    max-height: 88dvh;
+    overflow-y: auto;
+    margin: 0;
+  }
+  .p-modal-header {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--p-surface);
+    border-radius: 20px 20px 0 0;
+    padding: 16px 20px 12px;
+  }
+
+  /* ── Forms: prevent iOS zoom (font must be ≥16px) ── */
+  .p-input,
+  .p-select,
+  .p-textarea,
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="password"],
+  input[type="search"],
+  input[type="date"],
+  input[type="tel"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+
+  /* ── Buttons: minimum 44px touch targets ── */
+  .p-btn,
+  button.p-btn {
+    min-height: 44px;
+    padding: 10px 16px;
+  }
+  .p-icon-btn {
+    width: 40px;
+    height: 40px;
+    min-height: 40px;
+    padding: 0;
+    flex-shrink: 0;
+    aspect-ratio: 1 / 1;
+  }
+
+  /* ── Live panel / student grid: single column ── */
+  .p-live-grid,
+  .coach-students-grid,
+  .admin-coaches-grid,
+  .p-live-students-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* ── Coach student cards ── */
+  .coach-student-card {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 14px;
+  }
+
+  /* ── Attendance / reports tables ── */
+  .att-table-wrap,
+  .rpt-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .att-table { min-width: 480px; }
+  .rpt-table { min-width: 540px; }
+
+  /* ── Chart containers: cap height ── */
+  .p-chart-wrap,
+  .chart-container {
+    height: 240px !important;
+    max-height: 240px !important;
+  }
+
+  /* ── Notification drawer: full width ── */
+  .notif-drawer {
+    width: 100%;
+    right: -100%;
+  }
+  .notif-drawer.open { right: 0; }
+
+  /* ── Profile header ── */
+  .p-profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  /* ── 4-tile summary in live panel ── */
+  .admin-live-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   600px — PHONES
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  /* .p-topbar layout (margins, hamburger spacing) owned by portals.css */
+  .p-topbar-title { font-size: 1rem; }
+
+  .p-panel { padding: 14px 12px; }
+  .p-content { padding: 12px 12px 28px !important; }
+
+  .p-stat-card { padding: 12px 10px; }
+  .p-stat-val { font-size: 1.5rem; }
+  .p-stat-label { font-size: 0.72rem; }
+
+  .leaderboard-row { padding: 8px 10px; gap: 8px; }
+  .progress-card   { padding: 12px; }
+  .srs-card        { padding: 12px 14px; }
+  .goal-item       { padding: 10px 12px; }
+  .activity-item   { padding: 8px 10px; gap: 8px; }
+  .session-card    { padding: 12px; }
+
+  .admin-live-summary {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   480px — STANDARD PHONES
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .p-panel { padding: 12px 10px; }
+
+  .p-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .p-stat-card { padding: 10px 8px; }
+  .p-stat-val  { font-size: 1.3rem; }
+  .p-stat-icon { font-size: 1.4rem; }
+
+  .p-table th,
+  .p-table td {
+    font-size: 0.74rem;
+    padding: 8px 8px;
+  }
+
+  .p-btn { font-size: 0.8rem; padding: 9px 14px; }
+
+  .p-modal { max-height: 92dvh; }
+  .p-modal-body { padding: 14px 16px; }
+
+  .p-section-title { font-size: 0.95rem; }
+
+  .coach-student-card .student-card-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .att-btn {
+    padding: 5px 8px;
+    font-size: 0.72rem;
+    min-height: 32px;
+  }
+
+  .adm-coach-card { flex-wrap: wrap; gap: 8px; }
+  .adm-coach-stats {
+    width: 100%;
+    justify-content: space-around;
+    gap: 8px;
+  }
+  .adm-coach-stat-val { font-size: 0.95rem; }
+
+  .admin-live-summary { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .admin-live-tile { padding: 10px 8px; }
+  .admin-live-tile-val { font-size: 1.3rem; }
+
+  .notif-item { padding: 10px 12px; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   390px — SMALL PHONES (iPhone 12 mini / SE)
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 390px) {
+  .p-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  .p-stat-val { font-size: 1.2rem; }
+  .p-stat-card { padding: 8px 6px; }
+  .p-topbar-title { font-size: 0.88rem; }
+  .p-modal-header h3 { font-size: 1rem; }
+  .admin-live-summary { grid-template-columns: 1fr 1fr; gap: 4px; }
+  .admin-live-tile-val { font-size: 1.1rem; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   iOS SAFE AREA INSETS (notch / home indicator)
+   ═══════════════════════════════════════════════════════════ */
+@supports (padding: max(0px)) {
+  @media (max-width: 900px) {
+    .p-sidebar {
+      padding-bottom: max(0px, env(safe-area-inset-bottom));
+    }
+    .p-modal {
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+    }
+    .p-content {
+      padding-left: max(14px, env(safe-area-inset-left)) !important;
+      padding-right: max(14px, env(safe-area-inset-right)) !important;
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   FIXED DUAL-COLUMN LAYOUTS — base + responsive
+   ═══════════════════════════════════════════════════════════ */
+/* Classroom live board + controls */
+.cc-live-layout {
+  display: grid;
+  grid-template-columns: 1fr 270px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .cc-live-layout { grid-template-columns: 1fr; }
+}
+
+/* Student dashboard main + sidebar */
+.st-dash-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 1024px) {
+  .st-dash-layout { grid-template-columns: 1fr 280px; }
+}
+@media (max-width: 860px) {
+  .st-dash-layout { grid-template-columns: 1fr; }
+  .st-dash-sidebar { width: 100%; }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   TOUCH DEVICE — DISABLE HOVER LIFTS, ADD TAP FEEDBACK
+   ═══════════════════════════════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  .p-stat-card:hover,
+  .coach-student-card:hover,
+  .adm-coach-card:hover,
+  .p-btn:hover,
+  .leaderboard-row:hover,
+  .activity-item:hover,
+  .notif-item:hover,
+  .session-card:hover {
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  .p-btn:active,
+  .p-nav-item:active {
+    transform: scale(0.97);
+    opacity: 0.85;
+    transition: transform 0.1s, opacity 0.1s;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LANDSCAPE PHONE OVERRIDES
+   ═══════════════════════════════════════════════════════════ */
+@media (max-height: 500px) and (orientation: landscape) {
+  .p-stat-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .p-modal {
+    max-height: 95dvh;
+    overflow-y: auto;
+  }
+  .p-chart-wrap,
+  .chart-container {
+    height: 200px !important;
+    max-height: 200px !important;
+  }
+}

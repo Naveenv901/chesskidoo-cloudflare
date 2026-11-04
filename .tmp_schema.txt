@@ -1,0 +1,68 @@
+﻿_cf_METADATA
+    key*:INTEGER, value:BLOB
+assignments
+    id*:TEXT, title:TEXT, pgn:TEXT, type:TEXT, assignedTo:TEXT, dueDate:TEXT, description:TEXT, coach:TEXT, moves:TEXT, created:INTEGER, created_at:TEXT
+attendance
+    id*:TEXT, userid:TEXT, studentId:TEXT, studentName:TEXT, classId:TEXT, className:TEXT, coachId:TEXT, coachName:TEXT, markedAt:TEXT, date:TEXT, status:TEXT, class_title:TEXT, created_at:TEXT
+batch_links
+    batch_level*:TEXT, link:TEXT, updated_at:TEXT
+broadcasts
+    id*:TEXT, fen:TEXT, pgn:TEXT, coach:TEXT, ts:INTEGER, created_at:TEXT
+classes
+    id*:TEXT, coachId:TEXT, coachName:TEXT, title:TEXT, level:TEXT, batch:TEXT, days:TEXT, time:TEXT, duration:INTEGER, zoomLink:TEXT, maxStudents:INTEGER, studentIds:TEXT, active:INTEGER, createdAt:TEXT, created_at:TEXT
+coach_attendance
+    id*:TEXT, coachId:TEXT, classId:TEXT, date:TEXT, joinedAt:TEXT, created_at:TEXT
+coach_notes
+    id*:INTEGER, student:TEXT, coach:TEXT, text:TEXT, date:TEXT, created_at:TEXT
+credentials
+    email*:TEXT, password:TEXT, created_at:TEXT
+d1_migrations
+    id*:INTEGER, name:TEXT, applied_at:TIMESTAMP
+document
+    id*:INTEGER, file_name:TEXT, name:TEXT, level:TEXT, coach:TEXT, link:TEXT, batch:TEXT, user_ids:TEXT, type:TEXT, notes:TEXT, created_at:TEXT
+expenses
+    id*:INTEGER, date:TEXT, category:TEXT, description:TEXT, amount:TEXT, mode:TEXT, bill:TEXT, created_at:TEXT
+feedback
+    id*:TEXT, fromId:TEXT, fromName:TEXT, fromRole:TEXT, childId:TEXT, childName:TEXT, toId:TEXT, toName:TEXT, message:TEXT, rating:INTEGER, category:TEXT, replied:INTEGER, reply:TEXT, parent_name:TEXT, parent_email:TEXT, student_email:TEXT, text:TEXT, status:TEXT, created_at:TEXT
+hw_submissions
+    id*:TEXT, assignment_id:TEXT, student_id:TEXT, accuracy:INTEGER, movesStudied:INTEGER, totalMoves:INTEGER, note:TEXT, completed:INTEGER, submittedAt:TEXT, created_at:TEXT
+leads
+    id*:INTEGER, name:TEXT, phone:TEXT, parent_name:TEXT, child_age:TEXT, city:TEXT, status:TEXT, email:TEXT, message:TEXT, source:TEXT, full_name:TEXT, age:TEXT, created_at:TEXT
+meetings
+    id*:TEXT, date:TEXT, time:TEXT, coach:TEXT, coachId:TEXT, coachName:TEXT, title:TEXT, batch:TEXT, duration:INTEGER, link:TEXT, notes:TEXT, type:TEXT, studentIds:TEXT, status:TEXT, liveStartedAt:TEXT, created_at:TEXT
+monthly_reports
+    id*:TEXT, studentId:TEXT, studentName:TEXT, coachId:TEXT, coachName:TEXT, month:INTEGER, year:INTEGER, attendance:INTEGER, puzzles:INTEGER, notes:TEXT, recommendation:TEXT, topics:TEXT, rating:INTEGER, type:TEXT, data:TEXT, createdAt:TEXT, created_at:TEXT
+puzzle_scores
+    id*:TEXT, userId:TEXT, userName:TEXT, puzzleId:TEXT, solved:INTEGER, time:INTEGER, mistakes:INTEGER, xp:INTEGER, date:TEXT, created_at:TEXT
+ratings
+    id*:INTEGER, user_id:TEXT, online:INTEGER, international:INTEGER, date:TEXT
+resources
+    id*:TEXT, name:TEXT, type:TEXT, level:TEXT, notes:TEXT, link:TEXT, coach:TEXT, batch:TEXT, fen:TEXT, solution:TEXT, difficulty:TEXT, category:TEXT, explanation:TEXT, created_at:TEXT
+sessions
+    id*:TEXT, user_id:TEXT, role:TEXT, email:TEXT, created_at:TEXT, expires_at:TEXT
+sqlite_sequence
+    name:, seq:
+tourRatings
+    id*:INTEGER, user_id:TEXT, name:TEXT, result:TEXT, change:TEXT, created_at:TEXT
+users
+    id*:TEXT, userid:TEXT, email:TEXT, full_name:TEXT, role:TEXT, phone_number:TEXT, city:TEXT, level:TEXT, rating:INTEGER, coach:TEXT, batch:TEXT, session:TEXT, schedule:TEXT, fee:TEXT, status:TEXT, due_date:TEXT, join_date:TEXT, age:INTEGER, grade:TEXT, puzzle:INTEGER, game:INTEGER, star:INTEGER, photo:TEXT, certificate:TEXT, last_note:TEXT, childEmail:TEXT, childId:TEXT, child_id:TEXT, timetable:TEXT, revenue:TEXT, classes:INTEGER, streak_count:INTEGER, streak_last_date:TEXT, srs_data:TEXT, auth_id:TEXT, fide_rating:TEXT, session_type:TEXT, payment_status:TEXT, xp:INTEGER, created_at:TEXT, updated_at:TEXT
+
+--- MIGRATIONS TABLE ---
+[
+  {
+    "id": 1,
+    "name": "0001_init.sql",
+    "applied_at": "2026-09-29 05:29:59"
+  },
+  {
+    "id": 2,
+    "name": "seed.sql",
+    "applied_at": "2026-09-29 05:30:00"
+  },
+  {
+    "id": 3,
+    "name": "0002_add_missing_columns.sql",
+    "applied_at": "2026-09-29 05:45:10"
+  }
+]
+

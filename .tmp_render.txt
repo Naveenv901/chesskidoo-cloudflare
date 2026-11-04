@@ -1,0 +1,268 @@
+--- @55565 (undefined) ---
+m" onclick="window.deleteRecordedVideo('${v.id}')">🗑️</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+  };
+  async function renderChildGrowth() {
+    if (!currentStudent) return;
+    const s = currentStudent;
+     // Student's rating history from the global cache
+     const history = (allRatingHistory || []).filter(
+       (h) => String(h.student_id) === String(s.id) && (h.rating || h.elo)
+     );
+     // Shared stat-chip renderer for the Growth tab summary rows.
+    const growthChip = (label, value, sub, color) => `
+      <div style="background:var(--bg3); padding:10px 12px; border-radius:8px; border-left:4px solid ${color};">
+        <div style="font-size:10px; color:var(--ivory-dim); text-transform:uppercase; letter-spacing:0.8px;">${label}</div>
+        <div style="font-size:18px; font-weight:700; color:var(--ivory); margin-top:2px;">${value}</div>
+        <div style="f
+
+--- @85259 (undefined) ---
+ function renderChildResources() {
+    const grid = document.getElementById("resource-grid");
+    if (!grid || !currentStudent) return;
+    const levelRank = { Beginner: 0, Intermediate: 1, Advanced: 2, Elite: 3 };
+    const sRank = levelRank[getStudentLevel(currentStudent)] || 0;
+    const myRes = allResources.filter(
+      (r) => (levelRank[r.level_requirement] || 0) <= sRank,
+    );
+    const myBatches = allBatches.filter(b => b.student_ids && (typeof b.student_ids === 'string' ? JSON.parse(b.student_ids) : b.student_ids).map(String).includes(String(currentStudent.id)) && b.chessable_url);
+    const classroomsHtml = myBatches.map(b => `<div class="resource-card" style="border: 1px solid var(--gold); background: rgba(218, 163, 62, 0.05);"><div class="res-type" style="color:var(--gold);">♟️ BATCH CLASSROOM</div><div class="res-title">${escapeHtml(b.name)}</div><div class="res-desc">Your
+
+--- @282604 (undefined) ---
+mework = dataCache.homework || [];
+        // Sync to window for modules
+        window.allStudents = allStudents;
+        window.allCoaches = allCoaches;
+        window.allMessages = allMessages;
+        window.allAttendance = allAttendance;
+        window.allPayments = allPayments;
+        window.allRatingHistory = allRatingHistory;
+        window.allBatches = allBatches;
+        window.allHomework = allHomework;
+        window.allResources = allResources;
+syncCoachDropdowns();
+        if (role === "admin" || role === "master") {
+          renderDash();
+          updateMsgBadge();
+          renderEvents();
+          renderFame();
+          renderBills();
+          renderMsgs();
+          renderCoachMgmt();
+           if (window.renderAdminCoachAttendanceRemarks) window.renderAdminCoachAttendanceRemarks();
+          const activeCachedPage = document.querySelector(".page.active")?.id;
+  
+
+--- @282623 (undefined) ---
+homework || [];
+        // Sync to window for modules
+        window.allStudents = allStudents;
+        window.allCoaches = allCoaches;
+        window.allMessages = allMessages;
+        window.allAttendance = allAttendance;
+        window.allPayments = allPayments;
+        window.allRatingHistory = allRatingHistory;
+        window.allBatches = allBatches;
+        window.allHomework = allHomework;
+        window.allResources = allResources;
+syncCoachDropdowns();
+        if (role === "admin" || role === "master") {
+          renderDash();
+          updateMsgBadge();
+          renderEvents();
+          renderFame();
+          renderBills();
+          renderMsgs();
+          renderCoachMgmt();
+           if (window.renderAdminCoachAttendanceRemarks) window.renderAdminCoachAttendanceRemarks();
+          const activeCachedPage = document.querySelector(".page.active")?.id;
+          if (activeC
+
+--- @282738 (undefined) ---
+oaches = allCoaches;
+        window.allMessages = allMessages;
+        window.allAttendance = allAttendance;
+        window.allPayments = allPayments;
+        window.allRatingHistory = allRatingHistory;
+        window.allBatches = allBatches;
+        window.allHomework = allHomework;
+        window.allResources = allResources;
+syncCoachDropdowns();
+        if (role === "admin" || role === "master") {
+          renderDash();
+          updateMsgBadge();
+          renderEvents();
+          renderFame();
+          renderBills();
+          renderMsgs();
+          renderCoachMgmt();
+           if (window.renderAdminCoachAttendanceRemarks) window.renderAdminCoachAttendanceRemarks();
+          const activeCachedPage = document.querySelector(".page.active")?.id;
+          if (activeCachedPage === "page-homework" && window.loadHomeworkData) {
+            window.loadHomeworkData().then(() => {
+    
+
+--- @282753 (undefined) ---
+ches;
+        window.allMessages = allMessages;
+        window.allAttendance = allAttendance;
+        window.allPayments = allPayments;
+        window.allRatingHistory = allRatingHistory;
+        window.allBatches = allBatches;
+        window.allHomework = allHomework;
+        window.allResources = allResources;
+syncCoachDropdowns();
+        if (role === "admin" || role === "master") {
+          renderDash();
+          updateMsgBadge();
+          renderEvents();
+          renderFame();
+          renderBills();
+          renderMsgs();
+          renderCoachMgmt();
+           if (window.renderAdminCoachAttendanceRemarks) window.renderAdminCoachAttendanceRemarks();
+          const activeCachedPage = document.querySelector(".page.active")?.id;
+          if (activeCachedPage === "page-homework" && window.loadHomeworkData) {
+            window.loadHomeworkData().then(() => {
+              if (w
+
+--- @296751 (undefined) ---
+ion_id || p.id || "").toString().trim();
+          if (!key || seenPayKeys.has(key)) return false;
+          seenPayKeys.add(key);
+          return true;
+        });
+        allPayments = dedupedPayments.map((p) => ({
+          ...p,
+          amount: parseFloat(p.amount) || 0,
+        }));
+        allRatingHistory = extractData(allRatingHistory);
+        const pMap = {};
+        const seenMonths = new Set();
+        allPayments.forEach((p) => {
+          if (p.status === "paid") {
+            const sid = String(p.student_id || "")
+              .trim()
+              .toLowerCase();
+            if (!sid) return;
+            const pDate = new Date(p.payment_date || p.created_at);
+            const mKey = `${sid}_${pDate.getUTCFullYear()}-${pDate.getUTCMonth()}`;
+            if (seenMonths.has(mKey)) return;
+            seenMonths.add(mKey);
+            pMap[sid] = (pMap[sid] || 0) + 1;
+  
+
+--- @296782 (undefined) ---
+).trim();
+          if (!key || seenPayKeys.has(key)) return false;
+          seenPayKeys.add(key);
+          return true;
+        });
+        allPayments = dedupedPayments.map((p) => ({
+          ...p,
+          amount: parseFloat(p.amount) || 0,
+        }));
+        allRatingHistory = extractData(allRatingHistory);
+        const pMap = {};
+        const seenMonths = new Set();
+        allPayments.forEach((p) => {
+          if (p.status === "paid") {
+            const sid = String(p.student_id || "")
+              .trim()
+              .toLowerCase();
+            if (!sid) return;
+            const pDate = new Date(p.payment_date || p.created_at);
+            const mKey = `${sid}_${pDate.getUTCFullYear()}-${pDate.getUTCMonth()}`;
+            if (seenMonths.has(mKey)) return;
+            seenMonths.add(mKey);
+            pMap[sid] = (pMap[sid] || 0) + 1;
+          }
+        });
+        w
+
+--- @298805 (undefined) ---
+");
+        }
+        dataCache = {
+          coaches: allCoaches,
+          students: allStudents,
+          achievements: achievementsData,
+          events: eventsData,
+          messages: allMessages,
+          attendance: allAttendance,
+          payments: allPayments,
+          ratingHistory: allRatingHistory,
+          resources: allResources,
+          batches: allBatches,
+          homework: allHomework,
+          timestamp: now,
+        };
+try {
+          localStorage.setItem(
+            "chesskidoo_data_cache",
+            JSON.stringify(dataCache),
+          );
+        } catch (e) {}
+        // Ensure student portal renders after fresh data load
+        if (role === "parent" || role === "student") {
+          if (window.currentStudent) renderChild();
+        }
+         syncCoachDropdowns();
+          if (role === "admin" || role === "master") {
+            if (window.autoDet
+
+--- @298844 (undefined) ---
+       coaches: allCoaches,
+          students: allStudents,
+          achievements: achievementsData,
+          events: eventsData,
+          messages: allMessages,
+          attendance: allAttendance,
+          payments: allPayments,
+          ratingHistory: allRatingHistory,
+          resources: allResources,
+          batches: allBatches,
+          homework: allHomework,
+          timestamp: now,
+        };
+try {
+          localStorage.setItem(
+            "chesskidoo_data_cache",
+            JSON.stringify(dataCache),
+          );
+        } catch (e) {}
+        // Ensure student portal renders after fresh data load
+        if (role === "parent" || role === "student") {
+          if (window.currentStudent) renderChild();
+        }
+         syncCoachDropdowns();
+          if (role === "admin" || role === "master") {
+            if (window.autoDetectBillingMonth) window.autoDetectBilli
+
+--- @732498 (undefined) ---
+nown",
+          Achievement: a.title || "N/A",
+          Category: a.category || "Tournament",
+        };
+      });
+      const wsAch = XLSX.utils.json_to_sheet(achData);
+      XLSX.utils.book_append_sheet(wb, wsAch, "Achievements Archive");
+      // 7. Rating History Sheet
+      const rateData = (allRatingHistory || []).map((r) => {
+        const student = allStudents.find(
+          (s) => String(s.id) === String(r.student_id),
+        );
+        return {
+          Date: r.recorded_at || "N/A",
+          "Student Name": student ? getStudentName(student) : "Unknown",
+          "Old ELO": r.old_rating || 0,
+          "New ELO": r.new_rating || 0,
+          Gain: (r.new_rating || 0) - (r.old_rating || 0),
+        };
+      });
+      const wsRate = XLSX.utils.json_to_sheet(rateData);
+      XLSX.utils.book_append_sheet(wb, wsRate, "Rating Performance");
+      // Export file
+      XLSX.write

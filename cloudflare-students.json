@@ -1,0 +1,600 @@
+[
+  {
+    "results": [
+      {
+        "id": "08af0678-20ab-4199-ba80-9fc933c779bf",
+        "full_name": "SAHANA CHESSKIDOO - OFFLINE",
+        "coach": "c_jaganathan",
+        "batch": "2b47beb1-d68c-4571-b2fe-52b125131985",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "1010d0d5-5e17-4b08-90c6-82e6004d683a",
+        "full_name": "BALAPRANAV S",
+        "coach": "c_jaganathan",
+        "batch": "2b47beb1-d68c-4571-b2fe-52b125131985",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "112e5192-2f94-42ed-8893-e2b58af1f2f5",
+        "full_name": "Mocsha PK",
+        "coach": "c_yogesh",
+        "batch": "8076aeeb-8559-40bc-a6c1-e5f883b8ced6",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "15e09d45-a23d-4284-9e85-7dadb3849753",
+        "full_name": "Anved",
+        "coach": "c_shripathy",
+        "batch": "e03079eb-27e4-4cc7-8d58-ce5622b14ecb",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "1702b3e1-c776-44b2-a212-5a40e64fe5aa",
+        "full_name": "Uthiraapiramu",
+        "coach": "c_yogesh",
+        "batch": "a0834c97-bdf2-461b-8004-41c927bcc003",
+        "session": "7-8pm",
+        "session_type": "Evening",
+        "grade": "Intermediate"
+      },
+      {
+        "id": "20422495-6bf8-455a-95ef-d2092e721c51",
+        "full_name": "ISAI YAZHLINI",
+        "coach": "c_yogesh",
+        "batch": "8076aeeb-8559-40bc-a6c1-e5f883b8ced6",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "23dbf2a0-fe1f-4a39-bbc8-cde3e0e41ff4",
+        "full_name": "Mithra - venkatesh daughter",
+        "coach": "c_sudhin",
+        "batch": "db36a9b4-daa2-4e23-b7eb-2f1f8ed6aa5a",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "2bb1988d-9f19-402e-bff9-8f1c1bc9be70",
+        "full_name": "Harsha - venkatesh son",
+        "coach": "c_kirubhakaran",
+        "batch": "7b98e079-f7e0-43de-b924-1fb3b300253e",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "33e81446-7435-4fde-806b-96619fe6c6e9",
+        "full_name": "Prajesh  and rohit--offline academy",
+        "coach": "c_jaganathan",
+        "batch": "2b47beb1-d68c-4571-b2fe-52b125131985",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "397201dc-1cad-423c-98ee-4e0f83de3293",
+        "full_name": "ASAL SHAITH BHAVANI",
+        "coach": null,
+        "batch": "2b47beb1-d68c-4571-b2fe-52b125131985",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "3aafdc25-0f6c-40f7-bf33-e60e3e64a60f",
+        "full_name": "Krishnaveni - LAXMINAGAR OFFLINE",
+        "coach": "c_jaganathan",
+        "batch": "2b47beb1-d68c-4571-b2fe-52b125131985",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "3fa9c52f-e54c-453e-856b-0483c343d589",
+        "full_name": "ANUKSHA",
+        "coach": "c_gyanasurya",
+        "batch": "8efdf5d0-72f3-486d-b786-b08f69e3f4e5",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Intermediate"
+      },
+      {
+        "id": "4764d017-1efd-4fe0-aa7e-231eecefad51",
+        "full_name": "KRITHICK",
+        "coach": "c_jaganathan",
+        "batch": "2b47beb1-d68c-4571-b2fe-52b125131985",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "4c9720e1-ae66-4d6b-87cc-b8886b55884f",
+        "full_name": "YOGESH",
+        "coach": "c_arivuselevam",
+        "batch": "aff7a4a7-85e3-4b30-ae20-a27e6a28553f",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "5d3cc88d-d707-434f-951d-e27aa1a87ae7",
+        "full_name": "RAMYA",
+        "coach": "c_sudhin",
+        "batch": "f45cc289-92eb-455d-99da-c9c3580b267d",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "71dcad88-0929-4032-967e-d0bf19615e51",
+        "full_name": "SUDISKSHAA",
+        "coach": "c_sujith",
+        "batch": "b8a62af5-b96a-4fee-a377-f636972a80ea",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "74099ef6-6943-4101-a2c3-b93c8120f030",
+        "full_name": "Anved Vikrant Mahalle",
+        "coach": "c_kirubhakaran",
+        "batch": "febfde97-8249-4c5a-8c44-4d69d8337ece",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "7e1f0676-f274-4964-88e8-e8af7d71ca2c",
+        "full_name": "KAVISH",
+        "coach": "c_sudhin",
+        "batch": "db36a9b4-daa2-4e23-b7eb-2f1f8ed6aa5a",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "82ceda77-955f-4af7-8801-f8fd5bfe4d80",
+        "full_name": "DINESH(Sai brother)",
+        "coach": "c_yogesh",
+        "batch": "d3cf0a38-ea65-4bc2-a29d-3993bb48c8be",
+        "session": "17:00",
+        "session_type": "Group",
+        "grade": "Beginner"
+      },
+      {
+        "id": "83256c80-5470-4aa4-ab89-6f0cdb1f23f1",
+        "full_name": "AFSAN",
+        "coach": "c_ranjith",
+        "batch": "ed4e892c-0e86-444d-b0dc-dfba9d3b01e7",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Advanced"
+      },
+      {
+        "id": "89d28640-0817-4d24-9eb6-b72013fff23c",
+        "full_name": "ANUSH",
+        "coach": "c_arivuselevam",
+        "batch": "ee4d1964-bd46-441d-9173-befbd06fdca0",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Advanced"
+      },
+      {
+        "id": "8a5199b2-aa98-4472-a818-13a96ee2db22",
+        "full_name": "SAANVI",
+        "coach": "c_yogesh",
+        "batch": "5bc95705-a53f-4fa5-91ac-f50b07f44881",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "9052d92b-12f7-4500-a9b5-9dd3d1c1af6a",
+        "full_name": "PUKHALINI",
+        "coach": "c_vishnu",
+        "batch": "bbe1a981-4d47-46f5-aea4-526d53e1e808",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Intermediate"
+      },
+      {
+        "id": "92486897-45ff-4fe0-a214-f0439789eb76",
+        "full_name": "TANVI",
+        "coach": "c_yogesh",
+        "batch": "8076aeeb-8559-40bc-a6c1-e5f883b8ced6",
+        "session": "8-9pm",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "962eca8b-188e-450f-9034-dc3db8771c06",
+        "full_name": "MAGILA",
+        "coach": "c_sudhin",
+        "batch": "f052499d-578c-43d8-9cf7-8ea59bf6a14f",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "963fc363-5a2a-443c-938a-ed854f211d80",
+        "full_name": "pavithra germany parent",
+        "coach": "c_shripathy",
+        "batch": "45b17d90-86aa-4079-9f91-b5c7467b2b0f",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "98d88790-d2b6-4dd5-b538-1eb9dbd560f8",
+        "full_name": "ILAM BHARATHI",
+        "coach": "c_vishnu",
+        "batch": "bbe1a981-4d47-46f5-aea4-526d53e1e808",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "9e429356-3163-40b0-b913-933c30b7c786",
+        "full_name": "VG VARSHHAA",
+        "coach": "c_jaganathan",
+        "batch": "2b47beb1-d68c-4571-b2fe-52b125131985",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "9febacc2-5864-4334-860d-5e34ea055153",
+        "full_name": "Hasan",
+        "coach": "c_sudhin",
+        "batch": "db36a9b4-daa2-4e23-b7eb-2f1f8ed6aa5a",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "a3050100-996b-4de3-b637-b2809aa727d3",
+        "full_name": "HEMALATHA ANNAND",
+        "coach": "c_ranjith",
+        "batch": "ed4e892c-0e86-444d-b0dc-dfba9d3b01e7",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "c5046119-11e3-486a-88f5-26027ecfc773",
+        "full_name": "mithula",
+        "coach": "c_jaganathan",
+        "batch": "2b47beb1-d68c-4571-b2fe-52b125131985",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "c6523328-d34d-45bb-a8ab-a7281eee4ebe",
+        "full_name": "MOHITH",
+        "coach": "c_arivuselevam",
+        "batch": "ee4d1964-bd46-441d-9173-befbd06fdca0",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "c8035b43-c10b-408f-8216-2a4c9f2e4b94",
+        "full_name": "Saranya--offline academy",
+        "coach": "c_gyanasurya",
+        "batch": "ea7c9143-1b9c-4e88-9dca-6d5c1378085f",
+        "session": "Weekend",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "c9db01d3-af40-4066-92c7-b591615f9704",
+        "full_name": "YUGAN",
+        "coach": "c_arivuselevam",
+        "batch": "28a46516-f8e5-4c43-97c5-64e2c344db48",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "cc643886-6c27-4b70-a5ce-34533c7541fd",
+        "full_name": "SUGA MUGIL",
+        "coach": "c_yogesh",
+        "batch": "8076aeeb-8559-40bc-a6c1-e5f883b8ced6",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "d26c42dd-6ac7-45fa-9aad-1573edd0719e",
+        "full_name": "ABINITHA",
+        "coach": "c_yogesh",
+        "batch": "8076aeeb-8559-40bc-a6c1-e5f883b8ced6",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "d881ddd8-4572-4f3a-bcda-0d3f6cec37f3",
+        "full_name": "SAMIKSHA",
+        "coach": "c_rohit",
+        "batch": "257ac1ea-ec20-4946-8c51-6f3fa7509d84",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "deb2d01b-cffd-4ad1-b9b3-01f93b27b77a",
+        "full_name": "AKMAL KASIM",
+        "coach": "c_vishnu",
+        "batch": "bbe1a981-4d47-46f5-aea4-526d53e1e808",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "dfa2f7b2-3bbe-4823-b9ae-cc5af41ad886",
+        "full_name": "YADHUIVER",
+        "coach": "c_arivuselevam",
+        "batch": "28a46516-f8e5-4c43-97c5-64e2c344db48",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "e28132cc-bc48-4e6a-a893-4ce599f91112",
+        "full_name": "Mansa --offline academy",
+        "coach": "c_gyanasurya",
+        "batch": "76a8da37-beea-4768-b945-6e78d4603aa9",
+        "session": "17:00",
+        "session_type": "Evening",
+        "grade": "Beginner"
+      },
+      {
+        "id": "ec3e2fe1-fe11-442a-b381-9a0413c5cccc",
+        "full_name": "Dhakshinamoorthi",
+        "coach": "c_yogesh",
+        "batch": "5bc95705-a53f-4fa5-91ac-f50b07f44881",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "edf708a5-1ce5-4475-ac2a-ecae6bc1a010",
+        "full_name": "YASWANTH MURUGAN",
+        "coach": "c_jaganathan",
+        "batch": "2b47beb1-d68c-4571-b2fe-52b125131985",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "f3b31575-5407-427e-9585-90e887ac2db3",
+        "full_name": "SUJI",
+        "coach": "c_shripathy",
+        "batch": "e03079eb-27e4-4cc7-8d58-ce5622b14ecb",
+        "session": "17:00",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1776570387463ipwyaw",
+        "full_name": "AADHAVAN - SINGAPORE",
+        "coach": "c_shripathy",
+        "batch": "e03079eb-27e4-4cc7-8d58-ce5622b14ecb",
+        "session": "Weekday",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1776570395859f9yles",
+        "full_name": "JEEVAN",
+        "coach": "c_yogesh",
+        "batch": "8076aeeb-8559-40bc-a6c1-e5f883b8ced6",
+        "session": "Weekday",
+        "session_type": "Group",
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1776570396454jz42w7",
+        "full_name": "JAYARAJ",
+        "coach": "c_vishnu",
+        "batch": "bbe1a981-4d47-46f5-aea4-526d53e1e808",
+        "session": "Fri & Sat",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "s17765704027841ops02",
+        "full_name": "MOHAMMED RAYAN",
+        "coach": "c_yogesh",
+        "batch": "8076aeeb-8559-40bc-a6c1-e5f883b8ced6",
+        "session": "Weekend",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1776570409510nzt3aq",
+        "full_name": "RIYAS",
+        "coach": "c_ranjith",
+        "batch": "9d5c9199-c61d-4c2e-911c-cdd48c7b9bbb",
+        "session": "Weekend",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "s177657041140598u6a3",
+        "full_name": "SAKTHI - SATHYA -SANKARLINGAM",
+        "coach": "c_ranjith",
+        "batch": "ca684303-acb1-42ff-aece-871416c84a1f",
+        "session": "Weekend",
+        "session_type": null,
+        "grade": "Elite"
+      },
+      {
+        "id": "s1776570417093zc1qsu",
+        "full_name": "VARUN",
+        "coach": "c_ranjith",
+        "batch": "ed4e892c-0e86-444d-b0dc-dfba9d3b01e7",
+        "session": "Weekend",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1777039680914bzr0xg",
+        "full_name": "ANFAL",
+        "coach": "c_vishnu",
+        "batch": "bbe1a981-4d47-46f5-aea4-526d53e1e808",
+        "session": "Fri & Sat",
+        "session_type": null,
+        "grade": "Intermediate"
+      },
+      {
+        "id": "s17770396910665ovgle",
+        "full_name": "MUKILAN",
+        "coach": "c_arivuselevam",
+        "batch": "aff7a4a7-85e3-4b30-ae20-a27e6a28553f",
+        "session": "Fri & Sat",
+        "session_type": "Group",
+        "grade": "Advanced"
+      },
+      {
+        "id": "s17770396971908w1p7q",
+        "full_name": "VELAVA",
+        "coach": "c_vishnu",
+        "batch": "bbe1a981-4d47-46f5-aea4-526d53e1e808",
+        "session": "Fri & Sat",
+        "session_type": null,
+        "grade": "Intermediate"
+      },
+      {
+        "id": "s1777039708270xrop2u",
+        "full_name": "KRISHNA",
+        "coach": "c_vishnu",
+        "batch": "bbe1a981-4d47-46f5-aea4-526d53e1e808",
+        "session": "Morning & Evening",
+        "session_type": "GROUP",
+        "grade": "Intermediate"
+      },
+      {
+        "id": "s1777039718139wxdhwz",
+        "full_name": "SREELAXMI",
+        "coach": "c_rohit",
+        "batch": "c0e8ad29-7a75-48cf-a496-f5241037187f",
+        "session": "Morning & Evening",
+        "session_type": "Group",
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1777039719737empux8",
+        "full_name": "NIGUNAN",
+        "coach": "c_gyanasurya",
+        "batch": "8efdf5d0-72f3-486d-b786-b08f69e3f4e5",
+        "session": "Weekday",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1777039731155saw8pk",
+        "full_name": "RAKSHITHA",
+        "coach": "c_gyanasurya",
+        "batch": "8efdf5d0-72f3-486d-b786-b08f69e3f4e5",
+        "session": "Weekend",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "s177703974775757hjzk",
+        "full_name": "AARA V",
+        "coach": "c_gyanasurya",
+        "batch": "76a8da37-beea-4768-b945-6e78d4603aa9",
+        "session": "Weekend",
+        "session_type": "Group",
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1777039840844a11oo5",
+        "full_name": "ATHIVIK",
+        "coach": "c_yogesh",
+        "batch": "d3cf0a38-ea65-4bc2-a29d-3993bb48c8be",
+        "session": "Weekend",
+        "session_type": "GROUP",
+        "grade": "Beginner"
+      },
+      {
+        "id": "s17770398426543o38oy",
+        "full_name": "Ekansh",
+        "coach": "c_gyanasurya",
+        "batch": "8efdf5d0-72f3-486d-b786-b08f69e3f4e5",
+        "session": "Weekday",
+        "session_type": null,
+        "grade": "Intermediate"
+      },
+      {
+        "id": "s1777039844599f2rmrq",
+        "full_name": "ATISH VIDUN",
+        "coach": "c_arivuselevam",
+        "batch": "28a46516-f8e5-4c43-97c5-64e2c344db48",
+        "session": "Weekend",
+        "session_type": "SINGLE",
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1777040027196izu2po",
+        "full_name": "SUSIN",
+        "coach": "c_ranjith",
+        "batch": "ed4e892c-0e86-444d-b0dc-dfba9d3b01e7",
+        "session": "Weekend",
+        "session_type": "GROUP",
+        "grade": "Advanced"
+      },
+      {
+        "id": "s1777284264580v7a39t",
+        "full_name": "PRANISH P",
+        "coach": "c_kirubhakaran",
+        "batch": "febfde97-8249-4c5a-8c44-4d69d8337ece",
+        "session": "Weekend",
+        "session_type": null,
+        "grade": "Beginner"
+      },
+      {
+        "id": "s1777841856126wgbqme",
+        "full_name": "MOHAMMED AAKIF",
+        "coach": "c_kirubhakaran",
+        "batch": "2745a4d1-fb4d-4e46-ad45-2fb015fee748",
+        "session": "Weekend",
+        "session_type": "Weekend",
+        "grade": "Beginner"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "APAC",
+      "served_by_colo": "SIN",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 0.703
+      },
+      "duration": 0.703,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 385024,
+      "rows_read": 64,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]
