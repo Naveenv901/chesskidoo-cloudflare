@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "npx vite",
     "copy-assets": "node copy-assets.js",
     "build": "vite build && npm run copy-assets",
     "preview": "vite preview",

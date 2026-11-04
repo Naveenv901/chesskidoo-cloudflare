@@ -1,7 +1,3 @@
-// functions/api/blogs.js
-// Blog CRUD – mirrors generic query/mutate handling
-
-// Helper to ensure the blogs table exists (id, title, content, author, created_at, updated_at)
 async function ensureTable(env) {
   await env.DB.prepare(`
     CREATE TABLE IF NOT EXISTS blogs (
@@ -15,7 +11,7 @@ async function ensureTable(env) {
   `).run();
 }
 
-export async function handleBlogQuery(request, env) {
+async function handleBlogQuery(request, env) {
   // Ensure table exists first
   await ensureTable(env);
 
@@ -35,7 +31,7 @@ export async function handleBlogQuery(request, env) {
   }
 }
 
-export async function handleBlogMutate(request, env) {
+async function handleBlogMutate(request, env) {
   await ensureTable(env);
   const body = await request.json();
   const { op, data } = body;
@@ -86,3 +82,5 @@ export async function handleBlogMutate(request, env) {
     return json(500, { error: e.message });
   }
 }
+
+module.exports = { handleBlogQuery, handleBlogMutate };
