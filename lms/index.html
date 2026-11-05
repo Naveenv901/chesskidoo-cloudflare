@@ -163,6 +163,7 @@
     <div class="nav-item admin-only" id="nav-schedules" onclick="setPage('schedules')"><span class="ico">📅</span> Schedule Manager</div>
     <div class="nav-item admin-only" id="nav-events" onclick="setPage('events')"><span class="ico">🏆</span> Event Manager</div>
     <div class="nav-item admin-only" id="nav-fame" onclick="setPage('fame')"><span class="ico">🏅</span> Achievements</div>
+    <div class="nav-item admin-only" id="nav-blog" onclick="setPage('blog')"><span class="ico">📰</span> Blog</div>
     <div class="nav-item admin-only" id="nav-attendance" onclick="setPage('attendance')"><span class="ico">📋</span> Attendance Manager</div>
     <div class="nav-item admin-only" id="nav-homework" onclick="setPage('homework')"><span class="ico">📚</span> Homework Manager</div>
 
@@ -1210,6 +1211,30 @@
       <div id="admin-events-content">
         <div id="ev-loading" class="loading-state"><span class="spinner"></span> Loading Tournament &amp; Event Hub...</div>
         <div id="ev-grid" class="ev-grid" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Blog Manager Page (Admin) -->
+    <div id="page-blog" class="page admin-only">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; flex-wrap:wrap; gap:16px;">
+        <div>
+          <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(218,163,62,0.12); border:1px solid rgba(218,163,62,0.3); border-radius:99px; padding:4px 14px; font-size:11px; font-weight:700; color:var(--gold); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:8px;">
+            <span>📰 Content Management</span>
+          </div>
+          <h2 style="color:var(--gold); margin:0 0 6px; font-size:24px; font-weight:700;">Blog Manager</h2>
+          <p style="color:var(--ivory-dim); font-size:14px; margin:0;">Create, edit, and publish articles, tournament guides, and academy updates.</p>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-gold" onclick="openBlogModal()" style="display:inline-flex; align-items:center; gap:8px;">
+            <span>➕</span> New Post
+          </button>
+        </div>
+      </div>
+
+      <div id="blog-admin-loading" class="loading-state" style="display:none;"><span class="spinner"></span> Loading Articles…</div>
+
+      <div id="blog-admin-grid" class="ach-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(320px, 1fr)); gap:24px;">
+        <!-- Rendered via renderAdminBlog() in blog-admin.js -->
       </div>
     </div>
 
@@ -5034,7 +5059,7 @@
       <script src="/lms/js/tournaments.js?v=1.3&t=20260611a" charset="utf-8"></script>
       <script src="/lms/js/access.js?v=1.9&t=20260730b"></script>
       <script src="/lms/js/tom-brain.js?v=1.0&t=20260601" charset="utf-8"></script>
-      <script src="/lms/scripts.js?v=20261028d" charset="utf-8"></script>
+      <script src="/lms/scripts.js?v=20261105" charset="utf-8"></script>
       <script src="/lms/js/chess-api.js?v=2.2&t=20261001a"></script>
       <script src="/lms/js/homework.js?v=2.0&t=20261001a" charset="utf-8"></script>
       <script src="/lms/js/ai-assistant.js?v=v4&t=20261001a" charset="utf-8"></script>
@@ -5726,6 +5751,49 @@
       }
     })();
   </script>
+
+<!-- Blog Post Modal -->
+<div class="modal" id="blog-modal">
+  <div class="modal-box" style="max-width:650px; width:95%;">
+    <div class="modal-title" id="blog-modal-title">New Blog Post</div>
+    <input type="hidden" id="blog-id">
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:12px; color:var(--ivory-dim); margin-bottom:4px; font-weight:600;">Title</label>
+      <input type="text" id="blog-title" placeholder="e.g. 5 Benefits of Chess for Children" style="width:100%;">
+    </div>
+    <div class="grid-2-col" style="gap:12px; margin-bottom:12px;">
+      <div>
+        <label style="display:block; font-size:12px; color:var(--ivory-dim); margin-bottom:4px; font-weight:600;">Author</label>
+        <input type="text" id="blog-author" placeholder="Author name (e.g. Ranjith Kumar)">
+      </div>
+      <div>
+        <label style="display:block; font-size:12px; color:var(--ivory-dim); margin-bottom:4px; font-weight:600;">Date</label>
+        <input type="date" id="blog-date">
+      </div>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:12px; color:var(--ivory-dim); margin-bottom:4px; font-weight:600;">Summary / Excerpt</label>
+      <textarea id="blog-excerpt" placeholder="Short description for preview card..." rows="2" style="width:100%;"></textarea>
+    </div>
+    <div style="margin-bottom:12px;">
+      <label style="display:block; font-size:12px; color:var(--ivory-dim); margin-bottom:4px; font-weight:600;">Full Content</label>
+      <textarea id="blog-content" placeholder="Full article content..." rows="5" style="width:100%;"></textarea>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="display:block; font-size:12px; color:var(--ivory-dim); margin-bottom:4px; font-weight:600;">Cover Image</label>
+      <label class="upload-zone" for="blog-img-file" style="margin-bottom:8px;">🖼️ Upload Cover Image<input type="file" id="blog-img-file" accept="image/*" onchange="previewFile(this,'blog-img-preview')"></label>
+      <img id="blog-img-preview" class="upload-preview" style="max-height:120px; display:none; margin:10px 0; border-radius:8px; border:1px solid var(--border);">
+      <input type="url" id="blog-img-url" placeholder="OR paste image URL (e.g. /assets/img/blog/chess-benefits.jpg)" style="width:100%;">
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-gold" style="flex:1" onclick="saveBlogPost()">Publish Article</button>
+    </div>
+  </div>
+</div>
+
+<script src="/assets/js/blog.js?v=20261105"></script>
+<script src="/lms/js/blog-admin.js?v=20261105"></script>
 </body>
 </html>
 

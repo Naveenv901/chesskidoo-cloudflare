@@ -23,7 +23,7 @@ const ALLOWED_TABLES = [
   'classes', 'monthly_reports', 'puzzle_scores', 'coach_attendance',
   'assignments', 'hw_submissions', 'feedback', 'broadcasts', 'sessions',
   'students', 'payments', 'coaches', 'batches', 'messages', 'achievements',
-  'events', 'audit_log', 'rating_history', 'homework_assignments', 'homework_submissions'
+  'events', 'audit_log', 'rating_history', 'homework_assignments', 'homework_submissions', 'blogs'
 ];
 
 async function handleLogin(request, env) {
@@ -927,6 +927,103 @@ async function handleAchievements(request, env) {
   return methodNotAllowed();
 }
 
+function withBlogImage(row) {
+  if (!row) return row;
+  const image = row.image || row.img_url || '';
+  return { ...row, image, img_url: row.img_url || image };
+}
+
+async function ensureBlogsTable(env) {
+  try {
+    await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS blogs (
+        id TEXT PRIMARY KEY,
+        title TEXT,
+        excerpt TEXT,
+        content TEXT,
+        author TEXT,
+        image TEXT,
+        created_at TEXT,
+        updated_at TEXT
+      )
+    `).run();
+    // Add columns that may be missing in an existing table
+    try {
+      await env.DB.prepare('ALTER TABLE blogs ADD COLUMN image TEXT').run();
+    } catch (_) {}
+    try {
+      await env.DB.prepare('ALTER TABLE blogs ADD COLUMN excerpt TEXT').run();
+    } catch (_) {}
+  } catch (e) {
+    console.warn('[DB] ensureBlogsTable error:', e.message);
+  }
+}
+
+async function handleBlogs(request, env) {
+  if (request.method === 'OPTIONS') {
+    return new Response(null, { status: 200, headers: cors() });
+  }
+
+  await ensureBlogsTable(env);
+
+  if (request.method === 'GET') {
+    try {
+      const { results } = await env.DB.prepare('SELECT * FROM blogs ORDER BY created_at DESC').all();
+      return json(200, { data: (results || []).map(withBlogImage) });
+    } catch (e) {
+      return json(200, { data: [] });
+    }
+  }
+
+  if (request.method === 'POST') {
+    try {
+      const body = await request.json();
+      const id = body.id || `blog-${Date.now()}`;
+      const now = body.created_at || new Date().toISOString();
+      await env.DB.prepare(`INSERT OR REPLACE INTO blogs (id, title, excerpt, content, author, image, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+        .bind(id, body.title || '', body.excerpt || '', body.content || '', body.author || 'Admin', body.image || body.img_url || '', now, now).run();
+      const row = await env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(id).first();
+      return json(201, { data: withBlogImage(row) });
+    } catch (e) {
+      return json(500, { error: e.message });
+    }
+  }
+
+  if (request.method === 'PUT') {
+    try {
+      const url = new URL(request.url);
+      const id = url.searchParams.get('id');
+      if (!id) return json(400, { error: 'Missing blog id' });
+      const body = await request.json();
+      const now = new Date().toISOString();
+      await env.DB.prepare(`UPDATE blogs SET title = ?, excerpt = COALESCE(?, excerpt), content = ?, author = ?, image = COALESCE(?, image), created_at = COALESCE(?, created_at), updated_at = ? WHERE id = ?`)
+        .bind(body.title || '', body.excerpt ?? null, body.content || '', body.author || 'Admin', body.image || body.img_url || null, body.created_at || null, now, id).run();
+      const row = await env.DB.prepare('SELECT * FROM blogs WHERE id = ?').bind(id).first();
+      return json(200, { data: withBlogImage(row) });
+    } catch (e) {
+      return json(500, { error: e.message });
+    }
+  }
+
+  if (request.method === 'DELETE') {
+    try {
+      const url = new URL(request.url);
+      let id = url.searchParams.get('id');
+      if (!id) {
+        const body = await request.json().catch(() => ({}));
+        id = body.id;
+      }
+      if (!id) return json(400, { error: 'Missing blog id' });
+      await env.DB.prepare('DELETE FROM blogs WHERE id = ?').bind(id).run();
+      return json(200, { success: true });
+    } catch (e) {
+      return json(500, { error: e.message });
+    }
+  }
+
+  return methodNotAllowed();
+}
+
 async function handleEvents(request, env) {
   if (request.method === 'OPTIONS') {
     return new Response(null, { status: 200, headers: cors() });
@@ -1308,6 +1405,10 @@ if (pathname === '/api/attendance' || pathname.startsWith('/api/attendance')) {
 
     if (pathname === '/api/achievements' || pathname.startsWith('/api/achievements')) {
       return handleAchievements(request, env);
+    }
+
+    if (pathname === '/api/blogs' || pathname.startsWith('/api/blogs')) {
+      return handleBlogs(request, env);
     }
 
     if (pathname === '/api/events' || pathname.startsWith('/api/events')) {

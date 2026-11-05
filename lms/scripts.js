@@ -244082,6 +244082,7 @@ try {
 
 
     fame: "Wall of Fame",
+    blog: "Blog & Content Manager",
 
 
 
@@ -245363,6 +245364,7 @@ try {
 
       "studypgn",
       "analyze",
+      "blog",
     ];
 
 
@@ -246387,7 +246389,7 @@ try {
 
 
 
-        pageEl.style.setProperty("display", "block", "important");
+        if (pageEl.length) pageEl[0].style.setProperty("display", "block", "important");
 
 
 
@@ -250420,6 +250422,7 @@ setTimeout(function () {
 
 
       if (p === "fame") renderFame();
+      if (p === "blog" && typeof window.renderAdminBlog === "function") window.renderAdminBlog();
 
 
 
@@ -425365,6 +425368,9 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
 
 
+
+  // Expose the existing uploader so modules (blog admin, homework) can use it.
+  window.uploadToImgbb = uploadToImgbb;
 
   async function uploadToImgbb(file) {
 
