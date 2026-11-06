@@ -425372,6 +425372,27 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
   // Expose the existing uploader so modules (blog admin, homework) can use it.
   window.uploadToImgbb = uploadToImgbb;
 
+/**
+ * Upload an image file to Cloudflare R2 via the project's `/api/images` endpoint.
+ * Returns the public URL which can be stored in the DB.
+ */
+async function uploadToR2(file) {
+  const formData = new FormData();
+  formData.append('file', file);
+  const resp = await fetch('/api/images', {
+    method: 'POST',
+    body: formData,
+  });
+  const json = await resp.json();
+  if (!resp.ok) {
+    console.error('R2 upload failed', json);
+    throw new Error(json.error?.message || 'R2 upload failed');
+  }
+  return json.publicUrl;
+}
+// Alias old name to new implementation so existing calls work.
+uploadToImgbb = uploadToR2;
+
   async function uploadToImgbb(file) {
 
 
