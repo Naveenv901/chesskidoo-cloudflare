@@ -1,4 +1,4 @@
-﻿/**
+/**
 
  * ChessKidoo ACADEMY - Complete Admin Panel Scripts
 
@@ -662,7 +662,8 @@
 
     el.className = `toast toast-${type}`;
 
-    el.innerHTML = `
+    el.innerHTML = `
+
 
       <div class="toast-content">
 
@@ -1480,7 +1481,8 @@
 
         const eventTime = e.event_time || e.time || "TBD";
 
-        return `
+        return `
+
 
          <div class="ev-card">
 
@@ -1520,9 +1522,11 @@
 
                 isRegistered
 
-                  ? `<span class="badge badge-success" style="padding:6px 12px">✅ Registered</span>`
+                  ? `<span class="badge badge-success" style="padding:6px 12px">✅ Registered</span>`
 
-                  : `<button class="btn-register" onclick="registerForEvent('${e.id}')">Register</button>`
+
+                  : `<button class="btn-register" onclick="registerForEvent('${e.id}')">Register</button>`
+
 
               }
 
@@ -1662,7 +1666,8 @@
 
         const rankBadge = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
 
-        html += `
+        html += `
+
 
           <div class="card" style="padding:16px; display:flex; align-items:center; gap:14px; border-left:4px solid ${i === 0 ? 'var(--gold)' : 'var(--border)'};">
 
@@ -1746,7 +1751,8 @@
 
     } else {
 
-      attLogHtml = monthAtt.map(a => `
+      attLogHtml = monthAtt.map(a => `
+
 
         <div style="border-left: 2px solid ${a.status === 'present' ? 'var(--emerald)' : 'var(--danger)'}; padding-left: 10px; margin-bottom: 12px;">
 
@@ -1776,7 +1782,8 @@
 
     else if(feeStatus === "Due" || feeStatus === "Overdue") feeColor = "var(--danger)";
 
-    container.innerHTML = `
+    container.innerHTML = `
+
 
       <!-- Attendance Report Card -->
 
@@ -2208,7 +2215,8 @@
 
     const canEdit = window.currentUser && (window.currentUser.role === 'admin' || window.currentUser.role === 'master' || window.currentUser.role === 'coach');
 
-    container.innerHTML = videos.map(v => `
+    container.innerHTML = videos.map(v => `
+
 
       <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg3); padding:10px 14px; border-radius:8px; border:1px solid var(--border);">
 
@@ -2250,7 +2258,8 @@
 
      // Shared stat-chip renderer for the Growth tab summary rows.
 
-    const growthChip = (label, value, sub, color) => `
+    const growthChip = (label, value, sub, color) => `
+
 
       <div style="background:var(--bg3); padding:10px 12px; border-radius:8px; border-left:4px solid ${color};">
 
@@ -2514,7 +2523,8 @@
 
             <div style="font-size:10px; color:var(--ivory-dim); margin-top:1px;">live online rating</div>
 
-          </div>`
+          </div>`
+
 
         );
 
@@ -2858,7 +2868,8 @@
 
           const trendIcon = c.trend > 0 ? '↑' : c.trend < 0 ? '↓' : '→';
 
-          return `
+          return `
+
 
             <div style="background:var(--bg3); padding:12px; border-radius:8px; text-align:center; border:1px solid var(--border);">
 
@@ -2894,7 +2905,8 @@
 
         const winRate = totalGames > 0 ? Math.round((wins / totalGames) * 100) : 0;
 
-        summaryBar.innerHTML = `
+        summaryBar.innerHTML = `
+
 
           <div style="display:flex; gap:16px; flex-wrap:wrap; align-items:center; justify-content:space-between; width:100%;">
 
@@ -2976,7 +2988,8 @@
 
                   callbacks: {
 
-                    label: (ctx) => `Rating: ${ctx.raw}`
+                    label: (ctx) => `Rating: ${ctx.raw}`
+
 
                   }
 
@@ -3082,7 +3095,8 @@
 
                   callbacks: {
 
-                    label: (ctx) => `Rating: ${ctx.raw}`
+                    label: (ctx) => `Rating: ${ctx.raw}`
+
 
                   }
 
@@ -3188,7 +3202,8 @@
 
                   callbacks: {
 
-                    label: (ctx) => `Rating: ${ctx.raw}`
+                    label: (ctx) => `Rating: ${ctx.raw}`
+
 
                   }
 
@@ -3276,7 +3291,8 @@
 
         ];
 
-        ccStatCards.innerHTML = cards.map(c => `
+        ccStatCards.innerHTML = cards.map(c => `
+
 
           <div style="background:var(--bg3); padding:10px; border-radius:6px; text-align:center;">
 
@@ -3314,7 +3330,8 @@
 
         const totalGames = totalWins + totalLosses + totalDraws;
 
-        ccSummaryBar.innerHTML = `
+        ccSummaryBar.innerHTML = `
+
 
           <span>Total Games: <b>${totalGames}</b></span>
 
@@ -3432,7 +3449,8 @@
 
                 callbacks: {
 
-                  label: (ctx) => `${ctx.raw} rating`
+                  label: (ctx) => `${ctx.raw} rating`
+
 
                 }
 
@@ -4210,7 +4228,8 @@
 
     if (showCurrentRow) {
 
-      rows += `
+      rows += `
+
 
         <tr style="background: rgba(218, 163, 62, 0.02)">
 
@@ -4230,9 +4249,11 @@
 
               status === "Due" || status === "Pending"
 
-                ? `<button class="btn btn-gold btn-sm" onclick="openPay('${s.id}', '${jsAttrEncode(getStudentName(s))}', '${fee}')" style="box-shadow:var(--shadow-amber-sm)">Pay Now</button>`
+                ? `<button class="btn btn-gold btn-sm" onclick="openPay('${s.id}', '${jsAttrEncode(getStudentName(s))}', '${fee}')" style="box-shadow:var(--shadow-amber-sm)">Pay Now</button>`
 
-                : `<button class="btn btn-outline btn-sm" onclick="downloadReceipt('${s.id}', '${jsAttrEncode(getStudentName(s))}', '${fee}', '${jsAttrEncode(getStudentLevel(s))}', '${getStudentRating(s)}', 'N/A', 'Online')">Receipt</button>`
+
+                : `<button class="btn btn-outline btn-sm" onclick="downloadReceipt('${s.id}', '${jsAttrEncode(getStudentName(s))}', '${fee}', '${jsAttrEncode(getStudentLevel(s))}', '${getStudentRating(s)}', 'N/A', 'Online')">Receipt</button>`
+
 
             }
 
@@ -4280,7 +4301,8 @@
 
         const pMethod = p.payment_method || "Online";
 
-        rows += `
+        rows += `
+
 
           <tr>
 
@@ -4300,9 +4322,11 @@
 
                 pStatus === "Paid"
 
-                  ? `<button class="btn btn-outline-grey btn-sm" onclick="downloadReceipt('${s.id}', '${jsAttrEncode(getStudentName(s))}', '${pAmount}', '${jsAttrEncode(getStudentLevel(s))}', '${getStudentRating(s)}', 'N/A', '${pMethod}', '${p.payment_date || p.created_at || ""}')">Receipt</button>`
+                  ? `<button class="btn btn-outline-grey btn-sm" onclick="downloadReceipt('${s.id}', '${jsAttrEncode(getStudentName(s))}', '${pAmount}', '${jsAttrEncode(getStudentLevel(s))}', '${getStudentRating(s)}', 'N/A', '${pMethod}', '${p.payment_date || p.created_at || ""}')">Receipt</button>`
 
-                  : `<span style="color:var(--ivory-dim);font-size:12px">Pending Processing</span>`
+
+                  : `<span style="color:var(--ivory-dim);font-size:12px">Pending Processing</span>`
+
 
               }
 
@@ -4332,7 +4356,8 @@
 
             : `a "${activeFilter}"`;
 
-      rows = `
+      rows = `
+
 
         <tr>
 
@@ -4452,7 +4477,8 @@
 
           .toUpperCase();
 
-        itemizedRows += `
+        itemizedRows += `
+
 
           <tr style="border-bottom: 1px solid #eee;">
 
@@ -4474,7 +4500,8 @@
 
       baseSum = fee;
 
-      itemizedRows = `
+      itemizedRows = `
+
 
         <tr style="border-bottom: 1px solid #eee;">
 
@@ -4492,7 +4519,8 @@
 
     }
 
-    const html = `
+    const html = `
+
 
       <html>
 
@@ -5017,7 +5045,8 @@
 
          const parsed = window.parseAttendanceNotes ? window.parseAttendanceNotes(notes) : { cw: "", hw: "", general: "" };
 
-        return `
+        return `
+
 
         <tr>
 
@@ -5189,7 +5218,8 @@
 
     if (statsEl) {
 
-      statsEl.innerHTML = `
+      statsEl.innerHTML = `
+
 
         <span style="color:var(--success)">✅ ${present}</span> |
 
@@ -6543,7 +6573,8 @@
 
     const _e = window.escapeHtml || ((s) => s);
 
-    body.innerHTML = `
+    body.innerHTML = `
+
 
       <table class="data-table" style="width:100%;font-size:13px;border-collapse:collapse;">
 
@@ -6741,7 +6772,8 @@
 
         `Thank you for your continued support! \u{1F31F}\n` + // 🌟
 
-        `\u{265F}\u{FE0F} ChessKidoo Academy`
+        `\u{265F}\u{FE0F} ChessKidoo Academy`
+
 
       ); // ♟️
 
@@ -6765,7 +6797,8 @@
 
       `Thank you so much for your support and cooperation! \u{1F31F}\n` + // 🌟
 
-      `\u{265F}\u{FE0F} ChessKidoo Academy`
+      `\u{265F}\u{FE0F} ChessKidoo Academy`
+
 
     ); // ♟️
 
@@ -9413,7 +9446,8 @@
 
     if (!dropdown) return;
 
-    dropdown.innerHTML = `
+    dropdown.innerHTML = `
+
 
       <div class="country-search-container" onclick="event.stopPropagation()" style="position: relative; display: flex; align-items: center; padding: 10px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); background: rgba(0, 0, 0, 0.15);">
 
@@ -9437,7 +9471,8 @@
 
         ${COUNTRY_CODES.map(
 
-          (c) => `
+          (c) => `
+
 
           <div class="country-option" data-code="${c.code}" data-dial="${c.dial}" data-name="${c.name.toLowerCase()}" onclick="window.${selectFn}('${c.code}', '${c.dial}', ${c.length})">
 
@@ -9899,7 +9934,8 @@
 
         waitlistedStudents.length > 0
 
-          ? `${waitlistedStudents.length} Waitlisted`
+          ? `${waitlistedStudents.length} Waitlisted`
+
 
           : "No Waitlist";
 
@@ -10067,7 +10103,8 @@
 
                       ? `<button class="btn btn-outline-grey btn-sm" style="padding: 2px 6px; font-size:10px;" onclick="downloadReceipt('${sid}', '${escapeHtml(name).replace(/'/g, "\\'")}', '${studentFee}', '${escapeHtml(level).replace(/'/g, "\\'")}', '800', 'N/A', 'Event Fee', '', 'event', '${escapeHtml(e.title).replace(/'/g, "\\'")}')" title="Download Receipt">📄</button>
 
-                  <button class="btn btn-outline-grey btn-sm" style="padding: 2px 6px; font-size:10px;" onclick="sendPaymentReceiptNotification('${sid}', '${studentFee}')" title="Send via WhatsApp">📢</button>`
+                  <button class="btn btn-outline-grey btn-sm" style="padding: 2px 6px; font-size:10px;" onclick="sendPaymentReceiptNotification('${sid}', '${studentFee}')" title="Send via WhatsApp">📢</button>`
+
 
                       : ""
 
@@ -14419,7 +14456,8 @@ try {
 
           const periodValue = `${window.reportYear}-${String(window.reportMonth + 1).padStart(2, "0")}`;
 
-          btnArea.innerHTML = `
+          btnArea.innerHTML = `
+
 
           <div style="display:flex;gap:6px;align-items:center;background:var(--surface2);padding:3px 8px;border-radius:8px;border:1px solid var(--border);box-shadow:var(--shadow-amber)">
 
@@ -14441,7 +14479,8 @@ try {
 
 if (p === "stud")
 
-           btnArea.innerHTML = `
+           btnArea.innerHTML = `
+
 
            <button class="btn btn-outline-grey" onclick="openMonthlyMatrix()">📅 Monthly Matrix</button>
 
@@ -14453,7 +14492,8 @@ if (p === "stud")
 
         if (p === "batches") {
 
-          btnArea.innerHTML = `
+          btnArea.innerHTML = `
+
 
             <button class="btn btn-outline-grey" onclick="openMasterSchedule()">📋 Master Schedule</button>
 
@@ -14465,7 +14505,8 @@ if (p === "stud")
 
         if (p === "coach-mgmt")
 
-          btnArea.innerHTML = `
+          btnArea.innerHTML = `
+
 
           <button class="btn btn-outline-grey" onclick="openMasterSchedule()">📋 Master Schedule</button>
 
@@ -14477,7 +14518,8 @@ if (p === "stud")
 
         if (p === "chessable")
 
-          btnArea.innerHTML = `
+          btnArea.innerHTML = `
+
 
           <button class="btn btn-outline-amber" onclick="exportChessableCSV()">📤 Export CSV</button>
 
@@ -14665,7 +14707,8 @@ setTimeout(function () {
 
         if (chatBody && chatBody.children.length === 0) {
 
-          chatBody.innerHTML = `
+          chatBody.innerHTML = `
+
 
             <div class="ai-ws-msg bot">
 
@@ -17181,7 +17224,8 @@ setTimeout(function () {
 
     if (role === "coach" && theadRow) {
 
-      theadRow.innerHTML = `
+      theadRow.innerHTML = `
+
 
         <th>Student</th>
 
@@ -17193,7 +17237,8 @@ setTimeout(function () {
 
     } else if (theadRow) {
 
-      theadRow.innerHTML = `
+      theadRow.innerHTML = `
+
 
         <th style="width:40px"><input type="checkbox" id="stud-check-all" onclick="window.toggleAllStudents(this.checked)"></th>
 
@@ -18013,7 +18058,8 @@ setTimeout(function () {
 
             if (status === "Paid") {
 
-              primaryActions = `
+              primaryActions = `
+
 
                   <div style="display:flex;gap:4px;flex-wrap:nowrap">
 
@@ -18035,7 +18081,8 @@ setTimeout(function () {
 
                 `;
 
-              moreActions = `
+              moreActions = `
+
 
                  <button class="btn btn-outline-grey btn-sm" style="width:100%;margin-bottom:4px" onclick="viewPaymentHistory('${s.id}')">⏳ History</button>
 
@@ -18055,7 +18102,8 @@ setTimeout(function () {
 
             ) {
 
-              primaryActions = `
+              primaryActions = `
+
 
                    <div style="display:flex;gap:4px;flex-wrap:nowrap">
 
@@ -18077,7 +18125,8 @@ setTimeout(function () {
 
                   `;
 
-              moreActions = `
+              moreActions = `
+
 
                  <button class="btn btn-gold btn-sm" style="width:100%;margin-bottom:4px" onclick="openPay('${s.id}', '${jsAttrEncode(getStudentName(s))}', '${getStudentMonthlyFee(s)}')">💳 Pay Now</button>
 
@@ -18089,7 +18138,8 @@ setTimeout(function () {
 
             } else if (isNonActive || status === "Not Enrolled") {
 
-              primaryActions = `
+              primaryActions = `
+
 
                   <div style="display:flex;gap:4px;flex-wrap:nowrap">
 
@@ -18119,7 +18169,8 @@ setTimeout(function () {
 
             const checkboxHtml = isNonActive
 
-              ? `<input type="checkbox" class="stud-check" data-id="${s.id}" disabled title="Non-active students cannot be selected for payments" onchange="window.updateStudentBulkCount()" onclick="window.updateStudentBulkCount()">`
+              ? `<input type="checkbox" class="stud-check" data-id="${s.id}" disabled title="Non-active students cannot be selected for payments" onchange="window.updateStudentBulkCount()" onclick="window.updateStudentBulkCount()">`
+
 
               : `<input type="checkbox" class="stud-check" data-id="${s.id}" ${isSel ? "checked" : ""} onchange="window.updateStudentBulkCount()" onclick="window.updateStudentBulkCount()">`;
 
@@ -18133,7 +18184,8 @@ setTimeout(function () {
 
             const learningModeBadge = `<span class="badge" style="background: ${learningMode === "Online" ? "rgba(59, 130, 246, 0.12)" : "rgba(139, 92, 246, 0.12)"}; color: ${learningModeColor}; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; border: 1px solid ${learningMode === "Online" ? "rgba(59, 130, 246, 0.25)" : "rgba(139, 92, 246, 0.25)"}; margin-left: 4px;">${learningMode}</span>`;
 
-            const studentNameHtml = `
+            const studentNameHtml = `
+
 
               <div style="font-weight:600">${escapeHtml(getStudentName(s))}</div>
 
@@ -18149,7 +18201,8 @@ setTimeout(function () {
 
             const feeHtml = isNonActive
 
-              ? `<span style="color: var(--ivory-dim);">—</span>`
+              ? `<span style="color: var(--ivory-dim);">—</span>`
+
 
               : formatStudentFee(s, getStudentMonthlyFee(s));
 
@@ -18205,7 +18258,8 @@ setTimeout(function () {
 
             const sessionBadge = sessionType === "Single"
 
-              ? `<span class="badge badge-info" style="font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600;">Individual</span>`
+              ? `<span class="badge badge-info" style="font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600;">Individual</span>`
+
 
               : `<span class="badge badge-success" style="font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600;">Group</span>`;
 
@@ -18473,7 +18527,8 @@ setTimeout(function () {
 
       const grandLabel = isFiltered ? `Total ${filter} =` : "Total of all =";
 
-      return `
+      return `
+
 
         <tr class="student-totals-row">
 
@@ -18791,7 +18846,8 @@ setTimeout(function () {
 
             const sessionBadge = session === "Single"
 
-              ? `<span class="badge badge-info" style="font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600;">Individual</span>`
+              ? `<span class="badge badge-info" style="font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600;">Individual</span>`
+
 
               : `<span class="badge badge-success" style="font-size:10px; padding:2px 6px; border-radius:4px; font-weight:600;">Group</span>`;
 
@@ -20349,7 +20405,8 @@ due_date: (function () {
 
         }
 
-        return `
+        return `
+
 
          <div class="coach-card">
 
@@ -20657,7 +20714,8 @@ due_date: (function () {
 
     }
 
-    panel.innerHTML = `
+    panel.innerHTML = `
+
 
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
 
@@ -21583,7 +21641,8 @@ due_date: (function () {
 
           .join("") +
 
-        `</div>`
+        `</div>`
+
 
       );
 
@@ -21605,7 +21664,8 @@ due_date: (function () {
 
         .map(
 
-          (b) => `
+          (b) => `
+
 
         <div style="background:var(--bg2); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:14px;">
 
@@ -21659,7 +21719,8 @@ due_date: (function () {
 
             .map(
 
-              (s) => `
+              (s) => `
+
 
             <div style="display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px;">
 
@@ -21963,7 +22024,8 @@ due_date: (function () {
 
         const actionCell = calLink
 
-          ? `<td><a href="${calLink}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="font-size:11px; padding:4px 10px; white-space:nowrap;" onclick="window.toast && window.toast('Opening Google Calendar...', 'info');">Add to GCal</a></td>`
+          ? `<td><a href="${calLink}" target="_blank" rel="noopener" class="btn btn-outline btn-sm" style="font-size:11px; padding:4px 10px; white-space:nowrap;" onclick="window.toast && window.toast('Opening Google Calendar...', 'info');">Add to GCal</a></td>`
+
 
           : '<td><span style="color:var(--ivory-dim); font-size:11px;">N/A</span></td>';
 
@@ -21987,7 +22049,8 @@ due_date: (function () {
 
       .join("");
 
-    container.innerHTML = `
+    container.innerHTML = `
+
 
       <div style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
 
@@ -22147,7 +22210,8 @@ due_date: (function () {
 
     });
 
-    container.innerHTML = `
+    container.innerHTML = `
+
 
       <div style="margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
 
@@ -22759,7 +22823,8 @@ due_date: (function () {
 
         }
 
-        const blocksHtml = blocks.map(bl => `
+        const blocksHtml = blocks.map(bl => `
+
 
           <div style="display:block;padding:3px 4px;margin:2px 0;border-radius:3px;background:${bl.color};color:#fff;font-weight:600;font-size:7pt;line-height:1.15;">
 
@@ -22777,7 +22842,8 @@ due_date: (function () {
 
       }).join('');
 
-      rowsHtml += `
+      rowsHtml += `
+
 
         <tr>
 
@@ -22799,7 +22865,8 @@ due_date: (function () {
 
     // Build full table
 
-    container.innerHTML = `
+    container.innerHTML = `
+
 
       <style>
 
@@ -22995,7 +23062,8 @@ due_date: (function () {
 
              isAdmin
 
-               ? `
+               ? `
+
 
              <div style="display:flex;gap:8px;margin-left:auto">
 
@@ -23009,7 +23077,8 @@ due_date: (function () {
 
              </div>
 
-           `
+           `
+
 
                : ""
 
@@ -23417,7 +23486,8 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
         const canEdit = !isCoach || String(b.coach).toLowerCase() === String(currentCoachId).toLowerCase() || (currentCoachName && String(b.coach).toLowerCase().includes(currentCoachName));
 
-        return `
+        return `
+
 
         <div class="card" style="padding: 24px; position: relative; display: flex; flex-direction: column; gap: 16px;">
 
@@ -23565,7 +23635,8 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
         const name = escapeHtml(getStudentName(s));
 
-        return `
+        return `
+
 
         <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 8px;border-bottom:1px solid var(--border);">
 
@@ -24011,7 +24082,8 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
           : "";
 
-        return `
+        return `
+
 
         <label style="display:flex;align-items:center;gap:8px;padding:6px;border-bottom:1px solid rgba(255,255,255,0.05);cursor:pointer">
 
@@ -24401,7 +24473,8 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
             } // Bronze
 
-            return `
+            return `
+
 
             <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 10px; border-bottom: 1px solid var(--border);">
 
@@ -24515,7 +24588,8 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
           : "assets/img/placeholder-trophy.jpg";
 
-        return `
+        return `
+
 
          <div class="ach-card" style="position:relative; height: 360px; border-radius: 16px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.6); transition: transform 0.3s ease; border: 1px solid rgba(212, 175, 55, 0.3);">
 
@@ -24569,7 +24643,8 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
              isAdmin
 
-               ? `
+               ? `
+
 
              <div style="position: absolute; top: 12px; right: 12px; display:flex; gap: 8px; background: rgba(15, 23, 42, 0.75); padding: 6px 8px; border-radius: 10px; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); z-index:10;">
 
@@ -24581,7 +24656,8 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
              </div>
 
-           `
+           `
+
 
                : ""
 
@@ -24673,35 +24749,30 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
 
     }
 
-  }
+}
+//
+// Unified uploader using Cloudflare R2 (replaces ImgBB)
+async function uploadToImgbb(file) {
+  if (!file) return null;
+  const formData = new FormData();
+  formData.append('file', file);
+  const resp = await fetch('/api/images', {
+    method: 'POST',
+    body: formData,
+  });
 
- // Unified uploader using Cloudflare R2 (replaces ImgBB)
- async function uploadToImgbb(file) {
-   if (!file) return null;
-   const formData = new FormData();
-   formData.append('file', file);
-   const resp = await fetch('/api/images', {
-     method: 'POST',
-     body: formData,
-   });
-   const json = await resp.json();
-   if (!resp.ok) {
-     console.error('R2 upload failed', json);
-     throw new Error(json.error?.message || 'R2 upload failed');
-   }
-   return json.publicUrl;
- }
- // expose globally for admin/homework modules
- window.uploadToImgbb = uploadToImgbb;);
   const json = await resp.json();
+
   if (!resp.ok) {
     console.error('R2 upload failed', json);
     throw new Error(json.error?.message || 'R2 upload failed');
   }
   return json.publicUrl;
 }
+// expose globally for admin/homework modules
+window.uploadToImgbb = uploadToImgbb;
 
-    if (!file) return null;
+if (!file) return null;
 
     try {
 
@@ -24744,7 +24815,7 @@ const coach = allCoaches.find((c) => String(c.id).toLowerCase() === String(b.coa
     }
 
   }
-
+)
   async function saveAward() {
 
     const id = $("award-sid").value;
@@ -25617,7 +25688,8 @@ Best regards,
 
         });
 
-        return `
+        return `
+
 
        <tr>
 
@@ -26025,11 +26097,13 @@ Best regards,
 
               status === "Pending"
 
-                ? `<button class="btn btn-outline btn-sm" onclick="markCoachPaid('${c.id}')">✅ Mark Paid</button>`
+                ? `<button class="btn btn-outline btn-sm" onclick="markCoachPaid('${c.id}')">✅ Mark Paid</button>`
+
 
                 : `<button class="btn btn-outline-danger btn-sm" onclick="markCoachUnpaid('${c.id}')">❌ Mark Unpaid</button>
 
-           <button class="btn btn-outline btn-sm" onclick="informCoachSalaryPaid(allCoaches.find(x => String(x.id) === '${c.id}'))" style="border-color:var(--emerald);color:var(--emerald);" title="Notify Coach of Salary Credit">📢 Notify Credit</button>`
+           <button class="btn btn-outline btn-sm" onclick="informCoachSalaryPaid(allCoaches.find(x => String(x.id) === '${c.id}'))" style="border-color:var(--emerald);color:var(--emerald);" title="Notify Coach of Salary Credit">📢 Notify Credit</button>`
+
 
             }
 
@@ -26353,7 +26427,8 @@ Best regards,
 
         if (status === "Paid") {
 
-          actionButtons = `
+          actionButtons = `
+
 
             <button class="btn btn-outline-grey btn-sm" onclick="downloadReceipt('${s.id}', '${jsAttrEncode(getStudentName(s))}', '${getStudentMonthlyFee(s)}', '${jsAttrEncode(getStudentLevel(s))}', '${getStudentRating(s)}', '${coachName}', 'Online')">📄 Receipt</button>
 
@@ -26373,7 +26448,8 @@ Best regards,
 
         ) {
 
-          actionButtons = `
+          actionButtons = `
+
 
             <button class="btn btn-gold btn-sm" onclick="openPay('${s.id}', '${jsAttrEncode(getStudentName(s))}', '${getStudentMonthlyFee(s)}')">💳 Pay Now</button>
 
@@ -26911,7 +26987,8 @@ Best regards,
 
       }
 
-      optionsHtml += `
+      optionsHtml += `
+
 
         <div class="upi-item" onclick="initiatePay('Google Pay')"><b>Google Pay</b></div>
 
@@ -27859,11 +27936,13 @@ loadAllData(true);
 
         const statusIcon = isSuccess
 
-          ? `<span style="color:var(--success); font-size: 14px;" title="Success">💳</span>`
+          ? `<span style="color:var(--success); font-size: 14px;" title="Success">💳</span>`
+
 
           : `<span class="pulse-alert" style="color:var(--danger); font-size: 14px;" title="Risk Flag">🚨</span>`;
 
-        row.innerHTML = `
+        row.innerHTML = `
+
 
           <div style="flex: 0 0 40px; display:flex; align-items:center; justify-content:center;">${statusIcon}</div>
 
@@ -28421,7 +28500,8 @@ loadAllData(true);
 
           .map(
 
-            (m) => `
+            (m) => `
+
 
             <div class="msg-card ${getMessageIsRead(m) ? "" : "unread"}">
 
@@ -28471,7 +28551,8 @@ loadAllData(true);
 
       .map(
 
-        (m) => `
+        (m) => `
+
 
         <div class="msg-card ${getMessageIsRead(m) ? "" : "unread"}">
 
@@ -29075,7 +29156,8 @@ loadAllData(true);
 
           const chesscomText = s.chesscom_username ? `${chesscomActive ? '♟️ Active' : '♟️ Idle'}${chesscomDays !== null ? ` (${chesscomDays}d)` : ''}` : '';
 
-          engagementEl.innerHTML = `
+          engagementEl.innerHTML = `
+
 
             <span style="font-weight:700; color:${statusColor}; margin-right:8px;">● ${statusText}</span>
 
@@ -29767,7 +29849,8 @@ loadAllData(true);
 
       .map(
 
-        (a) => `
+        (a) => `
+
 
         <div class="ach-card">
 
@@ -30505,7 +30588,8 @@ loadAllData(true);
 
       welcomeMsg.className = "ai-ws-msg bot";
 
-      welcomeMsg.innerHTML = `
+      welcomeMsg.innerHTML = `
+
 
         <div class="ai-ws-avatar">🤖</div>
 
@@ -30525,7 +30609,8 @@ loadAllData(true);
 
                   ? "Switched to Coach Performance. I'll analyze individual coach metrics and student progress."
 
-                  : `Hello! I'm your personal assistant for ${currentStudent?.name || "your child"}'s progress. I can help with attendance, achievements, payment status, upcoming events, and class schedules.`
+                  : `Hello! I'm your personal assistant for ${currentStudent?.name || "your child"}'s progress. I can help with attendance, achievements, payment status, upcoming events, and class schedules.`
+
 
           }
 
@@ -31501,7 +31586,8 @@ loadAllData(true);
 
     thinkingMsg.className = "ai-ws-msg bot";
 
-    thinkingMsg.innerHTML = `
+    thinkingMsg.innerHTML = `
+
 
       <div class="ai-ws-avatar">🤖</div>
 
@@ -34079,7 +34165,8 @@ window.deleteStudent = deleteStudent;
 
       const profileUrl = username ? `https://www.chessable.com/profile/${username}/` : 'https://www.chessable.com';
 
-      return `
+      return `
+
 
         <div class="card" style="display:flex; align-items:center; justify-content:space-between; padding:12px 16px; background:var(--bg2); border:1px solid var(--border); border-radius:8px; margin-bottom:8px;">
 
@@ -34295,7 +34382,8 @@ window.deleteStudent = deleteStudent;
 
         totalActive > 0 ? Math.round((withProfile / totalActive) * 100) : 0;
 
-      statsRow.innerHTML = `
+      statsRow.innerHTML = `
+
 
         <div class="card" style="padding:20px; background:linear-gradient(135deg, var(--bg2), rgba(234,88,12,0.08)); border:1px solid rgba(234,88,12,0.2); border-radius:12px;">
 
@@ -34375,13 +34463,15 @@ window.deleteStudent = deleteStudent;
 
         const profileUrl = username
 
-          ? `https://www.chessable.com/profile/${username}/`
+          ? `https://www.chessable.com/profile/${username}/`
+
 
           : "";
 
         const hasProfile = !!username;
 
-        return `
+        return `
+
 
         <tr style="border-bottom:1px solid var(--border);">
 
@@ -34451,9 +34541,11 @@ window.deleteStudent = deleteStudent;
 
                   Open \u2197
 
-                </a>`
+                </a>`
 
-              : `<span style="color:var(--ivory-dim); font-size:12px; font-style:italic;">No profile</span>`
+
+              : `<span style="color:var(--ivory-dim); font-size:12px; font-style:italic;">No profile</span>`
+
 
             }
 
@@ -34559,7 +34651,8 @@ window.deleteStudent = deleteStudent;
 
       const url = username
 
-        ? `https://www.chessable.com/profile/${username}/`
+        ? `https://www.chessable.com/profile/${username}/`
+
 
         : "";
 
@@ -34645,7 +34738,8 @@ window.deleteStudent = deleteStudent;
 
           <div style="font-weight:600;color:var(--gold);margin-bottom:6px;">📬 New Academy Messages (${myMessages.length})</div>
 
-          ${myMessages.slice(0, 5).map(m => `
+          ${myMessages.slice(0, 5).map(m => `
+
 
             <div style="padding:8px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
 
@@ -34799,7 +34893,8 @@ window.deleteStudent = deleteStudent;
 
     }
 
-    content.innerHTML = `
+    content.innerHTML = `
+
 
       <div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center">
 
@@ -34881,13 +34976,15 @@ window.deleteStudent = deleteStudent;
 
         (active
 
-          ? ` <span class="filter-toggle-count">${active}</span>`
+          ? ` <span class="filter-toggle-count">${active}</span>`
+
 
           : "");
 
     btn.title = active
 
-      ? `${active} filter${active === 1 ? "" : "s"} applied`
+      ? `${active} filter${active === 1 ? "" : "s"} applied`
+
 
       : "Filter the student registry";
 
@@ -35079,7 +35176,8 @@ window.deleteStudent = deleteStudent;
 
             return strVal.includes(",") || strVal.includes("\n")
 
-              ? `"${strVal}"`
+              ? `"${strVal}"`
+
 
               : strVal;
 
@@ -36044,4 +36142,5 @@ window.viewAnalyzeDetail = async function(id, type) {
     alert('Failed to load detail');
   }
 };
+
 
