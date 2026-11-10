@@ -5378,41 +5378,41 @@ body:has(.page.active:not(#landing-page)) #scrollTopBtn {
 .ck-nri-pricing-box {
   background: linear-gradient(135deg, #0c1322 0%, #152035 50%, #0c1322 100%) !important;
   border: 2px solid rgba(251, 191, 36, 0.4) !important;
-  border-radius: 28px !important; padding: 40px !important;
-  margin-top: 48px !important; color: #ffffff !important;
+  border-radius: 20px !important; padding: 28px !important;
+  margin-top: 32px !important; color: #ffffff !important;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
   position: relative; overflow: hidden;
 }
 .ck-nri-pricing-box::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
   background: linear-gradient(90deg, #fbbf24, #f59e0b, #fbbf24);
 }
 .ck-nri-badge {
-  font-size: 0.82rem; font-weight: 800; color: #fbbf24;
+  font-size: 0.75rem; font-weight: 800; color: #fbbf24;
   background: rgba(251, 191, 36, 0.12); border: 1px solid rgba(251, 191, 36, 0.3);
-  padding: 6px 16px; border-radius: 20px; display: inline-flex; align-items: center;
-  gap: 8px; margin-bottom: 20px; letter-spacing: 0.5px;
+  padding: 5px 14px; border-radius: 16px; display: inline-flex; align-items: center;
+  gap: 6px; margin-bottom: 14px; letter-spacing: 0.5px;
 }
-.ck-nri-content { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
-.ck-nri-info { flex: 1 1 480px; }
-.ck-nri-info h4 { font-size: 1.25rem; font-weight: 800; color: #f8fafc; margin-bottom: 10px; }
-.ck-nri-info p { font-size: 0.9rem; color: #cbd5e1; line-height: 1.6; margin-bottom: 20px; }
-.ck-nri-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.ck-nri-content { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+.ck-nri-info { flex: 1 1 400px; }
+.ck-nri-info h4 { font-size: 1.1rem; font-weight: 800; color: #f8fafc; margin-bottom: 8px; }
+.ck-nri-info p { font-size: 0.85rem; color: #cbd5e1; line-height: 1.5; margin-bottom: 16px; }
+.ck-nri-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; }
 .ck-nri-col {
-  display: flex; gap: 12px; background: rgba(15, 23, 42, 0.6);
-  padding: 16px; border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex; gap: 10px; background: rgba(15, 23, 42, 0.6);
+  padding: 14px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.06);
 }
-.ck-nri-icon { font-size: 1.4rem; flex-shrink: 0; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.1); border-radius: 12px; }
-.ck-nri-col strong { display: block; font-size: 0.85rem; color: #f1f5f9; margin-bottom: 4px; font-weight: 700; }
-.ck-nri-col p { font-size: 0.78rem; color: #94a3b8; margin: 0; line-height: 1.45; }
+.ck-nri-icon { font-size: 1.2rem; flex-shrink: 0; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; background: rgba(245, 158, 11, 0.1); border-radius: 10px; }
+.ck-nri-col strong { display: block; font-size: 0.8rem; color: #f1f5f9; margin-bottom: 3px; font-weight: 700; }
+.ck-nri-col p { font-size: 0.75rem; color: #94a3b8; margin: 0; line-height: 1.4; }
 .ck-nri-action {
   background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(251, 191, 36, 0.3);
-  border-radius: 20px; padding: 28px; text-align: center; flex: 0 0 240px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  border-radius: 16px; padding: 20px; text-align: center; flex: 0 0 200px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
 }
-.ck-nri-price-tag { font-size: 1.5rem; font-weight: 800; color: #fbbf24; }
-.ck-nri-price-sub { font-size: 0.78rem; color: #94a3b8; margin-bottom: 16px; }
-.ck-nri-btn { width: 100%; padding: 12px 18px; font-size: 0.9rem; border-radius: 12px; font-weight: 700; }
+.ck-nri-price-tag { font-size: 1.25rem; font-weight: 800; color: #fbbf24; }
+.ck-nri-price-sub { font-size: 0.75rem; color: #94a3b8; margin-bottom: 12px; }
+.ck-nri-btn { width: 100%; padding: 10px 16px; font-size: 0.85rem; border-radius: 12px; font-weight: 700; }
 
 
 /* Learning Journey Scroll Line & Milestone Node Highlights */
