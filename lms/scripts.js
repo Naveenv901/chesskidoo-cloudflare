@@ -15066,6 +15066,13 @@ setTimeout(function () {
 
     if (loginScreen) loginScreen.style.display = "none";
 
+    // Re-apply saved theme after login (page doesn't reload, so theme must be reapplied)
+    const savedTheme = localStorage.getItem("ck_portal_theme");
+
+    if (savedTheme === "light") document.documentElement.setAttribute("data-theme", "light");
+
+    else document.documentElement.removeAttribute("data-theme");
+
     document.body.classList.remove(
 
       "login-mode",
