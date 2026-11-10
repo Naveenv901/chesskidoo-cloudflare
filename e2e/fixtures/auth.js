@@ -134,7 +134,7 @@ export const test = base.extend({
         );
         // Navigate to the dev server root so relative URLs work
         // Navigate to the dev server (default port 5174) and trim any stray spaces
-        await page.goto((process.env.DEV_URL || 'http://localhost:5174').trim(), { waitUntil: 'domcontentloaded', timeout: 60000 });
+        await page.goto((process.env.DEV_URL || 'http://localhost:8788').trim(), { waitUntil: 'domcontentloaded', timeout: 60000 });
         // Load the attendance UI helper as a module
         await page.addInitScript(`
           import { fixAttendanceIcons } from '/src/lib/attendance-ui.js';
