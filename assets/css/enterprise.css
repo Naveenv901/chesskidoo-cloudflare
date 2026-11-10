@@ -210,11 +210,11 @@
 .tvid-player {
   width: 100%;
   display: block;
-  aspect-ratio: 9 / 16;        /* portrait by default (phone-shot testimonials) */
-  max-height: 78vh;
+  aspect-ratio: 9 / 16;
+  max-height: 45vh;
+  max-width: 400px;
   object-fit: cover;
   background: #000;
-  /* GPU-promote so the reveal transform + scroll stay smooth (was janky on mobile) */
   transform: translateZ(0);
   backface-visibility: hidden;
 }
