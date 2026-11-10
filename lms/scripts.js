@@ -8020,6 +8020,18 @@
 
           toast(successMsg, "success");
 
+          // Immediate local refresh for achievement deletion
+
+          if (type === "achievement") {
+
+            achievementsData = achievementsData.filter((x) => String(x.id) !== String(id));
+
+            window.achievementsData = achievementsData;
+
+            renderFame();
+
+          }
+
         } else {
 
           const err = await res.json().catch(() => ({}));
@@ -25015,6 +25027,30 @@ window.uploadToImgbb = uploadToImgbb;
         toast("Achievement saved!", "success");
 
         closeModals();
+
+        // Immediate local refresh of achievements grid
+
+        try {
+
+          const saved = await res.json();
+
+          const savedAch = saved && saved.data ? saved.data : saved;
+
+          if (savedAch && savedAch.id) {
+
+            const idx = achievementsData.findIndex((x) => String(x.id) === String(savedAch.id));
+
+            if (idx >= 0) achievementsData[idx] = savedAch;
+
+            else achievementsData.push(savedAch);
+
+            window.achievementsData = achievementsData;
+
+          }
+
+        } catch (_) {}
+
+        renderFame();
 
         loadAllData(false);
 
