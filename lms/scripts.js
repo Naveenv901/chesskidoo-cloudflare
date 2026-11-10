@@ -24772,50 +24772,6 @@ async function uploadToImgbb(file) {
 // expose globally for admin/homework modules
 window.uploadToImgbb = uploadToImgbb;
 
-if (!file) return null;
-
-    try {
-
-      // 1. Convert file to Base64 for the proxy
-
-      const base64 = await new Promise((resolve) => {
-
-        const reader = new FileReader();
-
-        reader.onload = () => resolve(reader.result.split(",")[1]);
-
-        reader.readAsDataURL(file);
-
-      });
-
-      // 2. Call our secure proxy
-
-      const response = await apiCall("/api/upload", {
-
-        method: "POST",
-
-        body: JSON.stringify({ image: base64 }),
-
-      });
-
-      const data = await response.json();
-
-      if (data.success) return data.data.url;
-
-      console.error("Imgbb API Error Data:", data);
-
-      throw new Error(data.error?.message || data.error || "Upload failed");
-
-    } catch (e) {
-
-      console.error("Imgbb upload error:", e);
-
-      return null;
-
-    }
-
-  }
-)
   async function saveAward() {
 
     const id = $("award-sid").value;
