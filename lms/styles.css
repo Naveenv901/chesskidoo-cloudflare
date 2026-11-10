@@ -330,18 +330,17 @@ body.coach-mode .nav-item.coach-only.active {
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative; overflow: hidden;
   display: flex; flex-direction: column; gap: 10px;
+  /* Left accent border for category identification */
+  border-left: 4px solid transparent;
 }
 .stat-card:hover {
-  transform: translateY(-6px) scale(1.02);
-  border-color: rgba(232,168,48,0.35);
-  box-shadow: var(--shadow-amber), 0 0 35px rgba(232,168,48,0.2);
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(232,168,48,0.25);
+  box-shadow: var(--shadow-md), 0 0 20px rgba(0,0,0,0.3);
 }
-.stat-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover), var(--brand-300));
-  opacity: 0; transition: opacity 0.35s ease;
-}
-.stat-card:hover::before { opacity: 1; }
+/* Remove top accent bar on hover - only overall box border */
+.stat-card::before { display: none !important; }
+.stat-card:hover::before { opacity: 0 !important; }
 .stat-label {
   font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
   color: var(--text-muted); font-weight: 700; margin-bottom: 0;
@@ -354,6 +353,20 @@ body.coach-mode .nav-item.coach-only.active {
 }
 .stat-card.text-success .stat-value { color: var(--success); }
 .stat-card.text-danger .stat-value { color: var(--danger); }
+
+/* Per-card left border colors */
+.stat-card.border-green, .stat-card[style*="border-left:3px solid var(--emerald)"] { border-left-color: var(--success) !important; }
+.stat-card.border-blue, .stat-card[style*="border-left:3px solid var(--blue)"] { border-left-color: var(--info) !important; }
+.stat-card.border-gold, .stat-card[style*="border-left:3px solid var(--gold)"] { border-left-color: var(--accent-primary) !important; }
+.stat-card.border-red, .stat-card[style*="border-left:3px solid var(--danger)"] { border-left-color: var(--danger) !important; }
+.stat-card.border-purple { border-left-color: #8b5cf6 !important; }
+
+/* Per-card value colors based on category */
+.stat-card.border-green .stat-value { color: var(--success); }
+.stat-card.border-blue .stat-value { color: var(--info); }
+.stat-card.border-gold .stat-value { color: var(--accent-primary); }
+.stat-card.border-red .stat-value { color: var(--danger); }
+.stat-card.border-purple .stat-value { color: #8b5cf6; }
 
 .top-nav-right .btn { padding: 8px 14px; font-size: 12px; white-space: nowrap; }
 .top-nav-right { gap: 10px; }
@@ -382,18 +395,16 @@ body.coach-mode .nav-item.coach-only.active {
   transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative; overflow: hidden;
   display: flex; flex-direction: column; gap: 10px;
+  border-left: 4px solid transparent;
 }
 .dash-grid .card:hover {
-  transform: translateY(-6px) scale(1.02);
-  border-color: rgba(232,168,48,0.35);
-  box-shadow: var(--shadow-amber), 0 0 35px rgba(232,168,48,0.2);
+  transform: translateY(-4px) scale(1.01);
+  border-color: rgba(232,168,48,0.25);
+  box-shadow: var(--shadow-md), 0 0 20px rgba(0,0,0,0.3);
 }
-.dash-grid .card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-hover), var(--brand-300));
-  opacity: 0; transition: opacity 0.35s ease;
-}
-.dash-grid .card:hover::before { opacity: 1; }
+/* Remove top accent bar on hover - only overall box border */
+.dash-grid .card::before { display: none !important; }
+.dash-grid .card:hover::before { opacity: 0 !important; }
 .dash-grid .card .stat-label {
   font-size: 10px; text-transform: uppercase; letter-spacing: 1px;
   color: var(--text-muted); font-weight: 700; margin-bottom: 0;
@@ -406,6 +417,19 @@ body.coach-mode .nav-item.coach-only.active {
 }
 .dash-grid .card.text-success .stat-value { color: var(--success); }
 .dash-grid .card.text-danger .stat-value { color: var(--danger); }
+
+/* Per-card left border colors for dashboard cards based on inline border-left */
+.dash-grid .card[style*="border-left:3px solid var(--blue)"] { border-left-color: var(--info) !important; }
+.dash-grid .card[style*="border-left:3px solid var(--emerald)"] { border-left-color: var(--success) !important; }
+.dash-grid .card[style*="border-left:3px solid var(--gold)"] { border-left-color: var(--accent-primary) !important; }
+.dash-grid .card[style*="border-left:3px solid var(--danger)"] { border-left-color: var(--danger) !important; }
+.dash-grid .card[style*="border-left:3px solid var(--purple)"] { border-left-color: #8b5cf6 !important; }
+
+/* Per-card value colors for dashboard */
+.dash-grid .card[style*="border-left:3px solid var(--emerald)"] .stat-value { color: var(--success); }
+.dash-grid .card[style*="border-left:3px solid var(--blue)"] .stat-value { color: var(--info); }
+.dash-grid .card[style*="border-left:3px solid var(--gold)"] .stat-value { color: var(--accent-primary); }
+.dash-grid .card[style*="border-left:3px solid var(--danger)"] .stat-value { color: var(--danger); }
 body.parent-mode .top-nav-right > :not(#top-profile),
 body.student-mode .top-nav-right > :not(#top-profile) { display: none !important; }
 body.parent-mode #child-portal-tabs,
