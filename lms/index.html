@@ -132,15 +132,17 @@
         </script>
       </div>
 
-      <div class="login-options" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;font-size:12px;">
-        <label class="checkbox-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text-secondary);user-select:none;">
-          <input type="checkbox" style="accent-color:var(--gold);width:16px;height:16px;">
+      <div class="login-options">
+        <label class="checkbox-label">
+          <input type="checkbox" id="remember-me">
           <span>Remember me</span>
         </label>
-        <a class="footer-link" onclick="toast('Please contact administrator for reset','info')" style="color:var(--gold);font-weight:600;">Forgot Password?</a>
+        <a class="login-forgot" onclick="toast('Please contact administrator for reset','info')">Forgot Password?</a>
       </div>
 
-      <button type="submit" id="login-submit-btn" class="login-btn">Sign In</button>
+      <button type="submit" id="login-submit-btn" class="login-btn">
+        <span class="btn-text">🔓 Sign In</span>
+      </button>
     </form>
 
     <div id="login-err" style="color:var(--danger);font-size:13px;margin-top:16px;display:none;font-weight:500;text-align:center;padding:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:10px;"></div>
