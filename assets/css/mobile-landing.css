@@ -64,6 +64,7 @@ button, a, select, .btn, .nav-link, .faq-trigger,
   .hero-visual {
     display: block !important;
     margin-top: 0 !important;
+    margin-left: 0 !important;
     perspective: none !important;
   }
   .hero-visual .board-panel {

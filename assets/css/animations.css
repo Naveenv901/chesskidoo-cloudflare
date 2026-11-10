@@ -468,6 +468,33 @@ html { scroll-behavior: smooth; }
   width: 100%;
 }
 
+/* ═══ TRUST BAR MARQUEE ═══ */
+.badge-marquee {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-glass, rgba(255,255,255,0.06));
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 10px 0;
+  margin: 24px 0;
+}
+.badge-marquee-inner {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 20s linear infinite;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.02em;
+}
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .badge-marquee-inner { animation: none !important; transform: none !important; }
+}
+
 /* ═══ ACCESSIBILITY — respect reduced motion ═══ */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
