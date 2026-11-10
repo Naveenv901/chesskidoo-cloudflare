@@ -65,14 +65,14 @@
 
 <!-- Login Screen -->
 <div id="login-screen">
+  <div class="login-bg">
+    <div class="login-shape login-shape-1"></div>
+    <div class="login-shape login-shape-2"></div>
+    <div class="login-shape login-shape-3"></div>
+    <div class="login-shape login-shape-4"></div>
+  </div>
   <!-- Chat Widget on Login Page -->
-  <!-- No inline offsets: .chat-fab already supplies them and shifts to
-       right:16px/bottom:20px under 480px. Hard-coding 28px here pinned the
-       login FAB to the desktop position on mobile. -->
   <button class="chat-fab" id="login-chat-btn" onclick="toggleLoginChat()" title="AI Chat">♟</button>
-  <!-- Positioning comes from .chat-panel (bottom:96px; right:28px) so the panel
-       stays anchored under its FAB. An inline left:28px used to override that
-       and open the panel on the opposite side from the button. -->
   <div class="chat-panel" id="login-chat-panel" style="display:none">
     <div class="chat-head">
       <div class="chat-head-av">⚡</div>
@@ -91,26 +91,28 @@
   </div>
 
   <div class="login-box">
-    <div class="logo-area" style="text-align:center; margin-bottom: 32px;">
-      <!-- Brand logo -->
-      <div style="display: flex; flex-direction: column; align-items: center;">
-        <div class="logo-crest">♘</div>
+    <div class="login-brand">
+      <div class="login-brand-mark">♘</div>
+      <div class="login-brand-text">
+        <h1 style="font-family: var(--font-head); font-size: 32px; font-weight: 800; color: var(--gold); letter-spacing: 1px; margin: 0 0 6px 0; text-transform: uppercase;">ChessKidoo</h1>
+        <p style="font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-weight: 700; margin: 0;">Chess Academy</p>
       </div>
-      <h2 style="font-family: var(--font-head); font-size: 24px; font-weight: 800; color: var(--gold, #daa33e); letter-spacing: 2px; margin: 0 0 4px 0; text-transform: uppercase;">CHESSKIDOO</h2>
-      <p style="font-size: 12px; color: var(--gold, #d4af37); text-transform: uppercase; letter-spacing: 3px; font-weight: 700; margin: 0;">CHESS ACADEMY</p>
     </div>
 
-<form onsubmit="event.preventDefault(); window.doLogin();">
-       <div class="form-group">
-         <label class="label">Email or Username</label>
-         <input type="text" id="li-user" class="input-field" placeholder="Enter email or username" autocomplete="username">
-       </div>
+    <div class="login-title">Welcome Back</div>
+    <div class="login-subtitle">Sign in to access your academy portal</div>
 
-       <div class="form-group">
-         <label class="label">Password</label>
-         <div style="position:relative">
-           <input type="password" id="li-pass" class="input-field" placeholder="Enter password" autocomplete="current-password">
-         <button type="button" id="eye-btn" onclick="toggleEye()" aria-label="Show password" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:transparent;border:none;cursor:pointer;padding:8px;z-index:10">
+    <form onsubmit="event.preventDefault(); window.doLogin();">
+      <div class="form-group">
+        <label class="label">Email or Username</label>
+        <input type="text" id="li-user" class="input-field" placeholder="Enter email or username" autocomplete="username">
+      </div>
+
+      <div class="form-group">
+        <label class="label">Password</label>
+        <div style="position:relative">
+          <input type="password" id="li-pass" class="input-field" placeholder="Enter password" autocomplete="current-password">
+          <button type="button" id="eye-btn" onclick="toggleEye()" aria-label="Show password" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:transparent;border:none;cursor:pointer;padding:8px;z-index:10">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
@@ -129,17 +131,36 @@
           }
         </script>
       </div>
-      
-      <button type="submit" id="login-submit-btn" class="login-btn" style="margin-top:20px">Sign In</button>
-    </form>
-    
-    <div id="login-err" style="color:var(--danger);font-size:13px;margin-top:16px;display:none;font-weight:500;text-align:center"></div>
 
-    <div class="footer-links">
-      <a class="footer-link" onclick="toast('Please contact administrator for reset','info')">Forgot Password?</a>
-      <span class="footer-divider">|</span>
-      <a class="footer-link" href="https://chesskidoo.com" target="_blank" rel="noopener" style="color:var(--gold); font-weight:600;">🏠 Return to Home</a>
+      <div class="login-options" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;font-size:12px;">
+        <label class="checkbox-label" style="display:flex;align-items:center;gap:8px;cursor:pointer;color:var(--text-secondary);user-select:none;">
+          <input type="checkbox" style="accent-color:var(--gold);width:16px;height:16px;">
+          <span>Remember me</span>
+        </label>
+        <a class="footer-link" onclick="toast('Please contact administrator for reset','info')" style="color:var(--gold);font-weight:600;">Forgot Password?</a>
+      </div>
+
+      <button type="submit" id="login-submit-btn" class="login-btn">Sign In</button>
+    </form>
+
+    <div id="login-err" style="color:var(--danger);font-size:13px;margin-top:16px;display:none;font-weight:500;text-align:center;padding:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:10px;"></div>
+
+    <div class="login-divider" style="display:flex;align-items:center;margin:24px 0;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;">
+      <span style="flex:1;height:1px;background:var(--border-input);margin-right:12px;"></span>
+      Or continue with
+      <span style="flex:1;height:1px;background:var(--border-input);margin-left:12px;"></span>
     </div>
+
+    <div class="social-login" style="display:flex;gap:12px;">
+      <button class="social-btn" onclick="CK.handleGoogleLogin ? CK.handleGoogleLogin() : toast('Google login requires internet','info')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:var(--surface2);border:1px solid var(--border-input);border-radius:12px;color:var(--text-primary);font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;">
+        <span>G</span> Google
+      </button>
+    </div>
+
+    <div class="footer-links" style="margin-top:28px;display:flex;justify-content:center;gap:16px;">
+      <a class="footer-link" onclick="toast('Please contact administrator for reset','info')">Forgot Password?</a>
+      <span class="footer-divider" style="color:var(--text-muted);">|</span>
+      <a class="footer-link" href="https://chesskidoo.com" target="_blank" rel="noopener" style="color:var(--gold); font-weight:600;">🏠 Return to Home</a>
     </div>
   </div>
 </div>

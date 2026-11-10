@@ -584,70 +584,180 @@ input[type='month']::-webkit-calendar-picker-indicator { filter: invert(0.8) sep
 .msg-user { max-width: 82%; padding: 12px 16px; border-radius: 12px 12px 3px 12px; font-size: 14px; line-height: 1.6; background: linear-gradient(135deg, var(--gold), var(--gold2)); color: #000; font-weight: 600; align-self: flex-end; }
 .msg-thinking { opacity: 0.6; font-style: italic; }
 
-/* ── LOGIN SCREEN ── */
+/* ═══════════════════════════════════════════════════════════════
+   LOGIN SCREEN — Premium chess-themed design
+   Rounded corners, glassmorphism, gold gradients, animated background
+   ═══════════════════════════════════════════════════════════════ */
 #login-screen {
   position: fixed; inset: 0;
-  background: 
-    radial-gradient(ellipse at 30% 20%, var(--accent-subtle) 0%, transparent 50%),
-    var(--bg-primary);
+  background: var(--bg-primary);
   z-index: 4000; display: flex; align-items: center; justify-content: center;
   transition: opacity 0.5s ease, visibility 0.5s;
+  overflow: hidden;
 }
-#login-screen::before { content: ''; position: absolute; inset: 0; backdrop-filter: blur(12px); background: rgba(2, 6, 23, 0.4); }
+
+/* Animated decorative background shapes */
+.login-bg {
+  position: absolute; inset: 0;
+  z-index: 1;
+  background:
+    radial-gradient(circle at 20% 30%, var(--accent-mist) 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, rgba(245, 158, 11, 0.08) 0%, transparent 45%);
+}
+
+.login-shape {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(232,168,48,0.15), rgba(232,168,48,0.05));
+  filter: blur(60px);
+  z-index: 1;
+  animation: login-shape-float 12s ease-in-out infinite;
+}
+
+.login-shape-1 {
+  top: -10%; left: -10%; width: 500px; height: 500px;
+  animation-delay: 0s;
+}
+.login-shape-2 {
+  bottom: -10%; right: -10%; width: 600px; height: 600px;
+  animation-delay: -4s;
+  background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(59,130,246,0.03));
+}
+.login-shape-3 {
+  top: 40%; left: 60%; width: 300px; height: 300px;
+  animation-delay: -8s;
+  background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02));
+}
+.login-shape-4 {
+  top: 10%; right: 30%; width: 200px; height: 200px;
+  animation-delay: -2s;
+  background: linear-gradient(135deg, rgba(239,68,68,0.06), rgba(239,68,68,0.02));
+}
+
+@keyframes login-shape-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -40px) scale(1.05); }
+  66% { transform: translate(-20px, 40px) scale(0.95); }
+}
+
+#login-screen::before { content: ''; position: absolute; inset: 0; backdrop-filter: blur(20px); background: rgba(2, 6, 23, 0.35); z-index: 2; }
+
 .login-box {
-  width: 100%; max-width: 420px;
+  width: 100%; max-width: 440px;
   background: var(--bg-glass);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  padding: 48px;
-  box-shadow: var(--shadow-xl), 0 0 60px var(--accent-glow);
-  text-align: center; position: relative; z-index: 10; backdrop-filter: blur(20px);
+  border-radius: var(--radius-xl);
+  padding: 48px 40px;
+  box-shadow: var(--shadow-xl), 0 0 80px var(--accent-glow);
+  text-align: center; position: relative; z-index: 10;
+  backdrop-filter: blur(24px);
+  animation: login-box-fade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.logo-area { margin-bottom: 40px; }
-.logo-chess-large { width: 64px; height: 64px; background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)); border-radius: 14px; display: inline-flex; align-items: center; justify-content: center; font-size: 32px; box-shadow: 0 8px 24px var(--accent-glow); margin-bottom: 16px; color: var(--text-inverse); }
-.logo-name { font-family: var(--font-head); font-size: 28px; font-weight: 700; color: var(--accent-primary); letter-spacing: 1.5px; display: block; text-transform: uppercase; }
-.logo-tagline { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 3px; font-weight: 500; }
+
+@keyframes login-box-fade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-brand { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-bottom: 8px; }
+.login-brand-mark {
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+  border-radius: 20px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 36px; box-shadow: 0 12px 32px var(--accent-glow); color: var(--text-inverse);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.login-brand-text h1 {
+  margin: 0; font-family: var(--font-head); font-size: 30px; font-weight: 800;
+  color: var(--gold); letter-spacing: 0.5px; text-transform: uppercase;
+}
+.login-brand-text p {
+  margin: 0; font-size: 11px; color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 3px; font-weight: 700;
+}
+
+.login-title {
+  font-family: var(--font-head); font-size: 26px; font-weight: 700;
+  color: var(--text-primary); margin: 24px 0 8px 0; letter-spacing: -0.5px;
+}
+.login-subtitle {
+  font-size: 14px; color: var(--text-secondary); margin-bottom: 32px; font-weight: 400;
+}
+
+/* Form */
 .form-group { margin-bottom: 24px; text-align: left; }
-.label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 8px; margin-left: 4px; text-transform: uppercase; letter-spacing: 1px; -webkit-user-select: none; user-select: none; }
+.label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 10px; margin-left: 4px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; -webkit-user-select: none; user-select: none; }
 
-/* ── Login brand logo (theme-aware image with text fallback) ── */
-.login-logo { display: block; width: 88%; max-width: 320px; height: auto; margin: 0 auto 10px; }
-.login-logo-light { display: none; }
-[data-theme="light"] .login-logo-dark { display: none; }
-[data-theme="light"] .login-logo-light { display: block; }
-.logo-fallback { display: none; flex-direction: column; align-items: center; }
-/* If the image files aren't present yet, hide the imgs and show the branded mark. */
-.logo-area.logo-img-missing .login-logo { display: none !important; }
-.logo-area.logo-img-missing .logo-fallback { display: flex; }
-
-.logo-crest {
-  width: 76px; height: 76px; display: inline-flex; align-items: center; justify-content: center;
-  font-size: 44px; line-height: 1; margin-bottom: 14px; border-radius: 18px;
-  background: linear-gradient(135deg, var(--brand-300) 0%, var(--accent-primary) 55%, var(--brand-700) 100%);
-  color: var(--text-inverse); box-shadow: 0 10px 28px var(--accent-glow); border: 1px solid rgba(255,255,255,0.25);
+.input-field {
+  width: 100%; background: var(--surface2);
+  border: 1px solid var(--border-input);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px; color: var(--text-primary); font-family: var(--font-ui); font-size: 14px;
+  transition: all 0.3s ease; outline: none; box-sizing: border-box;
 }
-.logo-wordmark { font-family: var(--font-head); font-size: 30px; font-weight: 700; letter-spacing: 1px; line-height: 1; }
-.logo-wordmark .lw-chess { color: var(--text-primary); }
-.logo-wordmark .lw-kidoo { color: var(--accent-primary); }
-.logo-fallback .logo-tagline { margin-top: 8px; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 4px; font-weight: 600; }
-/* Light theme: pale crest + dark wordmark, gold accent kept. */
-[data-theme="light"] .logo-crest {
-  background: linear-gradient(135deg, var(--brand-100) 0%, var(--brand-200) 100%);
-  color: var(--text-primary); box-shadow: 0 8px 22px var(--accent-glow); border: 1px solid var(--border-subtle);
+.input-field:focus {
+  border-color: var(--accent-primary); background: var(--bg-elevated);
+  box-shadow: 0 0 0 4px var(--accent-glow);
 }
-[data-theme="light"] .logo-wordmark .lw-chess { color: var(--text-primary); }
-[data-theme="light"] .logo-wordmark .lw-kidoo { color: var(--accent-primary); }
+.input-field::placeholder { color: var(--text-muted); }
 
-/* Login form labels — brighter so they're clearly visible on the dark login box. */
-#login-screen .label { color: var(--accent-primary); opacity: 0.95; font-weight: 600; }
-[data-theme="light"] #login-screen .label { color: var(--accent-primary); }
-.input-field { width: 100%; background: var(--bg-surface); border: 1px solid var(--border-input); border-radius: var(--radius-sm); padding: 14px 16px; color: var(--text-primary); font-family: var(--font-ui); font-size: 14px; transition: all 0.3s ease; outline: none; }
-.input-field:focus { border-color: var(--accent-primary); background: var(--bg-elevated); box-shadow: 0 0 0 4px var(--accent-glow); }
-.login-btn { width: 100%; background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover)); color: var(--text-inverse); border: none; border-radius: var(--radius-sm); padding: 16px; font-family: var(--font-ui); font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.3s ease; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
-.login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px var(--accent-glow); filter: brightness(1.1); }
-.footer-links { margin-top: 24px; display: flex; justify-content: center; gap: 16px; }
-.footer-link { font-size: 12px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; cursor: pointer; }
+.login-options label { color: var(--text-secondary); font-weight: 500; }
+
+.login-btn {
+  width: 100%; background: linear-gradient(135deg, var(--accent-primary), var(--accent-hover));
+  color: var(--text-inverse); border: none; border-radius: var(--radius-lg);
+  padding: 18px; font-family: var(--font-ui); font-weight: 700; font-size: 15px;
+  cursor: pointer; transition: all 0.3s ease; margin-top: 4px;
+  text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 16px var(--accent-glow);
+}
+.login-btn:hover {
+  transform: translateY(-2px); box-shadow: 0 8px 24px var(--accent-glow); filter: brightness(1.05);
+}
+.login-btn:active { transform: translateY(0); }
+.login-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+.login-divider { margin: 0 0 20px 0; }
+.social-login { gap: 12px; }
+.social-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px; background: var(--surface2); border: 1px solid var(--border-input);
+  border-radius: var(--radius-lg); color: var(--text-primary); font-weight: 600;
+  font-size: 13px; cursor: pointer; transition: all 0.2s;
+}
+.social-btn:hover { background: var(--bg-elevated); border-color: var(--accent-primary); }
+.social-btn span {
+  width: 24px; height: 24px; background: var(--border-input); border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 800;
+}
+
+.footer-links { margin-top: 28px; display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+.footer-link { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color 0.2s; cursor: pointer; }
 .footer-link:hover { color: var(--accent-primary); }
+.footer-divider { color: var(--text-muted); }
+
+/* Responsive */
+@media (max-width: 480px) {
+  .login-box { padding: 36px 24px; margin: 16px; }
+  .login-brand-mark { width: 60px; height: 60px; font-size: 30px; border-radius: 16px; }
+  .login-title { font-size: 22px; }
+  .login-shape-1 { width: 300px; height: 300px; }
+  .login-shape-2 { width: 350px; height: 350px; }
+}
+
+/* Light theme login adjustments */
+[data-theme="light"] #login-screen::before { background: rgba(255, 255, 255, 0.45); }
+[data-theme="light"] .login-shape { background: linear-gradient(135deg, rgba(232,168,48,0.1), rgba(232,168,48,0.03)); }
+
+/* Chat FAB on login page — rounded */
+.chat-fab {
+  position: fixed; bottom: 28px; right: 28px;
+  width: 56px; height: 56px; border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #000; border: none; box-shadow: 0 6px 20px rgba(232,168,48,0.45), 0 0 0 0 rgba(232,168,48,0.4);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; z-index: 4600; transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.chat-fab:hover { transform: scale(1.1); box-shadow: 0 8px 28px rgba(232,168,48,0.55); }
 
 /* ── UPI & MISC ── */
 .upi-list { display: flex; flex-direction: column; gap: 11px; margin: 22px 0; }
