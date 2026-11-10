@@ -430,6 +430,57 @@ body.coach-mode .nav-item.coach-only.active {
   border-color: rgba(232,168,48,0.25);
   box-shadow: var(--shadow-md), 0 0 20px rgba(0,0,0,0.3);
 }
+/* Hover background tints per card color */
+.dash-grid .card:hover[style*="color:var(--blue)"],
+.dash-grid .card:hover[style*="color: var(--blue)"] {
+  background: linear-gradient(145deg, rgba(59,130,246,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="color:var(--emerald)"],
+.dash-grid .card:hover[style*="color: var(--emerald)"] {
+  background: linear-gradient(145deg, rgba(34,197,94,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="color:var(--gold)"],
+.dash-grid .card:hover[style*="color: var(--gold)"] {
+  background: linear-gradient(145deg, rgba(232,168,48,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="color:var(--danger)"],
+.dash-grid .card:hover[style*="color: var(--danger)"] {
+  background: linear-gradient(145deg, rgba(239,68,68,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="color:#8b5cf6"] {
+  background: linear-gradient(145deg, rgba(139,92,246,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="color:#f97316"] {
+  background: linear-gradient(145deg, rgba(249,115,22,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="color:#f59e0b"] {
+  background: linear-gradient(145deg, rgba(245,158,11,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="color:var(--slate)"],
+.dash-grid .card:hover[style*="color: var(--slate)"] {
+  background: linear-gradient(145deg, rgba(148,163,184,0.08), var(--bg-elevated));
+}
+/* Left border cards hover */
+.dash-grid .card:hover[style*="border-left:3px solid var(--blue)"] {
+  border-left-color: var(--info);
+  background: linear-gradient(145deg, rgba(59,130,246,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="border-left:3px solid var(--emerald)"] {
+  border-left-color: var(--success);
+  background: linear-gradient(145deg, rgba(34,197,94,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="border-left:3px solid var(--gold)"] {
+  border-left-color: var(--accent-primary);
+  background: linear-gradient(145deg, rgba(232,168,48,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="border-left:3px solid var(--danger)"] {
+  border-left-color: var(--danger);
+  background: linear-gradient(145deg, rgba(239,68,68,0.08), var(--bg-elevated));
+}
+.dash-grid .card:hover[style*="border-left:3px solid var(--orange")] {
+  border-left-color: #f97316;
+  background: linear-gradient(145deg, rgba(249,115,22,0.08), var(--bg-elevated));
+}
 /* Remove top accent bar on hover - only overall box border */
 .dash-grid .card::before { display: none !important; }
 .dash-grid .card:hover::before { opacity: 0 !important; }
