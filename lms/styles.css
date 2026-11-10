@@ -458,6 +458,16 @@ body.coach-mode .nav-item.coach-only.active {
 .dash-grid .card[style*="border-left:3px solid var(--blue)"] .stat-value { color: var(--info); }
 .dash-grid .card[style*="border-left:3px solid var(--gold)"] .stat-value { color: var(--accent-primary); }
 .dash-grid .card[style*="border-left:3px solid var(--danger)"] .stat-value { color: var(--danger); }
+/* Additional per-card left border colors */
+.dash-grid .card[style*="border-left:3px solid var(--orange")] { border-left-color: #f97316 !important; }
+.dash-grid .card[style*="border-left:3px solid #f97316"] { border-left-color: #f97316 !important; }
+/* Additional per-card value colors */
+.dash-grid .card[style*="color:var(--orange")] .stat-value,
+.dash-grid .card[style*="color:#f97316"] .stat-value { color: #f97316 !important; }
+.dash-grid .card[style*="color:#f59e0b"] .stat-value { color: #f59e0b !important; }
+.dash-grid .card[style*="color:#8b5cf6"] .stat-value { color: #8b5cf6 !important; }
+.dash-grid .card[style*="color:var(--slate)"] .stat-value,
+.dash-grid .card[style*="color: var(--slate)"] .stat-value { color: var(--slate) !important; }
 body.parent-mode .top-nav-right > :not(#top-profile),
 body.student-mode .top-nav-right > :not(#top-profile) { display: none !important; }
 body.parent-mode #child-portal-tabs,

@@ -697,42 +697,42 @@
       <!-- AI Insights Feed has been moved to its own page -->
 
 <div class="dash-grid" style="margin-bottom:14px">
-         <div class="card card-clickable" onclick="setPage('stud')"><div class="stat-label">Total Students</div><div class="stat-value" id="s-total">—</div></div>
-         <div class="card"><div class="stat-label">Avg Academy ELO</div><div class="stat-value" id="s-elo">—</div></div>
-         <div class="card card-clickable" onclick="setPage('coach-mgmt')"><div class="stat-label">Active Coaches</div><div class="stat-value" id="s-coaches">—</div></div>
+         <div class="card card-clickable" onclick="setPage('stud')" style="border-left:3px solid var(--blue);"><div class="stat-label">Total Students</div><div class="stat-value" id="s-total" style="color:var(--blue);">—</div></div>
+         <div class="card"><div class="stat-label">Avg Academy ELO</div><div class="stat-value" id="s-elo" style="color:#8b5cf6;">—</div></div>
+         <div class="card card-clickable" onclick="setPage('coach-mgmt')" style="border-left:3px solid var(--emerald);"><div class="stat-label">Active Coaches</div><div class="stat-value" id="s-coaches" style="color:var(--emerald);">—</div></div>
        </div>
 <div class="dash-grid" style="margin-bottom:14px">
-        <div class="card"><div class="stat-label">Collected This Month</div><div class="stat-value text-success" id="s-curr-collected">₹0</div></div>
-        <div class="card"><div class="stat-label">Collected Last Month</div><div class="stat-value" style="color:var(--success)" id="s-prev-collected">₹0</div></div>
-        <div class="card"><div class="stat-label">Collection Rate</div><div class="stat-value" style="color:var(--gold)" id="s-rate">—</div></div>
-      </div>
-      <div class="dash-grid" style="margin-bottom:14px">
-        <div class="card"><div class="stat-label">Projected Revenue</div><div class="stat-value" style="color:var(--gold)" id="s-total-revenue">—</div></div>
-<div class="card"><div class="stat-label">Total Coach Cost</div><div class="stat-value" style="color: var(--ivory) !important;" id="s-total-cost">—</div></div>
-         <div class="card card-clickable" onclick="setPage('exp')"><div class="stat-label">Net Profit/Loss</div><div class="stat-value" style="color: var(--ivory) !important;" id="s-profit">—</div></div>
-      </div>
+         <div class="card"><div class="stat-label">Collected This Month</div><div class="stat-value text-success" id="s-curr-collected" style="color:var(--success);">₹0</div></div>
+         <div class="card"><div class="stat-label">Collected Last Month</div><div class="stat-value" style="color:var(--success); border-left:3px solid var(--success);" id="s-prev-collected">₹0</div></div>
+         <div class="card"><div class="stat-label">Collection Rate</div><div class="stat-value" style="color:var(--gold);" id="s-rate">—</div></div>
+       </div>
        <div class="dash-grid" style="margin-bottom:14px">
-         <div class="card card-clickable" onclick="setPage('bills')"><div class="stat-label">Last Month Due Amount</div><div class="stat-value" style="color: var(--ivory) !important; font-weight:800;" id="s-last-due">₹0</div></div>
-         <div class="card card-clickable" onclick="setPage('bills')"><div class="stat-label">Current Month Due</div><div class="stat-value" style="color: var(--gold) !important; font-weight:800;" id="s-curr-due">₹0</div></div>
-         <div class="card card-clickable" onclick="setPage('bills')"><div class="stat-label">Current Month Pending</div><div class="stat-value theme-adaptive-pending" id="s-curr-pending">₹0</div></div>
-         <div class="card card-clickable" onclick="setPage('bills')"><div class="stat-label">Total Pending</div><div class="stat-value" style="color: #0d9488 !important; font-weight:800;" id="s-total-outstanding">₹0</div></div>
+         <div class="card"><div class="stat-label">Projected Revenue</div><div class="stat-value" style="color:var(--gold);" id="s-total-revenue">—</div></div>
+<div class="card"><div class="stat-label">Total Coach Cost</div><div class="stat-value" style="color:var(--danger);" id="s-total-cost">—</div></div>
+         <div class="card card-clickable" onclick="setPage('exp')"><div class="stat-label">Net Profit/Loss</div><div class="stat-value" style="color:var(--success);" id="s-profit">—</div></div>
+       </div>
+        <div class="dash-grid" style="margin-bottom:14px">
+         <div class="card card-clickable" onclick="setPage('bills')" style="border-left:3px solid var(--orange, #f97316);"><div class="stat-label">Last Month Due Amount</div><div class="stat-value" style="color:var(--orange, #f97316); font-weight:800;" id="s-last-due">₹0</div></div>
+         <div class="card card-clickable" onclick="setPage('bills')" style="border-left:3px solid var(--gold);"><div class="stat-label">Current Month Due</div><div class="stat-value" style="color:var(--gold); font-weight:800;" id="s-curr-due">₹0</div></div>
+         <div class="card card-clickable" onclick="setPage('bills')"><div class="stat-label">Current Month Pending</div><div class="stat-value theme-adaptive-pending" style="color:#f59e0b;" id="s-curr-pending">₹0</div></div>
+         <div class="card card-clickable" onclick="setPage('bills')" style="border-left:3px solid var(--danger);"><div class="stat-label">Total Pending</div><div class="stat-value" style="color:var(--danger); font-weight:800;" id="s-total-outstanding">₹0</div></div>
        </div>
        <div class="dash-grid" style="margin-bottom:20px">
-         <div class="card"><div class="stat-label">Active Enrollments</div><div class="stat-value" style="color:var(--emerald)" id="s-active-enroll">—</div></div>
-         <div class="card"><div class="stat-label">Group Sessions</div><div class="stat-value" id="s-group">—</div></div>
-         <div class="card"><div class="stat-label">Single Sessions</div><div class="stat-value" id="s-single">—</div></div>
+         <div class="card"><div class="stat-label">Active Enrollments</div><div class="stat-value" style="color:var(--emerald);" id="s-active-enroll">—</div></div>
+         <div class="card"><div class="stat-label">Group Sessions</div><div class="stat-value" style="color:var(--blue);" id="s-group">—</div></div>
+         <div class="card"><div class="stat-label">Single Sessions</div><div class="stat-value" style="color:#8b5cf6;" id="s-single">—</div></div>
        </div>
        <div class="dash-grid" style="margin-bottom:20px">
-         <div class="card"><div class="stat-label">Online Students</div><div class="stat-value" style="color:var(--accent)" id="s-online">—</div></div>
-         <div class="card"><div class="stat-label">Offline Students</div><div class="stat-value" style="color:var(--slate)" id="s-offline">—</div></div>
+         <div class="card"><div class="stat-label">Online Students</div><div class="stat-value" style="color:var(--emerald);" id="s-online">—</div></div>
+         <div class="card"><div class="stat-label">Offline Students</div><div class="stat-value" style="color:var(--slate);" id="s-offline">—</div></div>
        </div>
 
-       <!-- Golden State: Attendance Insights -->
+        <!-- Golden State: Attendance Insights -->
       <h3 style="color:var(--gold);margin-bottom:12px;font-family:var(--font-head);letter-spacing:1px">Today's Attendance Insights</h3>
       <div class="dash-grid" style="margin-bottom:20px">
-        <div class="card"><div class="stat-label">Present Today</div><div class="stat-value text-success" id="s-att-present">0</div></div>
-        <div class="card"><div class="stat-label">Absent Today</div><div class="stat-value text-danger" id="s-att-absent">0</div></div>
-        <div class="card"><div class="stat-label">Class Pending</div><div class="stat-value" style="color:var(--surface3)" id="s-att-pending">0</div></div>
+        <div class="card" style="border-left:3px solid var(--emerald);"><div class="stat-label">Present Today</div><div class="stat-value text-success" id="s-att-present">0</div></div>
+        <div class="card" style="border-left:3px solid var(--danger);"><div class="stat-label">Absent Today</div><div class="stat-value text-danger" id="s-att-absent">0</div></div>
+        <div class="card" style="border-left:3px solid var(--gold);"><div class="stat-label">Class Pending</div><div class="stat-value" style="color:var(--gold);" id="s-att-pending">0</div></div>
       </div>
 
       <div class="dash-charts" style="margin-bottom: 16px;">
