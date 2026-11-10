@@ -794,11 +794,11 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
 }
 @media (max-width: 992px) { .price-card.gold-card { transform: none; } }
 
-.price-title { font-family: var(--font-display); font-size: 2.2rem; margin-bottom: 12px; color: var(--text-primary); }
-.price-amount { font-size: 3.5rem; font-weight: 900; margin-bottom: 32px; font-family: var(--font-display); display: flex; align-items: baseline; gap: 4px; color: var(--text-primary); }
+.price-title { font-family: var(--font-display); font-size: 1.6rem; margin-bottom: 10px; color: var(--text-primary); }
+.price-amount { font-size: 2.5rem; font-weight: 900; margin-bottom: 20px; font-family: var(--font-display); display: flex; align-items: baseline; gap: 4px; color: var(--text-primary); }
 .price-amount span { font-size: 1.25rem; opacity: 0.5; font-weight: 500; }
-.price-features { list-style: none; margin-bottom: 40px; flex-grow: 1; }
-.price-features li { display: flex; gap: 12px; margin-bottom: 16px; font-family: var(--font-display); font-size: 0.95rem; color: var(--text-secondary); }
+.price-features { list-style: none; margin-bottom: 28px; flex-grow: 1; }
+.price-features li { display: flex; gap: 10px; margin-bottom: 12px; font-family: var(--font-display); font-size: 0.9rem; color: var(--text-secondary); }
 .price-features .check { color: var(--accent-hover); font-weight: bold; }
 
 /* ─── Pricing: level cards with Group / Individual fee tiers ───
@@ -806,7 +806,7 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
    these are all styled for light-on-dark. Accents stay amber to match the
    rest of the brand rather than the per-level colours of the print chart. */
 .price-piece {
-  font-size: 2.6rem; line-height: 1;
+  font-size: 2rem; line-height: 1;
   color: var(--accent-hover);
   margin-bottom: 14px;
   text-shadow: 0 4px 18px var(--accent-glow);
@@ -821,17 +821,17 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
   padding: 6px 14px; margin-bottom: 16px;
 }
 .price-desc {
-  font-size: 0.95rem; line-height: 1.6;
-  color: var(--text-muted); margin-bottom: 22px;
+  font-size: 0.9rem; line-height: 1.6;
+  color: var(--text-muted); margin-bottom: 16px;
 }
 .price-meta {
   display: flex; flex-wrap: wrap; gap: 8px 18px;
-  font-size: 0.82rem; font-weight: 600;
-  color: var(--text-muted); margin-bottom: 20px;
-  padding-bottom: 20px;
+  font-size: 0.8rem; font-weight: 600;
+  color: var(--text-muted); margin-bottom: 16px;
+  padding-bottom: 16px;
   border-bottom: 1px solid var(--border-subtle);
 }
-.price-tiers { display: grid; gap: 12px; margin-bottom: 30px; }
+.price-tiers { display: grid; gap: 10px; margin-bottom: 24px; }
 .price-tier {
   background: var(--bg-subtle);
   border: 1px solid rgba(245,158,11,0.22);
@@ -2607,12 +2607,12 @@ body.loaded #preloader { opacity: 0; visibility: hidden; pointer-events: none; }
   position: relative;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: 24px;
-  padding: 36px 26px;
+  border-radius: 20px;
+  padding: 28px 22px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-height: 520px;
+  min-height: 440px;
   transform-style: preserve-3d;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
@@ -3611,9 +3611,9 @@ button, input, textarea, select, a {
 /* Per-photo framing — passport/headshot photos need their own crop point */
 .coach-img-box img[src*="ranjith"] { object-position: center 30%; background: linear-gradient(180deg,#eef2f7,#dfe6ee); }
 .coach-card-premium:hover .coach-img-box img { transform: scale(1.06); }
-.coach-card-body { padding: 22px 18px; text-align: center; }
-.coach-card-body h5 { font-family: var(--font-display); font-weight: 800; font-size: 1.2rem; color: #0f172a; margin: 0 0 6px; }
-.coach-card-body p { font-size: .88rem; color: #64748b; line-height: 1.55; margin: 0; }
+.coach-card-body { padding: 18px 14px; text-align: center; }
+.coach-card-body h5 { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; color: #0f172a; margin: 0 0 4px; }
+.coach-card-body p { font-size: 0.85rem; color: #64748b; line-height: 1.5; margin: 0; }
 .coach-level-badge {
   position: absolute; top: 14px; right: 14px; z-index: 10;
   padding: 4px 12px; border-radius: 99px;
@@ -3623,30 +3623,30 @@ button, input, textarea, select, a {
 }
 
 /* Premium Reviews */
-.reviews-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(320px,1fr)); gap: 64px; max-width:1400px; margin:0 auto; padding:0 32px; }
+.reviews-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap: 32px; max-width:1100px; margin:0 auto; padding:0 20px; }
 .review-card {
-  background: #fff; border-radius: 20px; padding: 56px;
+  background: #fff; border-radius: 16px; padding: 32px;
   border: 1px solid rgba(232,160,32,.1);
   box-shadow: 0 4px 20px rgba(0,0,0,.05);
   transition: all .35s ease; position: relative;
 }
 .review-card::before {
-  content: '"'; position: absolute; top:16px; left:24px;
-  font-family: var(--font-display); font-size:5rem;
+  content: '"'; position: absolute; top:8px; left:12px;
+  font-family: var(--font-display); font-size:2.5rem;
   color: var(--amber); opacity:.12; line-height:1; font-weight:900;
 }
-.review-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,.1); border-color: rgba(232,160,32,.25); }
-.review-stars { display: flex; gap:3px; color: var(--amber); font-size:1.25rem; margin-bottom:32px; }
-.review-text { font-size:1.15rem; line-height:2.1; color:rgba(26,18,9,.75); margin-bottom:40px; font-style:italic; }
-.review-author { display: flex; align-items: center; gap:12px; }
+.review-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,.08); border-color: rgba(232,160,32,.25); }
+.review-stars { display: flex; gap:2px; color: var(--amber); font-size:1rem; margin-bottom:16px; }
+.review-text { font-size:1rem; line-height:1.7; color:rgba(26,18,9,.75); margin-bottom:20px; font-style:italic; }
+.review-author { display: flex; align-items: center; gap:10px; }
 .review-avatar {
-  width:50px; height:50px; border-radius:50%;
+  width:40px; height:40px; border-radius:50%;
   background: linear-gradient(135deg, var(--amber), #F5C842);
   display: flex; align-items: center; justify-content: center;
-  font-weight:800; color:#fff; font-size:1.2rem; flex-shrink:0;
+  font-weight:800; color:#fff; font-size:1rem; flex-shrink:0;
 }
-.review-name { font-weight:700; font-size:1.05rem; color:var(--ink); }
-.review-role { font-size:.9rem; color:rgba(26,18,9,.5); margin-top:3px; }
+.review-name { font-weight:700; font-size:0.9rem; color:var(--ink); }
+.review-role { font-size:0.8rem; color:rgba(26,18,9,.5); margin-top:2px; }
 
 /* Enhanced CTA */
 #cta { position:relative; overflow:hidden; }
@@ -3846,7 +3846,7 @@ button, input, textarea, select, a {
 }
 .journey-main-title {
   font-family: var(--font-display, 'Poppins', sans-serif);
-  font-size: clamp(2rem, 4.5vw, 3rem);
+  font-size: clamp(1.6rem, 4.5vw, 2.2rem);
   font-weight: 900;
   color: var(--text-primary);
   letter-spacing: -0.02em;
