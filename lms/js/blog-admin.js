@@ -269,10 +269,20 @@
     }
 
     let imgUrl = urlInput || '/assets/img/blog/chess-benefits.jpg';
-    if (fileInput && fileInput.files && fileInput.files[0] && typeof window.uploadToImgbb === 'function') {
-      if (typeof window.toast === 'function') window.toast('Uploading image...', 'info');
-      const uploaded = await window.uploadToImgbb(fileInput.files[0]);
-      if (uploaded) imgUrl = uploaded;
+    if (fileInput && fileInput.files && fileInput.files[0]) {
+      if (typeof window.uploadToImgbb === 'function') {
+        if (typeof window.toast === 'function') window.toast('Uploading image...', 'info');
+        try {
+          const uploaded = await window.uploadToImgbb(fileInput.files[0]);
+          if (uploaded) imgUrl = uploaded;
+        } catch (e) {
+          console.warn('[Blog] Image upload failed:', e);
+          if (typeof window.toast === 'function') window.toast('Image upload failed: ' + (e?.message || 'unknown error'), 'error');
+        }
+      } else {
+        console.warn('[Blog] window.uploadToImgbb is not defined; image will not be uploaded');
+        if (typeof window.toast === 'function') window.toast('Image upload function not available', 'error');
+      }
     }
 
     const postData = {
