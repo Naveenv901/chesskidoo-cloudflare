@@ -18648,9 +18648,9 @@ setTimeout(function () {
 
       });
 
-      set("stud-sum-total", total, totalAmount);
+      set("stud-sum-total", studs.length, undefined);
 
-      set("stud-sum-paid", paidCount, paidAmount);
+      set("stud-sum-paid", total, totalAmount);
 
       set("stud-sum-pending", pendingCount, pendingAmount);
 
