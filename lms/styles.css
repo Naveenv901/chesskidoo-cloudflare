@@ -593,7 +593,9 @@ input[type='month']::-webkit-calendar-picker-indicator { filter: invert(0.8) sep
   background: var(--bg-primary);
   z-index: 4000; display: flex; align-items: center; justify-content: center;
   transition: opacity 0.5s ease, visibility 0.5s;
-  overflow: hidden;
+  overflow-y: auto; overflow-x: hidden;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
 /* Animated decorative background shapes */
@@ -647,11 +649,15 @@ input[type='month']::-webkit-calendar-picker-indicator { filter: invert(0.8) sep
   background: var(--bg-glass);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
-  padding: 48px 40px;
+  padding: 40px 32px;
   box-shadow: var(--shadow-xl), 0 0 80px var(--accent-glow);
   text-align: center; position: relative; z-index: 10;
   backdrop-filter: blur(24px);
   animation: login-box-fade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  max-height: 95vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+  margin: 10px 0;
 }
 
 @keyframes login-box-fade {
