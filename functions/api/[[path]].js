@@ -203,7 +203,7 @@ async function getSessionUser(request, env) {
   }
 }
 
-async function filterOpToSQL(op) {
+function filterOpToSQL(op) {
   switch (op) {
     case 'eq': return '=';
     case 'neq': return '!=';
