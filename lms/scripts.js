@@ -24756,7 +24756,7 @@ async function uploadToImgbb(file) {
   if (!file) return null;
   const formData = new FormData();
   formData.append('file', file);
-  const resp = await fetch('/api/images', {
+  const resp = await fetch('/api/upload', {
     method: 'POST',
     body: formData,
   });
