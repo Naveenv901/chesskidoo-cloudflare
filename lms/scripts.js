@@ -24765,13 +24765,9 @@ async function uploadToImgbb(file) {
     }
     if (!token) token = localStorage.getItem('sb-access-token');
   } catch (_) {}
-  const headers = {};
-  if (token) headers.Authorization = 'Bearer ' + token;
-  const resp = await fetch('/api/upload', {
-    method: 'POST',
-    headers,
-    body: formData,
-  });
+  const fetchOpts = { method: 'POST', body: formData };
+  if (token) fetchOpts.headers = { Authorization: 'Bearer ' + token };
+  const resp = await fetch('/api/upload', fetchOpts);
 
   const json = await resp.json();
 

@@ -298,8 +298,9 @@
     // Save to remote API
     try {
       if (typeof window.apiCall === 'function') {
+        let res;
         if (id) {
-          await window.apiCall(`/api/blogs?id=${encodeURIComponent(id)}`, {
+          res = await window.apiCall(`/api/blogs?id=${encodeURIComponent(id)}`, {
             method: 'PUT',
             body: JSON.stringify({
               title,
@@ -311,7 +312,7 @@
             })
           });
         } else {
-          await window.apiCall('/api/blogs', {
+          res = await window.apiCall('/api/blogs', {
             method: 'POST',
             body: JSON.stringify({
               id: postData.id,
@@ -324,9 +325,19 @@
             })
           });
         }
+        if (!res.ok) {
+          let errMsg = `Blog save failed (${res.status})`;
+          try {
+            const errBody = await res.json();
+            if (errBody.error) errMsg = errBody.error;
+          } catch (_) {}
+          throw new Error(errMsg);
+        }
       }
     } catch (e) {
       console.warn('[Blog] API call error:', e);
+      if (typeof window.toast === 'function') window.toast(e.message || 'Failed to save blog post', 'error');
+      return;
     }
 
     if (typeof window.closeModals === 'function') window.closeModals();
