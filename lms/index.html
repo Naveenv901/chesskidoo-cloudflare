@@ -145,13 +145,13 @@
 
     <div id="login-err" style="color:var(--danger);font-size:13px;margin-top:16px;display:none;font-weight:500;text-align:center;padding:10px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:10px;"></div>
 
-    <div class="login-divider" style="display:flex;align-items:center;margin:24px 0;color:var(--text-muted);font-size:11px;text-transform:uppercase;letter-spacing:1px;">
+    <div class="login-divider" style="display:none;">
       <span style="flex:1;height:1px;background:var(--border-input);margin-right:12px;"></span>
       Or continue with
       <span style="flex:1;height:1px;background:var(--border-input);margin-left:12px;"></span>
     </div>
 
-    <div class="social-login" style="display:flex;gap:12px;">
+    <div class="social-login" style="display:none;gap:12px;">
       <button class="social-btn" onclick="CK.handleGoogleLogin ? CK.handleGoogleLogin() : toast('Google login requires internet','info')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px;background:var(--surface2);border:1px solid var(--border-input);border-radius:12px;color:var(--text-primary);font-weight:600;font-size:13px;cursor:pointer;transition:all 0.2s;">
         <span>G</span> Google
       </button>
