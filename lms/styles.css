@@ -371,13 +371,41 @@ body.coach-mode .nav-item.coach-only.active {
 .top-nav-right .btn { padding: 8px 14px; font-size: 12px; white-space: nowrap; }
 .top-nav-right { gap: 10px; }
 
-/* ── Curved containers for dashboard content ── */
+/* ── Global Button Border Radius ── */
+.btn, button {
+  border-radius: var(--radius-md) !important;
+}
+
+/* Specific action button containers */
+.top-btn-area .btn, #top-btn-area .btn,
+.notif-btn, .dash-action-btn,
+.social-btn, .btn-gold, .btn-outline, .btn-outline-grey,
+.btn-outline-blue, .btn-outline-info, .btn-outline-warning,
+.btn-outline-grey.active, .btn-danger, .btn-sm {
+  border-radius: var(--radius-md) !important;
+}
+
+/* ── Student filter bar action buttons ── */
+#f-search, #f-coach, #f-session, #f-enroll-status, #f-status, #f-learning-mode,
+#f-min-fee, #f-max-fee, #f-bill-month-stud, #f-due-date-stud, #f-enroll-date-stud, #f-last-updated-stud {
+  border-radius: var(--radius-md) !important;
+}
+
+/* ── Coach section buttons & containers ── */
+.coach-stat-card, .coach-section-block, .coach-section-row,
+.coach-shell {
+  border-radius: var(--radius-lg) !important;
+}
+
+/* ── All clickable cards ── */
+.card-clickable, .card {
+  border-radius: var(--radius-md);
+}
+
+/* ── Dashboard containers ── */
 .table-wrap {
   border-radius: var(--radius-lg) !important;
   overflow: hidden;
-}
-.card {
-  border-radius: var(--radius-lg);
 }
 .filter-bar {
   border-radius: var(--radius-lg);
