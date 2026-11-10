@@ -415,15 +415,15 @@
            <div class="coach-section-block">
                <div class="coach-section-row">
                  <h2 class="coach-section-title">Schedule</h2>
-                 <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                    <div class="tabs-nav" id="coach-schedule-tabs" style="background:rgba(0,0,0,0.2); padding:3px; border-radius:8px; border:1px solid var(--border); display:inline-flex; gap:2px;">
-                      <button type="button" class="tab-link active" id="coach-schedule-tab-weekly" onclick="window.setCoachScheduleView && window.setCoachScheduleView('weekly')" style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; font-size:12px; border-radius:6px; border:none; cursor:pointer; font-weight:700;">📆 Weekly</button>
-                      <button type="button" class="tab-link" id="coach-schedule-tab-monthly" onclick="window.setCoachScheduleView && window.setCoachScheduleView('monthly')" style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; font-size:12px; border-radius:6px; border:none; cursor:pointer; font-weight:700;">📅 Monthly</button>
+                  <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                     <div class="tabs-nav" id="coach-schedule-tabs" style="background:rgba(0,0,0,0.2); padding:3px; border-radius:8px; border:1px solid var(--border); display:inline-flex; gap:2px;">
+                       <button type="button" class="tab-link active" id="coach-schedule-tab-weekly" onclick="window.setCoachScheduleView && window.setCoachScheduleView('weekly')" style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; font-size:12px; border-radius:8px; border:none; cursor:pointer; font-weight:700;">📆 Weekly</button>
+                       <button type="button" class="tab-link" id="coach-schedule-tab-monthly" onclick="window.setCoachScheduleView && window.setCoachScheduleView('monthly')" style="display:inline-flex; align-items:center; gap:6px; padding:7px 14px; font-size:12px; border-radius:8px; border:none; cursor:pointer; font-weight:700;">📅 Monthly</button>
+                     </div>
+                        <input type="month" id="coach-schedule-month" onchange="window.renderCoachSchedule && window.renderCoachSchedule(window.coachScheduleView || 'monthly')" min="2026-01" style="padding:6px 10px; background:var(--bg3); border:1px solid var(--border); color:var(--ivory); border-radius:8px; font-size:12px; width:140px; display:none;">
+                        <button class="btn btn-outline btn-sm" onclick="window.openCoachBatchSchedulePopup && window.openCoachBatchSchedulePopup()" style="padding:6px 14px; font-size:12px; height:32px; border-radius:8px;">📋 Batch Schedule</button>
+                        <button class="btn btn-outline btn-sm" onclick="window.coachApplyLinkToAllBatches && window.coachApplyLinkToAllBatches()" style="padding:6px 14px; font-size:12px; height:32px; border-radius:8px;">🔗 Set Link for All</button>
                     </div>
-                       <input type="month" id="coach-schedule-month" onchange="window.renderCoachSchedule && window.renderCoachSchedule(window.coachScheduleView || 'monthly')" min="2026-01" style="padding:6px 10px; background:var(--bg3); border:1px solid var(--border); color:var(--ivory); border-radius:6px; font-size:12px; width:140px; display:none;">
-                       <button class="btn btn-outline btn-sm" onclick="window.openCoachBatchSchedulePopup && window.openCoachBatchSchedulePopup()" style="padding:6px 12px; font-size:12px; height:32px;">📋 Batch Schedule</button>
-                       <button class="btn btn-outline btn-sm" onclick="window.coachApplyLinkToAllBatches && window.coachApplyLinkToAllBatches()" style="padding:6px 12px; font-size:12px; height:32px;">🔗 Set Link for All</button>
-                   </div>
                </div>
              <div id="coach-schedule-content">
                <div class="coach-loading-cell">Loading schedule...</div>

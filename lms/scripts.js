@@ -32463,11 +32463,21 @@ loadAllData(true);
 
   function toggleTheme() {
 
-    const newTheme = document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+    const isLight = document.documentElement.getAttribute("data-theme") === "light";
 
-    if (newTheme === "light") document.documentElement.setAttribute("data-theme", "light"); else document.documentElement.removeAttribute("data-theme");
+    if (isLight) {
 
-    localStorage.setItem("ck_portal_theme", newTheme);
+      document.documentElement.removeAttribute("data-theme");
+
+      localStorage.setItem("ck_portal_theme", "dark");
+
+    } else {
+
+      document.documentElement.setAttribute("data-theme", "light");
+
+      localStorage.setItem("ck_portal_theme", "light");
+
+    }
 
     // Re-render dashboard if visible to update chart colors
 
