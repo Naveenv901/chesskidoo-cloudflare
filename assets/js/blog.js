@@ -123,7 +123,7 @@ function renderBlogPosts(posts) {
         </div>
         <h3 class="blog-title">${escapeBlogHtml(post.title)}</h3>
         <p class="blog-excerpt">${escapeBlogHtml(post.excerpt)}</p>
-        ${post.content ? '<p class="blog-full" style="display:none;">' + escapeBlogHtml(post.content) + '</p>' : ''}
+        <p class="blog-full" style="display:none;">${escapeBlogHtml(post.content || '')}</p>
         <a href="#" class="blog-read-more" data-id="${escapeBlogHtml(post.id)}">Read more →</a>
       </div>
     </div>`).join('');
@@ -133,13 +133,20 @@ function renderBlogPosts(posts) {
     link.addEventListener('click', e => {
       e.preventDefault();
       const card = e.target.closest('.blog-card');
+      if (!card) return;
       const excerpt = card.querySelector('.blog-excerpt');
       const full = card.querySelector('.blog-full');
       if (!full) return;
-      const showingFull = full.style.display !== 'none';
-      excerpt.style.display = showingFull ? '' : 'none';
-      full.style.display = showingFull ? 'none' : '';
-      e.target.textContent = showingFull ? 'Read more →' : 'Read less ←';
+      const isCollapsed = full.style.display === 'none';
+      if (isCollapsed) {
+        excerpt.style.display = 'none';
+        full.style.display = '';
+        e.target.textContent = 'Read less ←';
+      } else {
+        excerpt.style.display = '';
+        full.style.display = 'none';
+        e.target.textContent = 'Read more →';
+      }
     });
   });
 }
