@@ -905,6 +905,152 @@
 
   }
 
+  function showAllNotifications() {
+    const btn = $("notification-btn");
+    if (btn && typeof btn.click === "function") btn.click();
+    const dd = $("notif-dropdown");
+    if (dd) dd.style.display = "none";
+  }
+
+  function showFinancialReport() {
+    const content = $("notification-content");
+    const dd = $("notif-dropdown");
+    if (dd) dd.style.display = "none";
+    if (content) {
+      content.innerHTML = `
+        <div style="padding:24px;max-width:600px;margin:0 auto;">
+          <h2 style="color:var(--gold);font-family:var(--font-head);margin-bottom:20px;">📊 Financial Report</h2>
+          <div style="background:var(--surface2);border:1px solid var(--border-subtle);border-radius:12px;padding:20px;margin-bottom:20px;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:16px;">
+              <div><div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Total Revenue</div><div style="font-size:24px;font-weight:800;color:var(--success);" id="fin-total-rev">₹0</div></div>
+              <div><div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Collected This Month</div><div style="font-size:24px;font-weight:800;color:var(--success);" id="fin-curr-collected">₹0</div></div>
+              <div><div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Pending Collections</div><div style="font-size:24px;font-weight:800;color:var(--warning);" id="fin-pending">₹0</div></div>
+              <div><div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Coach Payouts</div><div style="font-size:24px;font-weight:800;color:var(--danger);" id="fin-coach-cost">₹0</div></div>
+            </div>
+          </div>
+          <div style="text-align:center;color:var(--text-muted);font-size:12px;">Report generated on ${new Date().toLocaleDateString()}</div>
+        </div>
+      `;
+      const modal = $("notification-modal");
+      if (modal) { modal.style.display = "flex"; modal.classList.add("active", "open"); }
+      // populate values
+      setTimeout(() => {
+        if ($("s-curr-collected")) $("fin-curr-collected").textContent = $("s-curr-collected").textContent;
+        if ($("s-total-revenue")) $("fin-total-rev").textContent = $("s-total-revenue").textContent;
+        if ($("s-total-cost")) $("fin-coach-cost").textContent = $("s-total-cost").textContent;
+        if ($("s-total-outstanding")) $("fin-pending").textContent = $("s-total-outstanding").textContent;
+      }, 100);
+    }
+    toast("Financial Report opened", "info");
+  }
+
+  function showBoardroomSlides() {
+    const dd = $("notif-dropdown");
+    if (dd) dd.style.display = "none";
+    const content = $("notification-content");
+    if (content) {
+      content.innerHTML = `
+        <div style="padding:24px;max-width:700px;margin:0 auto;">
+          <h2 style="color:var(--gold);font-family:var(--font-head);margin-bottom:20px;">🎯 Boardroom Slides — Executive Summary</h2>
+          <div style="background:linear-gradient(135deg,var(--surface2),var(--bg-elevated));border:1px solid var(--border-subtle);border-radius:16px;padding:24px;margin-bottom:24px;">
+            <div style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+              <div style="flex:1;min-width:140px;">
+                <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Total Students</div>
+                <div style="font-size:32px;font-weight:800;color:var(--accent-primary);" id="board-students">—</div>
+              </div>
+              <div style="flex:1;min-width:140px;">
+                <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Avg Academy ELO</div>
+                <div style="font-size:32px;font-weight:800;color:var(--accent-primary);" id="board-elo">—</div>
+              </div>
+              <div style="flex:1;min-width:140px;">
+                <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Monthly Revenue</div>
+                <div style="font-size:32px;font-weight:800;color:var(--success);" id="board-revenue">₹0</div>
+              </div>
+              <div style="flex:1;min-width:140px;">
+                <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;">Active Coaches</div>
+                <div style="font-size:32px;font-weight:800;color:var(--info);" id="board-coaches">—</div>
+              </div>
+            </div>
+          </div>
+          <div style="background:var(--surface2);border:1px solid var(--border-subtle);border-radius:12px;padding:20px;">
+            <div style="font-size:11px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;margin-bottom:12px;">Quick Actions</div>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <button class="btn btn-gold btn-sm" onclick="setPage('stud')">Manage Students</button>
+              <button class="btn btn-gold btn-sm" onclick="setPage('coach-mgmt')">Manage Coaches</button>
+              <button class="btn btn-outline btn-sm" onclick="setPage('bills')">View Dues</button>
+              <button class="btn btn-outline btn-sm" onclick="setPage('exp')">View Expenses</button>
+            </div>
+          </div>
+        </div>
+      `;
+      const modal = $("notification-modal");
+      if (modal) { modal.style.display = "flex"; modal.classList.add("active", "open"); }
+      setTimeout(() => {
+        if ($("s-total")) $("board-students").textContent = $("s-total").textContent;
+        if ($("s-elo")) $("board-elo").textContent = $("s-elo").textContent;
+        if ($("s-curr-collected")) $("board-revenue").textContent = $("s-curr-collected").textContent;
+        if ($("s-coaches")) $("board-coaches").textContent = $("s-coaches").textContent;
+      }, 100);
+    }
+    toast("Boardroom Slides opened", "info");
+  }
+
+  function populateNotifDropdown() {
+    const list = $("notif-list");
+    const badge = $("notification-badge");
+    const dd = $("notif-dropdown");
+    if (!list) return;
+    let html = "";
+    const unreadCount = getUnreadCount ? getUnreadCount() : 0;
+    if (badge) badge.textContent = unreadCount;
+    if (badge) badge.style.display = unreadCount > 0 ? "flex" : "none";
+    if (unreadCount === 0) {
+      html = '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:13px;">No new notifications</div>';
+    } else {
+      const msgs = (allMessages || []).filter(m => !getMessageIsRead(m) && m.receiver_type === "admin").slice(0, 8);
+      msgs.forEach(m => {
+        const time = m.created_at ? new Date(m.created_at).toLocaleTimeString([], {hour:2-digit, minute:2-digit}) : "";
+        html += `
+          <div class="notif-item unread" onclick="event.stopPropagation();">
+            <div class="notif-item-icon">💬</div>
+            <div class="notif-item-content">
+              <div class="notif-item-title">${escapeHtml(m.subject || m.body || "New Message").slice(0, 40)}</div>
+              <div class="notif-item-time">${time}</div>
+            </div>
+          </div>`;
+      });
+      const dueStudents = (allStudents || []).filter(s => {
+        const status = getStudentPaymentStatus ? getStudentPaymentStatus(s) : "";
+        return status === "Due" || status === "Overdue";
+      }).slice(0, 4);
+      dueStudents.forEach(s => {
+        html += `
+          <div class="notif-item unread" onclick="event.stopPropagation();setPage('stud');">
+            <div class="notif-item-icon">💰</div>
+            <div class="notif-item-content">
+              <div class="notif-item-title">Fee Due: ${escapeHtml(s.full_name || "Student")}</div>
+              <div class="notif-item-time">Payment pending</div>
+            </div>
+          </div>`;
+      });
+    }
+    list.innerHTML = html;
+  }
+
+  function getUnreadCount() {
+    let count = 0;
+    if (allMessages) {
+      count += (allMessages || []).filter(m => !getMessageIsRead(m) && m.receiver_type === "admin").length;
+    }
+    if (allStudents) {
+      count += (allStudents || []).filter(s => {
+        const status = getStudentPaymentStatus ? getStudentPaymentStatus(s) : "";
+        return status === "Due" || status === "Overdue";
+      }).length;
+    }
+    return count;
+  }
+
   function updateNotificationBadge() {
 
     const unread = allMessages.filter(
@@ -34871,6 +35017,8 @@ window.deleteStudent = deleteStudent;
       ${html}
 
     `;
+
+    populateNotifDropdown();
 
     openModal("notification-modal");
 

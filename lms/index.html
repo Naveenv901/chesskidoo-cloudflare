@@ -256,7 +256,42 @@
     </div>
     <div class="top-nav-right">
 
-      <button type="button" class="btn btn-outline" onclick="showNotifications()" title="Notifications" id="notification-btn">🔔 <span id="notification-badge" class="badge badge-danger" style="display:none">0</span></button>
+      <!-- Notification Bell -->
+      <div class="notif-wrap" style="position:relative; display:inline-flex; align-items:center;">
+        <button type="button" class="btn btn-outline notif-btn" onclick="showNotifications()" title="Notifications" id="notification-btn">
+          <span class="notif-icon">🔔</span>
+          <span id="notification-badge" class="notif-badge">0</span>
+        </button>
+        <div id="notif-dropdown" class="notif-dropdown" style="display:none;">
+          <div class="notif-dropdown-header">
+            <span class="notif-dropdown-title">Notifications</span>
+            <button class="notif-clear" onclick="clearNotifications()" style="background:none;border:none;color:var(--gold);font-size:11px;cursor:pointer;">Clear all</button>
+          </div>
+          <div id="notif-list" class="notif-list" style="max-height:300px;overflow-y:auto;padding:8px 0;">
+            <!-- notifications injected here -->
+          </div>
+          <div class="notif-footer" style="padding:8px 12px;border-top:1px solid var(--border-subtle);text-align:center;">
+            <button class="btn btn-outline btn-sm" onclick="showAllNotifications()" style="width:100%;">View All Notifications</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="dash-actions" style="display:flex;gap:8px;align-items:center;">
+        <button class="dash-action-btn" onclick="setPage('exp')" title="Export Academy Data">
+          <span class="dash-action-icon">📤</span>
+          <span class="dash-action-label">Export</span>
+        </button>
+        <button class="dash-action-btn" onclick="showFinancialReport()" title="Financial Report">
+          <span class="dash-action-icon">📊</span>
+          <span class="dash-action-label">Finance</span>
+        </button>
+        <button class="dash-action-btn" onclick="showBoardroomSlides()" title="Boardroom Slides">
+          <span class="dash-action-icon">🎯</span>
+          <span class="dash-action-label">Boardroom</span>
+        </button>
+      </div>
+
        <div id="top-btn-area" style="display:flex;gap:16px;align-items:center"></div>
       <div class="top-profile" id="top-profile" onclick="openProfile()" style="display:none;">
         <img id="top-profile-av" class="top-profile-av" src="" alt="Profile">
