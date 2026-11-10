@@ -292,7 +292,8 @@
       date,
       excerpt,
       content,
-      image: imgUrl
+      image: imgUrl,
+      img_url: imgUrl
     };
 
     // Save locally
@@ -318,6 +319,7 @@
               content: content || excerpt,
               author,
               image: imgUrl,
+              img_url: imgUrl,
               created_at: date ? new Date(date).toISOString() : null
             })
           });
@@ -331,6 +333,7 @@
               content: content || excerpt,
               author,
               image: imgUrl,
+              img_url: imgUrl,
               created_at: date ? new Date(date).toISOString() : new Date().toISOString()
             })
           });

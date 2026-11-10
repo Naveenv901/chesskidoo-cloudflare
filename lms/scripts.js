@@ -24773,9 +24773,9 @@ async function uploadToImgbb(file) {
 
   if (!resp.ok) {
     console.error('R2 upload failed', json);
-    throw new Error(json.error?.message || 'R2 upload failed');
+    throw new Error(json.error?.message || json?.data?.error || 'R2 upload failed');
   }
-  return json.publicUrl;
+  return json?.data?.publicUrl || json?.publicUrl;
 }
 // expose globally for admin/homework modules
 window.uploadToImgbb = uploadToImgbb;
