@@ -24756,8 +24756,20 @@ async function uploadToImgbb(file) {
   if (!file) return null;
   const formData = new FormData();
   formData.append('file', file);
+  let token = null;
+  try {
+    const raw = localStorage.getItem('chesskidoo_auth') || localStorage.getItem('twoknights_auth');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      token = parsed && parsed.token ? parsed.token : null;
+    }
+    if (!token) token = localStorage.getItem('sb-access-token');
+  } catch (_) {}
+  const headers = {};
+  if (token) headers.Authorization = 'Bearer ' + token;
   const resp = await fetch('/api/upload', {
     method: 'POST',
+    headers,
     body: formData,
   });
 
