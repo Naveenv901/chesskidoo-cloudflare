@@ -486,10 +486,11 @@ html { scroll-behavior: smooth; }
   color: var(--text-muted);
   font-size: 0.85rem;
   letter-spacing: 0.02em;
+  margin-right: 40px;
 }
 @keyframes marquee {
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-100%); }
+  100% { transform: translateX(-50%); }
 }
 @media (prefers-reduced-motion: reduce) {
   .badge-marquee-inner { animation: none !important; transform: none !important; }

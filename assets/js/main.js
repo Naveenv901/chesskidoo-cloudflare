@@ -300,14 +300,17 @@
     const landingPage = document.getElementById('landing-page');
     if (!landingPage || !landingPage.classList.contains('active')) return;
 
-    const sections = ['home', 'features', 'levels', 'coaches', 'achievements', 'tournaments', 'ck-world', 'pricing', 'careers', 'faq'];
-    const scrollPosition = window.scrollY + 140;
+    const sections = ['home', 'features', 'levels', 'coaches', 'achievements', 'tournaments', 'ck-world', 'ck-centres', 'why-choose', 'reviews', 'pricing', 'faq', 'about', 'blog', 'cta'];
+    const headerOffset = 90;
+    const scrollPosition = window.scrollY + headerOffset;
 
+    let found = false;
     for (const secId of sections) {
       const el = document.getElementById(secId);
       if (el) {
-        const top = el.offsetTop;
-        const height = el.offsetHeight;
+        const rect = el.getBoundingClientRect();
+        const top = rect.top + window.scrollY;
+        const height = rect.height;
         if (scrollPosition >= top && scrollPosition < top + height) {
           document.querySelectorAll('.nav-links .nav-link').forEach(btn => {
             if (btn.getAttribute('data-section') === secId) {
@@ -316,9 +319,17 @@
               btn.classList.remove('active');
             }
           });
+          found = true;
           break;
         }
       }
+    }
+
+    // If scrolled past all sections, highlight the last one (faq/cta)
+    if (!found) {
+      document.querySelectorAll('.nav-links .nav-link').forEach(btn => {
+        btn.classList.remove('active');
+      });
     }
   });
 
