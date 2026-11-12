@@ -8878,15 +8878,39 @@
 
       enrollStatus === "waitlist" ||
 
-      enrollStatus === "upcoming" ||
-
-      enrollStatus === "inactive" ||
-
-      enrollStatus === "archived"
+      enrollStatus === "upcoming"
 
     ) {
 
       return "Not Enrolled";
+
+    }
+
+    // Inactive/Archived: date-based inactivation — previous month fees preserved
+
+    if (enrollStatus === "inactive" || enrollStatus === "archived") {
+
+      const inactiveDateStr = s.inactive_date || null;
+
+      if (inactiveDateStr) {
+
+        const inactiveDate = new Date(inactiveDateStr);
+
+        inactiveDate.setUTCHours(0, 0, 0, 0);
+
+        // If target month end is on/after inactive date, student was inactive this month
+
+        if (targetMonthEnd >= inactiveDate) return "Not Enrolled";
+
+        // Otherwise student was still active during this target month — fall through
+
+      } else {
+
+        // No inactive date: treat as fully inactive for all months
+
+        return "Not Enrolled";
+
+      }
 
     }
 
@@ -19249,6 +19273,7 @@ setTimeout(function () {
     if (window.updateEditFeeCurrencyConversion) window.updateEditFeeCurrencyConversion();
 
     if ($("e-enroll-status")) $("e-enroll-status").value = s.status || "active";
+    if ($("e-inactive-date")) $("e-inactive-date").value = s.inactive_date || "";
 
     if ($("e-payment-status"))
 
@@ -19445,6 +19470,8 @@ setTimeout(function () {
        enrollment_date: $("e-join")?.value?.trim() || null,
 
        due_date: $("e-due-date")?.value?.trim() || null,
+
+       inactive_date: $("e-inactive-date")?.value?.trim() || null,
 
        session_mode: $("e-batch-type").value?.trim() || null,
 
@@ -19854,7 +19881,7 @@ setTimeout(function () {
 
           const changedFields = {};
 
-          const fieldsToTrack = ['name', 'status', 'payment_status', 'coach_id', 'monthly_fee', 'level', 'batch_type', 'session_mode', 'enrollment_date', 'due_date'];
+          const fieldsToTrack = ['name', 'status', 'payment_status', 'coach_id', 'monthly_fee', 'level', 'batch_type', 'session_mode', 'enrollment_date', 'due_date', 'inactive_date'];
 
           fieldsToTrack.forEach(field => {
 
